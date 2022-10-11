@@ -1,0 +1,154 @@
+body {
+    background: #fff;
+    color: #000;
+    font: normal 13px tahoma, arial, verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+::selection {
+    color: fff;
+    background: #82b8e6;
+}
+
+#branding {
+    background: #FcFcFe;
+    border-top: 3px solid #dadee0;
+    border-bottom: 0;
+    height: 80px;
+}
+
+#banner_highlight {
+    position: relative;
+    background-repeat: no-repeat;
+    height: 80px;
+}
+
+.wrapper {
+    width: auto;
+    margin: 0 auto;
+    min-width: 980px;
+    max-width: 1400px;
+}
+
+#search {
+    margin: 13px 8px auto auto;
+}
+
+.right {
+    float: right;
+}
+
+form {
+    display: block;
+    margin-top: 0em;
+}
+
+input,
+select,
+textarea {
+    font: normal 12px tahoma, arial, verdana, sans-serif;
+}
+
+fieldset,
+img {
+    border: 0;
+}
+
+#logo {
+    float: left;
+}
+
+a {
+    color: #4a545c;
+    text-decoration: underline;
+}
+
+#nav_wrap {
+    height: 38px;
+    border-top: 1px solid #2e2e2e;
+    border-bottom: 1px solid #1b1b1b;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    overflow: hidden;
+}
+
+#user_navigation {
+    color: #9f9f9f;
+    float: right;
+    font-size: 11px;
+    line-height: 38px;
+    height: 38px;
+    overflow: hidden;
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+}
+
+li {
+    text-align: -webkit-match-parent;
+}
+
+.content {
+    border-top: none;
+}
+
+#content {
+    padding: 8px 14px 5px 14px;
+    clear: both;
+    border-bottom: none;
+    line-height: inherit;
+}
+
+div {
+    display: block;
+}
+
+#board_index {
+    position: relative;
+}
+
+.ipsLayout_largeright.ipsLayout_withright {
+    padding-right: 280px;
+}
+
+.ipsLayout.ipsLayout_withright {
+    clear: left;
+}
+
+.ipsLayout_content {
+    width: 100%;
+    float: left;
+}
+
+.ipsLayout_content,
+.ipsLayout .ipsLayout_left,
+.ipsLayout_right {
+    position: relative;
+}
+
+.statistics {
+    margin: 20px 0 0 0;
+    padding: 8px;
+    line-height: 1.3;
+    overflow: hidden;
+}
