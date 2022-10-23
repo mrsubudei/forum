@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"forum/internal/database"
 	"html/template"
 	"net/http"
 )
@@ -54,9 +53,8 @@ func RegisterHandler(writer http.ResponseWriter, request *http.Request) {
 		Errors(writer, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	name := request.FormValue("name")
-	email := request.FormValue("email")
-	database.CreateDB(name, email)
+	// name := request.FormValue("name")
+	// email := request.FormValue("email")
 
 	err = html.Execute(writer, nil)
 	if err != nil {
