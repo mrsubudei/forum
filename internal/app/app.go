@@ -19,21 +19,17 @@ func Run() {
 	defer sq.Close()
 	CommunicationUseCase := usecase.New(sqlite.New(sq))
 
-	exist, err := Exists("forum.db")
+	err = CommunicationUseCase.CreateDB()
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	if !exist {
-		CommunicationUseCase.CreateDB()
 	}
 
 	topics := []string{"cars", "sports", "cinema"}
 	CommunicationUseCase.CreateTopics(topics)
 
 	user := entity.User{
-		Name:        "Subi",
-		Email:       "Subudei@gmail.com",
+		Name:        "Sub1i",
+		Email:       "Sub1udei@gmail.com",
 		Password:    "vivse",
 		RegDate:     "10.10.2022",
 		DateOfBirth: "19.06.1989",
@@ -48,8 +44,8 @@ func Run() {
 	user.Id = assignedUserId
 
 	user2 := entity.User{
-		Name:        "Mubi",
-		Email:       "Mubudei@gmail.com",
+		Name:        "Mu11bi",
+		Email:       "Mub1udei@gmail.com",
 		Password:    "vivse",
 		RegDate:     "10.10.2022",
 		DateOfBirth: "19.06.1989",
