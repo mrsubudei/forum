@@ -1,22 +1,17 @@
-package usecases
+package sqlite
 
 import (
-	"database/sql"
-	"log"
+	"forum/internal/entity"
 )
 
-func GetAllUsers() ([]User, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return nil, err
-	}
+func (c *CommunicationRepo) GetAllUsers() ([]entity.User, error) {
 
-	rows, err := db.Query("SELECT * FROM users")
+	rows, err := c.DB.Query("SELECT * FROM users")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	listUsers := []User{}
+	listUsers := []entity.User{}
 	for rows.Next() {
 
 		var id int
@@ -32,12 +27,12 @@ func GetAllUsers() ([]User, error) {
 		if err != nil {
 			return nil, err
 		}
-		posts, err = GetUserPostIds(db, id)
+		posts, err = c.GetUserPostIds(id)
 		if err != nil {
 			return nil, err
 		}
 
-		user := User{
+		user := entity.User{
 			Id:          id,
 			Name:        name,
 			Password:    pass,
@@ -56,14 +51,10 @@ func GetAllUsers() ([]User, error) {
 	return listUsers, nil
 }
 
-func GetUser(userId int) (User, error) {
-	selectedUser := User{}
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return selectedUser, err
-	}
+func (c *CommunicationRepo) GetUser(userId int) (entity.User, error) {
+	selectedUser := entity.User{}
 
-	rows, err := db.Query(`SELECT id, name, email, password, reg_date, 
+	rows, err := c.DB.Query(`SELECT id, name, email, password, reg_date, 
 	date_of_birth, city, sex FROM users WHERE id = ?`, userId)
 
 	if err != nil {
@@ -77,7 +68,7 @@ func GetUser(userId int) (User, error) {
 		if err != nil {
 			return selectedUser, err
 		}
-		selectedUser.PostIds, err = GetUserPostIds(db, userId)
+		selectedUser.PostIds, err = c.GetUserPostIds(userId)
 		if err != nil {
 			return selectedUser, err
 		}
@@ -89,11 +80,11 @@ func GetUser(userId int) (User, error) {
 	return selectedUser, err
 }
 
-func GetUserPostIds(db *sql.DB, userId int) ([]int, error) {
+func (c *CommunicationRepo) GetUserPostIds(userId int) ([]int, error) {
 
-	rows, err := db.Query("SELECT id FROM posts WHERE user_id = ?", userId)
+	rows, err := c.DB.Query("SELECT id FROM posts WHERE user_id = ?", userId)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer rows.Close()
 	var posts []int
@@ -101,29 +92,24 @@ func GetUserPostIds(db *sql.DB, userId int) ([]int, error) {
 		var id int
 		err = rows.Scan(&id)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		posts = append(posts, id)
 	}
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	return posts, nil
 }
 
-func GetAllPosts() ([]Post, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := db.Query("SELECT * FROM posts")
+func (c *CommunicationRepo) GetAllPosts() ([]entity.Post, error) {
+	rows, err := c.DB.Query("SELECT * FROM posts")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	listPosts := []Post{}
+	listPosts := []entity.Post{}
 	for rows.Next() {
 
 		var id int
@@ -132,8 +118,8 @@ func GetAllPosts() ([]Post, error) {
 		var content string
 		var topics []string
 		var comments []int
-		var likes []Like
-		var dislikes []DisLike
+		var likes []entity.Like
+		var dislikes []entity.DisLike
 		err = rows.Scan(&id, &userId, &date, &content)
 		if err != nil {
 			return nil, err
@@ -141,7 +127,7 @@ func GetAllPosts() ([]Post, error) {
 
 		//topics = GetAllTopics()
 
-		post := Post{
+		post := entity.Post{
 			Id:         id,
 			UserId:     userId,
 			Date:       date,

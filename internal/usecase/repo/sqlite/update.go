@@ -1,19 +1,14 @@
-package usecases
+package sqlite
 
 import (
-	"database/sql"
-	"log"
+	"forum/internal/entity"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (u *User) CreateUser() (int, error) {
+func (c *CommunicationRepo) CreateUser(u *entity.User) (int, error) {
 
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return 0, err
-	}
-	tx, err := db.Begin()
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return 0, err
 	}
@@ -27,9 +22,12 @@ func (u *User) CreateUser() (int, error) {
 	}
 	defer stmt.Close()
 
-	cached := cachePass(u.Password)
+	cached, err := cachePass(u.Password)
+	if err != nil {
+		return 0, err
+	}
 
-	_, err = stmt.Exec(u.Name, u.Email, cached, u.RegDate, u.DateOfBirth, u.City, u.Sex)
+	result, err := stmt.Exec(u.Name, u.Email, cached, u.RegDate, u.DateOfBirth, u.City, u.Sex)
 	if err != nil {
 		return 0, err
 	}
@@ -38,34 +36,16 @@ func (u *User) CreateUser() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
-	//returning assigned id for user name
-	row, err := db.Query("SELECT id FROM users ORDER BY ID DESC LIMIT 1")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer row.Close()
-	var userId int
-	if row.Next() {
-		err = row.Scan(&userId)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	err = row.Err()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return userId, nil
-}
-
-func (p *Post) CreatePost() (int, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
+	userId, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
-	tx, err := db.Begin()
+
+	return int(userId), nil
+}
+
+func (c *CommunicationRepo) CreatePost(p *entity.Post) (int, error) {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return 0, err
 	}
@@ -78,7 +58,7 @@ func (p *Post) CreatePost() (int, error) {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(p.UserId, p.Date, p.Content)
+	result, err := stmt.Exec(p.UserId, p.Date, p.Content)
 	if err != nil {
 		return 0, err
 	}
@@ -87,33 +67,16 @@ func (p *Post) CreatePost() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	//returning assigned id for post
-	row, err := db.Query("SELECT id FROM posts ORDER BY ID DESC LIMIT 1")
+	postId, err := result.LastInsertId()
 	if err != nil {
-		log.Fatal(err)
-	}
-	defer row.Close()
-	var postId int
-	if row.Next() {
-		err = row.Scan(&postId)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	err = row.Err()
-	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
-	return postId, nil
+	return int(postId), nil
 }
 
-func (p *Post) CreateComment(date, content string) error {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return err
-	}
-	tx, err := db.Begin()
+func (c *CommunicationRepo) CreateComment(p *entity.Post, date, content string) error {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -138,12 +101,8 @@ func (p *Post) CreateComment(date, content string) error {
 	return nil
 }
 
-func (u *User) PutPostLike(postId int, date string) error {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return err
-	}
-	tx, err := db.Begin()
+func (c *CommunicationRepo) PutPostLike(u *entity.User, postId int, date string) error {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -168,12 +127,8 @@ func (u *User) PutPostLike(postId int, date string) error {
 	return nil
 }
 
-func (u *User) PutPostDisLike(postId int, date string) error {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return err
-	}
-	tx, err := db.Begin()
+func (c *CommunicationRepo) PutPostDisLike(u *entity.User, postId int, date string) error {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -198,12 +153,8 @@ func (u *User) PutPostDisLike(postId int, date string) error {
 	return nil
 }
 
-func (u *User) PutCommentLike(commentId int, date string) error {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return err
-	}
-	tx, err := db.Begin()
+func (c *CommunicationRepo) PutCommentLike(u *entity.User, commentId int, date string) error {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -228,12 +179,8 @@ func (u *User) PutCommentLike(commentId int, date string) error {
 	return nil
 }
 
-func (u *User) PutCommentDisLike(commentId int, date string) error {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return err
-	}
-	tx, err := db.Begin()
+func (c *CommunicationRepo) PutCommentDisLike(u *entity.User, commentId int, date string) error {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -258,27 +205,25 @@ func (u *User) PutCommentDisLike(commentId int, date string) error {
 	return nil
 }
 
-func CreateTopics(name string) error {
-	db, err := sql.Open("sqlite3", "./forum.db")
+func (c *CommunicationRepo) CreateTopics(name []string) error {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return err
 	}
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	stmt, err := tx.Prepare(
-		`INSERT INTO topics(name) 
-			values(?)`)
+	for i := 0; i < len(name); i++ {
+		stmt, err := tx.Prepare(
+			`INSERT INTO topics(name) 
+				values(?)`)
 
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
+		if err != nil {
+			return err
+		}
+		defer stmt.Close()
 
-	_, err = stmt.Exec(name)
-	if err != nil {
-		return err
+		_, err = stmt.Exec(name[i])
+		if err != nil {
+			return err
+		}
 	}
 
 	err = tx.Commit()
@@ -288,12 +233,8 @@ func CreateTopics(name string) error {
 	return nil
 }
 
-func (p *Post) CreatePostRef(name ...string) error {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return err
-	}
-	tx, err := db.Begin()
+func (c *CommunicationRepo) CreatePostRef(p *entity.Post, name []string) error {
+	tx, err := c.DB.Begin()
 	if err != nil {
 		return err
 	}
@@ -320,10 +261,10 @@ func (p *Post) CreatePostRef(name ...string) error {
 	return nil
 }
 
-func cachePass(str string) string {
+func cachePass(str string) (string, error) {
 	cached, err := bcrypt.GenerateFromPassword([]byte(str), bcrypt.DefaultCost)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
-	return string(cached)
+	return string(cached), nil
 }

@@ -1,18 +1,18 @@
-package usecases
+package sqlite
 
 import (
-	"database/sql"
-	"log"
-
-	_ "github.com/mattn/go-sqlite3"
+	"forum/pkg/sqlite3"
 )
 
-func CreateDB() *sql.DB {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+type CommunicationRepo struct {
+	*sqlite3.Sqlite
+}
+
+func New(sq *sqlite3.Sqlite) *CommunicationRepo {
+	return &CommunicationRepo{sq}
+}
+
+func (c *CommunicationRepo) CreateDB() error {
 
 	users := `
 	CREATE TABLE users (
@@ -26,10 +26,9 @@ func CreateDB() *sql.DB {
 		sex TEXT
 		);
 	`
-	_, err = db.Exec(users)
+	_, err := c.DB.Exec(users)
 	if err != nil {
-		log.Printf("%q: %s\n", err, users)
-		return nil
+		return err
 	}
 
 	posts := `
@@ -41,10 +40,9 @@ func CreateDB() *sql.DB {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = db.Exec(posts)
+	_, err = c.DB.Exec(posts)
 	if err != nil {
-		log.Printf("%q: %s\n", err, posts)
-		return nil
+		return err
 	}
 
 	comments := `
@@ -58,10 +56,9 @@ func CreateDB() *sql.DB {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = db.Exec(comments)
+	_, err = c.DB.Exec(comments)
 	if err != nil {
-		log.Printf("%q: %s\n", err, comments)
-		return nil
+		return err
 	}
 
 	postLikes := `
@@ -74,10 +71,9 @@ func CreateDB() *sql.DB {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = db.Exec(postLikes)
+	_, err = c.DB.Exec(postLikes)
 	if err != nil {
-		log.Printf("%q: %s\n", err, postLikes)
-		return nil
+		return err
 	}
 
 	postDisLikes := `
@@ -90,10 +86,9 @@ func CreateDB() *sql.DB {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = db.Exec(postDisLikes)
+	_, err = c.DB.Exec(postDisLikes)
 	if err != nil {
-		log.Printf("%q: %s\n", err, postDisLikes)
-		return nil
+		return err
 	}
 
 	commentLikes := `
@@ -106,10 +101,9 @@ func CreateDB() *sql.DB {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = db.Exec(commentLikes)
+	_, err = c.DB.Exec(commentLikes)
 	if err != nil {
-		log.Printf("%q: %s\n", err, commentLikes)
-		return nil
+		return err
 	}
 
 	commentDisLikes := `
@@ -122,10 +116,9 @@ func CreateDB() *sql.DB {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = db.Exec(commentDisLikes)
+	_, err = c.DB.Exec(commentDisLikes)
 	if err != nil {
-		log.Printf("%q: %s\n", err, commentDisLikes)
-		return nil
+		return err
 	}
 
 	topics := `
@@ -134,10 +127,9 @@ func CreateDB() *sql.DB {
 		name TEXT UNIQUE
 		);
 	`
-	_, err = db.Exec(topics)
+	_, err = c.DB.Exec(topics)
 	if err != nil {
-		log.Printf("%q: %s\n", err, topics)
-		return nil
+		return err
 	}
 
 	referencetopic := `
@@ -149,11 +141,9 @@ func CreateDB() *sql.DB {
 		FOREIGN KEY (topic_id) REFERENCES topics(id)
 		);
 	`
-	_, err = db.Exec(referencetopic)
+	_, err = c.DB.Exec(referencetopic)
 	if err != nil {
-		log.Printf("%q: %s\n", err, referencetopic)
-		return nil
+		return err
 	}
-
-	return db
+	return nil
 }
