@@ -5,7 +5,6 @@ import (
 )
 
 func (c *CommunicationRepo) GetAllUsers() ([]entity.User, error) {
-
 	rows, err := c.DB.Query("SELECT * FROM users")
 	if err != nil {
 		return nil, err
@@ -14,34 +13,15 @@ func (c *CommunicationRepo) GetAllUsers() ([]entity.User, error) {
 	listUsers := []entity.User{}
 	for rows.Next() {
 
-		var id int
-		var name string
-		var email string
-		var pass string
-		var regDate string
-		var dateOfBirth string
-		var city string
-		var sex string
-		var posts []int
-		err = rows.Scan(&id, &name, &email, &pass, &regDate, &dateOfBirth, &city, &sex)
+		user := entity.User{}
+		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.RegDate, &user.DateOfBirth, &user.City, &user.Sex)
 		if err != nil {
 			return nil, err
 		}
-		posts, err = c.GetUserPostIds(id)
 		if err != nil {
 			return nil, err
 		}
 
-		user := entity.User{
-			Id:          id,
-			Name:        name,
-			Password:    pass,
-			RegDate:     regDate,
-			DateOfBirth: dateOfBirth,
-			City:        city,
-			Sex:         sex,
-			PostIds:     posts,
-		}
 		listUsers = append(listUsers, user)
 	}
 	err = rows.Err()
@@ -56,7 +36,6 @@ func (c *CommunicationRepo) GetUser(userId int) (entity.User, error) {
 
 	rows, err := c.DB.Query(`SELECT id, name, email, password, reg_date, 
 	date_of_birth, city, sex FROM users WHERE id = ?`, userId)
-
 	if err != nil {
 		return selectedUser, err
 	}
@@ -68,7 +47,6 @@ func (c *CommunicationRepo) GetUser(userId int) (entity.User, error) {
 		if err != nil {
 			return selectedUser, err
 		}
-		selectedUser.PostIds, err = c.GetUserPostIds(userId)
 		if err != nil {
 			return selectedUser, err
 		}
@@ -81,7 +59,6 @@ func (c *CommunicationRepo) GetUser(userId int) (entity.User, error) {
 }
 
 func (c *CommunicationRepo) GetUserPostIds(userId int) ([]int, error) {
-
 	rows, err := c.DB.Query("SELECT id FROM posts WHERE user_id = ?", userId)
 	if err != nil {
 		return nil, err
@@ -112,31 +89,14 @@ func (c *CommunicationRepo) GetAllPosts() ([]entity.Post, error) {
 	listPosts := []entity.Post{}
 	for rows.Next() {
 
-		var id int
-		var userId int
-		var date string
-		var content string
-		var topics []string
-		var comments []int
-		var likes []entity.Like
-		var dislikes []entity.DisLike
+		post := entity.Post{}
 		err = rows.Scan(&id, &userId, &date, &content)
 		if err != nil {
 			return nil, err
 		}
 
-		//topics = GetAllTopics()
+		// topics = GetAllTopics()
 
-		post := entity.Post{
-			Id:         id,
-			UserId:     userId,
-			Date:       date,
-			Content:    content,
-			Topics:     topics,
-			CommentIds: comments,
-			Likes:      likes,
-			DisLikes:   dislikes,
-		}
 		listPosts = append(listPosts, post)
 	}
 	err = rows.Err()
