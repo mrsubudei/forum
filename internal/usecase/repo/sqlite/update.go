@@ -7,7 +7,6 @@ import (
 )
 
 func (c *CommunicationRepo) CreateUser(u *entity.User) (int, error) {
-
 	tx, err := c.DB.Begin()
 	if err != nil {
 		return 0, err
@@ -16,7 +15,6 @@ func (c *CommunicationRepo) CreateUser(u *entity.User) (int, error) {
 	stmt, err := tx.Prepare(
 		`INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex) 
 			values(?, ?, ?, ?, ?, ?, ?)`)
-
 	if err != nil {
 		return 0, err
 	}
@@ -51,14 +49,13 @@ func (c *CommunicationRepo) CreatePost(p *entity.Post) (int, error) {
 	}
 	stmt, err := tx.Prepare(
 		`INSERT INTO posts(user_id, date, content) 
-			values(?, ?, ?)`)
-
+			values(?, ?)`)
 	if err != nil {
 		return 0, err
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(p.UserId, p.Date, p.Content)
+	result, err := stmt.Exec(p.Date, p.Content)
 	if err != nil {
 		return 0, err
 	}
@@ -83,7 +80,6 @@ func (c *CommunicationRepo) CreateComment(p *entity.Post, date, content string) 
 	stmt, err := tx.Prepare(
 		`INSERT INTO comments(post_id, user_id, date, content) 
 			values(?, ?, ?, ?)`)
-
 	if err != nil {
 		return err
 	}
@@ -109,7 +105,6 @@ func (c *CommunicationRepo) PutPostLike(u *entity.User, postId int, date string)
 	stmt, err := tx.Prepare(
 		`INSERT INTO post_likes(post_id, user_id, date) 
 			values(?, ?, ?)`)
-
 	if err != nil {
 		return err
 	}
@@ -135,7 +130,6 @@ func (c *CommunicationRepo) PutPostDisLike(u *entity.User, postId int, date stri
 	stmt, err := tx.Prepare(
 		`INSERT INTO post_dislikes(post_id, user_id, date) 
 			values(?, ?, ?)`)
-
 	if err != nil {
 		return err
 	}
@@ -161,7 +155,6 @@ func (c *CommunicationRepo) PutCommentLike(u *entity.User, commentId int, date s
 	stmt, err := tx.Prepare(
 		`INSERT INTO comment_likes(comment_id, user_id, date) 
 			values(?, ?, ?)`)
-
 	if err != nil {
 		return err
 	}
@@ -187,7 +180,6 @@ func (c *CommunicationRepo) PutCommentDisLike(u *entity.User, commentId int, dat
 	stmt, err := tx.Prepare(
 		`INSERT INTO comment_dislikes(comment_id, user_id, date) 
 			values(?, ?, ?)`)
-
 	if err != nil {
 		return err
 	}
@@ -214,7 +206,6 @@ func (c *CommunicationRepo) CreateTopics(name []string) error {
 		stmt, err := tx.Prepare(
 			`INSERT INTO topics(name) 
 				values(?)`)
-
 		if err != nil {
 			return err
 		}
@@ -241,7 +232,6 @@ func (c *CommunicationRepo) CreatePostRef(p *entity.Post, name []string) error {
 	stmt, err := tx.Prepare(
 		`INSERT INTO referencetopic(post_id, topic_id) 
 			values(?, ?)`)
-
 	if err != nil {
 		return err
 	}

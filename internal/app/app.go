@@ -128,7 +128,6 @@ func Run() {
 		fmt.Println(err)
 	}
 	fmt.Println(selectedUser)
-
 }
 
 func Exists(name string) (bool, error) {

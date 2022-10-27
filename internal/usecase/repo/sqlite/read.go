@@ -57,6 +57,7 @@ func (c *CommunicationRepo) GetUser(userId int) (entity.User, error) {
 	}
 	return selectedUser, err
 }
+func gettopics()
 
 func (c *CommunicationRepo) GetUserPostIds(userId int) ([]int, error) {
 	rows, err := c.DB.Query("SELECT id FROM posts WHERE user_id = ?", userId)
@@ -90,7 +91,7 @@ func (c *CommunicationRepo) GetAllPosts() ([]entity.Post, error) {
 	for rows.Next() {
 
 		post := entity.Post{}
-		err = rows.Scan(&id, &userId, &date, &content)
+		err = rows.Scan(&id, &date, &content)
 		if err != nil {
 			return nil, err
 		}
