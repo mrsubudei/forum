@@ -23,9 +23,12 @@ func (c *CommunicationRepo) CreateDB() error {
 		reg_date TEXT,
 		date_of_birth TEXT,
 		city TEXT,
-		sex TEXT
+		sex TEXT,
+		session_token TEXT,
+		token_life_time TEXT
 		);
 	`
+
 	_, err := c.DB.Exec(users)
 	if err != nil {
 		return err
@@ -36,6 +39,7 @@ func (c *CommunicationRepo) CreateDB() error {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id INTEGER,
 		date TEXT NOT NULL,
+		title TEXT NOT NULL,
 		content TEXT NOT NULL,
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
@@ -56,6 +60,7 @@ func (c *CommunicationRepo) CreateDB() error {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
+
 	_, err = c.DB.Exec(comments)
 	if err != nil {
 		return err
@@ -86,11 +91,11 @@ func (c *CommunicationRepo) CreateDB() error {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
+
 	_, err = c.DB.Exec(postDisLikes)
 	if err != nil {
 		return err
 	}
-
 	commentLikes := `
 	CREATE TABLE comment_likes (
 		comment_id INTEGER,
@@ -101,11 +106,11 @@ func (c *CommunicationRepo) CreateDB() error {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
+
 	_, err = c.DB.Exec(commentLikes)
 	if err != nil {
 		return err
 	}
-
 	commentDisLikes := `
 	CREATE TABLE comment_dislikes (
 		comment_id INTEGER,
@@ -116,6 +121,7 @@ func (c *CommunicationRepo) CreateDB() error {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
+
 	_, err = c.DB.Exec(commentDisLikes)
 	if err != nil {
 		return err
@@ -131,7 +137,6 @@ func (c *CommunicationRepo) CreateDB() error {
 	if err != nil {
 		return err
 	}
-
 	referencetopic := `
 	CREATE TABLE referencetopic (
 		post_id TEXT,
@@ -145,5 +150,6 @@ func (c *CommunicationRepo) CreateDB() error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
