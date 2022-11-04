@@ -1,21 +1,9 @@
 package sqlite
 
-import (
-	"forum/pkg/sqlite3"
-)
-
-type CommunicationRepo struct {
-	*sqlite3.Sqlite
-}
-
-func New(sq *sqlite3.Sqlite) *CommunicationRepo {
-	return &CommunicationRepo{sq}
-}
-
-func (c *CommunicationRepo) CreateDB() error {
+func (pr *PostsRepo) CreateDB() error {
 
 	users := `
-	CREATE TABLE users (
+	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL UNIQUE,
 		email TEXT NOT NULL UNIQUE,
@@ -29,13 +17,13 @@ func (c *CommunicationRepo) CreateDB() error {
 		);
 	`
 
-	_, err := c.DB.Exec(users)
+	_, err := pr.DB.Exec(users)
 	if err != nil {
 		return err
 	}
 
 	posts := `
-	CREATE TABLE posts (
+	CREATE TABLE IF NOT EXISTS posts (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id INTEGER,
 		date TEXT NOT NULL,
@@ -44,13 +32,13 @@ func (c *CommunicationRepo) CreateDB() error {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = c.DB.Exec(posts)
+	_, err = pr.DB.Exec(posts)
 	if err != nil {
 		return err
 	}
 
 	comments := `
-	CREATE TABLE comments (
+	CREATE TABLE IF NOT EXISTS comments (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		post_id INTEGER,
 		user_id INTEGER,
@@ -61,13 +49,13 @@ func (c *CommunicationRepo) CreateDB() error {
 		);
 	`
 
-	_, err = c.DB.Exec(comments)
+	_, err = pr.DB.Exec(comments)
 	if err != nil {
 		return err
 	}
 
 	postLikes := `
-	CREATE TABLE post_likes (
+	CREATE TABLE IF NOT EXISTS post_likes (
 		post_id INTEGER,
 		user_id INTEGER,
 		date TEXT,
@@ -76,13 +64,13 @@ func (c *CommunicationRepo) CreateDB() error {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = c.DB.Exec(postLikes)
+	_, err = pr.DB.Exec(postLikes)
 	if err != nil {
 		return err
 	}
 
 	postDisLikes := `
-	CREATE TABLE post_dislikes (
+	CREATE TABLE IF NOT EXISTS post_dislikes (
 		post_id INTEGER,
 		user_id INTEGER,
 		date TEXT,
@@ -92,12 +80,12 @@ func (c *CommunicationRepo) CreateDB() error {
 		);
 	`
 
-	_, err = c.DB.Exec(postDisLikes)
+	_, err = pr.DB.Exec(postDisLikes)
 	if err != nil {
 		return err
 	}
 	commentLikes := `
-	CREATE TABLE comment_likes (
+	CREATE TABLE IF NOT EXISTS comment_likes (
 		comment_id INTEGER,
 		user_id INTEGER,
 		date TEXT,
@@ -107,12 +95,12 @@ func (c *CommunicationRepo) CreateDB() error {
 		);
 	`
 
-	_, err = c.DB.Exec(commentLikes)
+	_, err = pr.DB.Exec(commentLikes)
 	if err != nil {
 		return err
 	}
 	commentDisLikes := `
-	CREATE TABLE comment_dislikes (
+	CREATE TABLE IF NOT EXISTS comment_dislikes (
 		comment_id INTEGER,
 		user_id INTEGER,
 		date TEXT,
@@ -122,23 +110,23 @@ func (c *CommunicationRepo) CreateDB() error {
 		);
 	`
 
-	_, err = c.DB.Exec(commentDisLikes)
+	_, err = pr.DB.Exec(commentDisLikes)
 	if err != nil {
 		return err
 	}
 
 	topics := `
-	CREATE TABLE topics (
+	CREATE TABLE IF NOT EXISTS topics (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT UNIQUE
 		);
 	`
-	_, err = c.DB.Exec(topics)
+	_, err = pr.DB.Exec(topics)
 	if err != nil {
 		return err
 	}
 	referencetopic := `
-	CREATE TABLE referencetopic (
+	CREATE TABLE IF NOT EXISTS referencetopic (
 		post_id TEXT,
 		topic_id TEXT,
 		PRIMARY KEY(post_id, topic_id),
@@ -146,7 +134,7 @@ func (c *CommunicationRepo) CreateDB() error {
 		FOREIGN KEY (topic_id) REFERENCES topics(id)
 		);
 	`
-	_, err = c.DB.Exec(referencetopic)
+	_, err = pr.DB.Exec(referencetopic)
 	if err != nil {
 		return err
 	}
