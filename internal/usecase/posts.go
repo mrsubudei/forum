@@ -2,17 +2,17 @@ package usecase
 
 import (
 	"forum/internal/entity"
-	"forum/internal/repository/sqlite"
+	"forum/internal/repository"
 )
 
 type PostsUseCase struct {
-	repo sqlite.Posts
+	repo repository.Posts
 
-	userUseCase    sqlite.Users
-	commentUseCase sqlite.Comments
+	userUseCase    repository.Users
+	commentUseCase repository.Comments
 }
 
-func NewPostsUseCase(repo sqlite.Posts, userUseCase sqlite.Users, commentUseCase sqlite.Comments) *PostsUseCase {
+func NewPostsUseCase(repo repository.Posts, userUseCase repository.Users, commentUseCase repository.Comments) *PostsUseCase {
 	return &PostsUseCase{
 		repo:           repo,
 		userUseCase:    userUseCase,

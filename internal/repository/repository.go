@@ -1,7 +1,8 @@
-package sqlite
+package repository
 
 import (
 	"forum/internal/entity"
+	"forum/internal/repository/sqlite"
 	"forum/pkg/sqlite3"
 )
 
@@ -69,8 +70,8 @@ type Repositories struct {
 
 func NewRepositories(sq *sqlite3.Sqlite) *Repositories {
 	return &Repositories{
-		Posts:    NewPostsRepo(sq),
-		Users:    NewUsersRepo(sq),
-		Comments: NewCommentsRepo(sq),
+		Posts:    sqlite.NewPostsRepo(sq),
+		Users:    sqlite.NewUsersRepo(sq),
+		Comments: sqlite.NewCommentsRepo(sq),
 	}
 }

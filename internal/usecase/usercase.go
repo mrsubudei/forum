@@ -2,7 +2,8 @@ package usecase
 
 import (
 	"forum/internal/entity"
-	"forum/internal/repository/sqlite"
+	"forum/internal/repository"
+
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
 )
@@ -42,7 +43,7 @@ type UseCases struct {
 }
 
 type Dependencies struct {
-	Repos        *sqlite.Repositories
+	Repos        *repository.Repositories
 	Hasher       hasher.PasswordHasher
 	TokenManager auth.TokenManager
 }

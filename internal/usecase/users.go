@@ -3,21 +3,22 @@ package usecase
 import (
 	"fmt"
 	"forum/internal/entity"
-	"forum/internal/repository/sqlite"
+	"forum/internal/repository"
+
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
 )
 
 type UsersUseCase struct {
-	repo           sqlite.Users
+	repo           repository.Users
 	hasher         hasher.PasswordHasher
 	tokenManager   auth.TokenManager
-	postUseCase    sqlite.Posts
-	commentUseCase sqlite.Comments
+	postUseCase    repository.Posts
+	commentUseCase repository.Comments
 }
 
-func NewUsersUseCase(repo sqlite.Users, hasher hasher.PasswordHasher,
-	tokenManager auth.TokenManager, postUseCase sqlite.Posts, commentUseCase sqlite.Comments) *UsersUseCase {
+func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
+	tokenManager auth.TokenManager, postUseCase repository.Posts, commentUseCase repository.Comments) *UsersUseCase {
 	return &UsersUseCase{
 		repo:           repo,
 		hasher:         hasher,

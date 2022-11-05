@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"forum/internal/entity"
+	"forum/internal/repository"
 	"forum/internal/repository/sqlite"
 	"forum/internal/usecase"
 	"forum/pkg/auth"
@@ -18,7 +19,7 @@ func Run() {
 		log.Fatal(err)
 	}
 	defer sq.Close()
-	repositories := sqlite.NewRepositories(sq)
+	repositories := repository.NewRepositories(sq)
 	err = sqlite.CreateDB(sq)
 	if err != nil {
 		log.Fatal(err)
@@ -35,9 +36,9 @@ func Run() {
 	})
 
 	user := entity.User{
-		Name:     "zxc",
-		Email:    "zxc",
-		Password: "xcv",
+		Name:     "uff",
+		Email:    "uff",
+		Password: "uff",
 	}
 	err = useCases.Users.SignUp(user)
 	if err != nil {
