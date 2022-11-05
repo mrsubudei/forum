@@ -16,7 +16,6 @@ type Posts interface {
 	Delete(post entity.Post) error
 	ThumbsUp(post entity.Post) error
 	ThumbsDown(post entity.Post) error
-	CreateDB() error
 }
 
 type Users interface {

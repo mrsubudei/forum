@@ -1,6 +1,10 @@
 package sqlite
 
-func (pr *PostsRepo) CreateDB() error {
+import (
+	"forum/pkg/sqlite3"
+)
+
+func CreateDB(s *sqlite3.Sqlite) error {
 
 	users := `
 	CREATE TABLE IF NOT EXISTS users (
@@ -17,7 +21,7 @@ func (pr *PostsRepo) CreateDB() error {
 		);
 	`
 
-	_, err := pr.DB.Exec(users)
+	_, err := s.DB.Exec(users)
 	if err != nil {
 		return err
 	}
@@ -32,7 +36,7 @@ func (pr *PostsRepo) CreateDB() error {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = pr.DB.Exec(posts)
+	_, err = s.DB.Exec(posts)
 	if err != nil {
 		return err
 	}
@@ -49,7 +53,7 @@ func (pr *PostsRepo) CreateDB() error {
 		);
 	`
 
-	_, err = pr.DB.Exec(comments)
+	_, err = s.DB.Exec(comments)
 	if err != nil {
 		return err
 	}
@@ -64,7 +68,7 @@ func (pr *PostsRepo) CreateDB() error {
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
-	_, err = pr.DB.Exec(postLikes)
+	_, err = s.DB.Exec(postLikes)
 	if err != nil {
 		return err
 	}
@@ -80,7 +84,7 @@ func (pr *PostsRepo) CreateDB() error {
 		);
 	`
 
-	_, err = pr.DB.Exec(postDisLikes)
+	_, err = s.DB.Exec(postDisLikes)
 	if err != nil {
 		return err
 	}
@@ -95,7 +99,7 @@ func (pr *PostsRepo) CreateDB() error {
 		);
 	`
 
-	_, err = pr.DB.Exec(commentLikes)
+	_, err = s.DB.Exec(commentLikes)
 	if err != nil {
 		return err
 	}
@@ -110,7 +114,7 @@ func (pr *PostsRepo) CreateDB() error {
 		);
 	`
 
-	_, err = pr.DB.Exec(commentDisLikes)
+	_, err = s.DB.Exec(commentDisLikes)
 	if err != nil {
 		return err
 	}
@@ -121,7 +125,7 @@ func (pr *PostsRepo) CreateDB() error {
 		name TEXT UNIQUE
 		);
 	`
-	_, err = pr.DB.Exec(topics)
+	_, err = s.DB.Exec(topics)
 	if err != nil {
 		return err
 	}
@@ -134,7 +138,7 @@ func (pr *PostsRepo) CreateDB() error {
 		FOREIGN KEY (topic_id) REFERENCES topics(id)
 		);
 	`
-	_, err = pr.DB.Exec(referencetopic)
+	_, err = s.DB.Exec(referencetopic)
 	if err != nil {
 		return err
 	}

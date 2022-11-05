@@ -28,7 +28,13 @@ func NewUsersUseCase(repo sqlite.Users, hasher hasher.PasswordHasher,
 }
 
 func (uu *UsersUseCase) SignUp(u entity.User) error {
-	err := uu.repo.Store(u)
+	hashed, err := uu.hasher.Hash(u.Password)
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - SignUp - %w", err)
+	}
+	u.Password = hashed
+
+	err = uu.repo.Store(u)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignUp - %w", err)
 	}

@@ -19,11 +19,11 @@ func Run() {
 	}
 	defer sq.Close()
 	repositories := sqlite.NewRepositories(sq)
-	err = repositories.Posts.CreateDB()
+	err = sqlite.CreateDB(sq)
 	if err != nil {
 		log.Fatal(err)
 	}
-	hasher := hasher.NewBcryptHasher("h")
+	hasher := hasher.NewBcryptHasher()
 	tokenManager, err := auth.NewManager("s")
 	if err != nil {
 		log.Fatal(err)
@@ -34,7 +34,11 @@ func Run() {
 		TokenManager: tokenManager,
 	})
 
-	user := entity.User{}
+	user := entity.User{
+		Name:     "zxc",
+		Email:    "zxc",
+		Password: "xcv",
+	}
 	err = useCases.Users.SignUp(user)
 	if err != nil {
 		sl := strings.Split(err.Error(), ":")
