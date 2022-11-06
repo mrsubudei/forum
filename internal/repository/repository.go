@@ -9,15 +9,16 @@ import (
 type Posts interface {
 	Store(post *entity.Post) error
 	Fetch() ([]entity.Post, error)
-	FetchLiked() ([]entity.Post, error)
-	FetchDisliked() ([]entity.Post, error)
 	GetById(id int64) (entity.Post, error)
-	GetByCategory(category string) (entity.Post, error)
-	Update(post entity.Post) (entity.Post, error)
+	GetIdByCategory(category string) (entity.Post, error)
+	Update(post entity.Post) error
 	Delete(post entity.Post) error
-	ThumbsUp(post entity.Post) error
-	ThumbsDown(post entity.Post) error
+	StoreLike(post entity.Post) error
+	StoreDislike(post entity.Post) error
+	DeleteLike(post entity.Post) error
+	DeleteDislike(post entity.Post) error
 	StoreTopicReference(post entity.Post) error
+	GetRelatedCategories(post entity.Post) ([]string, error)
 }
 
 type Users interface {

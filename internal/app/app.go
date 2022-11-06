@@ -10,6 +10,7 @@ import (
 	"forum/pkg/hasher"
 	"forum/pkg/sqlite3"
 	"log"
+	"time"
 )
 
 func Run() {
@@ -34,73 +35,79 @@ func Run() {
 		TokenManager: tokenManager,
 	})
 
-	// regDate := "2022-11-10"
-	// date, err := time.Parse("2006-01-02", regDate)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// dateOfBirth := "1989-06-19"
-	// birthDate, err := time.Parse("2006-01-02", dateOfBirth)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// user := entity.User{
-	// 	Name:        "Bobik",
-	// 	Email:       "bobik@gmail.com",
-	// 	Password:    "vivse",
-	// 	RegDate:     date,
-	// 	DateOfBirth: birthDate,
-	// 	City:        "Astana",
-	// 	Sex:         "Male",
-	// }
-	id := int64(4)
-	userFind := entity.User{
-		Id: id,
+	regDate := "2022-11-10"
+	date, err := time.Parse("2006-01-02", regDate)
+	if err != nil {
+		log.Fatal(err)
 	}
+	dateOfBirth := "1989-06-19"
+	birthDate, err := time.Parse("2006-01-02", dateOfBirth)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	user := entity.User{
+		Id:          1,
+		Name:        "Bobik",
+		Email:       "bobik@gmail.com",
+		Password:    "vivse",
+		RegDate:     date,
+		DateOfBirth: birthDate,
+		City:        "Astana",
+		Sex:         "Male",
+	}
+	// id := int64(4)
+	// userFind := entity.User{
+	// 	Id: id,
+	// }
 	// err = useCases.Users.SignUp(user)
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
+
+	err = useCases.Users.SignIn(user)
+	if err != nil {
+		if err.Error() == entity.ErrUserPasswordIncorrect.Error() {
+			fmt.Println("wrong pass")
+		} else {
+			log.Fatal(err)
+		}
+	}
+
 	// err = useCases.Users.UpdateSession(userFind)
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	expired, err := useCases.Users.CheckTTLExpired(userFind)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(expired)
+	// expired, err := useCases.Users.CheckTTLExpired(userFind)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(expired)
 	// err = useCases.Users.DeleteUser(userFind)
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	// findUser, err := useCases.Users.GetById(2)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// err = useCases.Users.UpdateSession(findUser)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 
-	// err = useCases.Users.UpdateSession(user)
+	// userP := entity.User{
+	// 	Id: 1,
+	// }
+	// date := "2022-11-10 15:00:01"
+	// parsed, err := time.Parse("2006-01-02 15:04:05", date)
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
 
 	// post := entity.Post{
-	// 	User: entity.User{
-	// 		Id: 1,
-	// 	},
-	// 	Date:    "05.11.2022",
-	// 	Title:   "Cars",
-	// 	Content: "sdfsdf",
+	// 	User:    userP,
+	// 	Date:    parsed,
+	// 	Title:   "Carsd",
+	// 	Content: "sdfsddf",
 	// 	Category: []string{
 	// 		"cars",
 	// 		"mars",
 	// 	},
 	// }
+
 	// err = useCases.Posts.CreatePost(post)
 	// if err != nil {
 	// 	log.Fatal(err)

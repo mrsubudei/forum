@@ -24,7 +24,7 @@ type Users interface {
 	GetAllUsers() ([]entity.User, error)
 	GetById(id int64) (entity.User, error)
 	GetSession(id int64) (entity.User, error)
-	CheckTTLExpired(user entity.User) (bool, error)
+	CheckSession(user entity.User) (bool, error)
 	UpdateUserInfo(user entity.User, query string) error
 	UpdateSession(user entity.User) error
 	DeleteUser(u entity.User) error

@@ -131,11 +131,10 @@ func CreateDB(s *sqlite3.Sqlite) error {
 	}
 	referencetopic := `
 	CREATE TABLE IF NOT EXISTS reference_topic (
-		post_id TEXT,
-		topic_id TEXT,
-		PRIMARY KEY(post_id, topic_id),
-		FOREIGN KEY (post_id) REFERENCES posts(id),
-		FOREIGN KEY (topic_id) REFERENCES topics(id)
+		post_id INTEGER,
+		topic TEXT,
+		PRIMARY KEY (post_id, topic),
+		FOREIGN KEY (post_id) REFERENCES posts(id)
 		);
 	`
 	_, err = s.DB.Exec(referencetopic)

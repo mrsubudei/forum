@@ -12,7 +12,9 @@ type Post struct {
 	Comments      []Comment  `json:"comments,omitempty"`
 	CountComments int64      `json:"total_comments,omitempty"`
 	Likes         []Reaction `json:"likes,omitempty"`
+	TotalLikes    int64      `json:"total_likes,omitempty"`
 	Dislikes      []Reaction `json:"dislkes,omitempty"`
+	TotalDislikes int64      `json:"total_dislikes,omitempty"`
 }
 
 type Reaction struct {

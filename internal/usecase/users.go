@@ -34,14 +34,14 @@ func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
 	}
 }
 
-func (uu *UsersUseCase) SignUp(u entity.User) error {
-	hashed, err := uu.hasher.Hash(u.Password)
+func (uu *UsersUseCase) SignUp(user entity.User) error {
+	hashed, err := uu.hasher.Hash(user.Password)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignUp - %w", err)
 	}
-	u.Password = hashed
+	user.Password = hashed
 
-	err = uu.repo.Store(u)
+	err = uu.repo.Store(user)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignUp - %w", err)
 	}
@@ -50,10 +50,21 @@ func (uu *UsersUseCase) SignUp(u entity.User) error {
 }
 
 func (uu *UsersUseCase) SignIn(user entity.User) error {
+	existUserInfo, err := uu.GetById(user.Id)
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
+	}
+
+	err = uu.hasher.CheckPassword(existUserInfo.Password, user.Password)
+	if err != nil {
+		return entity.ErrUserPasswordIncorrect
+	}
+
 	token, err := uu.tokenManager.NewToken()
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
 	}
+
 	user.SessionToken = token
 	TTL := uu.tokenManager.UpdateTTL()
 	user.SessionTTL = TTL
@@ -76,6 +87,36 @@ func (uu *UsersUseCase) UpdateSession(user entity.User) error {
 	return nil
 }
 
+func (uu *UsersUseCase) GetSession(id int64) (entity.User, error) {
+	var user entity.User
+	user, err := uu.repo.GetSession(id)
+	if err != nil {
+		return user, fmt.Errorf("UsersUseCase - GetSession - %w", err)
+	}
+
+	return user, nil
+}
+
+func (uu *UsersUseCase) CheckSession(user entity.User) (bool, error) {
+	existUserInfo, err := uu.GetSession(user.Id)
+	if err != nil {
+		return false, fmt.Errorf("UsersUseCase - CheckTTLExpired - %w", err)
+	}
+
+	//check token
+	if existUserInfo.SessionToken != user.SessionToken {
+		return false, nil
+	}
+
+	//check token life time
+	expired, err := uu.tokenManager.CheckTTLExpired(existUserInfo.SessionTTL)
+	if err != nil {
+		return false, fmt.Errorf("UsersUseCase - CheckTTLExpired - %w", err)
+	}
+
+	return expired, nil
+}
+
 func (uu *UsersUseCase) GetAllUsers() ([]entity.User, error) {
 	var users []entity.User
 	users, err := uu.repo.Fetch()
@@ -94,30 +135,6 @@ func (uu *UsersUseCase) GetById(id int64) (entity.User, error) {
 	}
 
 	return user, nil
-}
-
-func (uu *UsersUseCase) GetSession(id int64) (entity.User, error) {
-	var user entity.User
-	user, err := uu.repo.GetSession(id)
-	if err != nil {
-		return user, fmt.Errorf("UsersUseCase - GetSession - %w", err)
-	}
-
-	return user, nil
-}
-
-func (uu *UsersUseCase) CheckTTLExpired(user entity.User) (bool, error) {
-	existUserInfo, err := uu.GetSession(user.Id)
-	if err != nil {
-		return false, fmt.Errorf("UsersUseCase - CheckTTLExpired - %w", err)
-	}
-
-	expired, err := uu.tokenManager.CheckTTLExpired(existUserInfo.SessionTTL)
-	if err != nil {
-		return false, fmt.Errorf("UsersUseCase - CheckTTLExpired - %w", err)
-	}
-
-	return expired, nil
 }
 
 func (uu *UsersUseCase) UpdateUserInfo(user entity.User, query string) error {

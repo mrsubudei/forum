@@ -21,12 +21,12 @@ func NewPostsUseCase(repo repository.Posts, userUseCase repository.Users, commen
 	}
 }
 
-func (pu *PostsUseCase) CreatePost(p entity.Post) error {
-	err := pu.repo.Store(&p)
+func (pu *PostsUseCase) CreatePost(post entity.Post) error {
+	err := pu.repo.Store(&post)
 	if err != nil {
 		return fmt.Errorf("PostsUseCase - CreatePost - %w", err)
 	}
-	err = pu.repo.StoreTopicReference(p)
+	err = pu.repo.StoreTopicReference(post)
 	if err != nil {
 		return fmt.Errorf("PostsUseCase - CreatePost - %w", err)
 	}
@@ -57,5 +57,22 @@ func (pu *PostsUseCase) MakeReaction(p entity.Post) error {
 }
 
 func (pu *PostsUseCase) DeleteReaction(p entity.Post) error {
+	return nil
+}
+
+func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
+	// for i := 0; i < len(*posts); i++ {
+	// 	categories, err := pu.repo.GetRelatedCategories((*posts)[i])
+	// 	if err != nil {
+	// 		return fmt.Errorf("PostsUseCase - fillPostDetails - %w", err)
+	// 	}
+	// 	(*posts)[i].Category = categories
+	// }
+	// mapPosts := make(map[int64]entity.Post)
+	// for _, post := range *posts {
+	// 	mapPosts[post.Id] = entity.Post{}
+	// }
+	// chanPost := make(chan entity.Post)
+	// for postId :=
 	return nil
 }

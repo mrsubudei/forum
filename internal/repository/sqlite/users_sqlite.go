@@ -115,7 +115,7 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var user entity.User
 	stmt, err := ur.DB.Prepare(`SELECT
-	name, email, reg_date, date_of_birth, city, sex,
+	name, email, password, reg_date, date_of_birth, city, sex,
 	(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
 	(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
 	(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
@@ -137,7 +137,7 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var commentDislikes sql.NullInt64
 	var regDate string
 	var birthDate string
-	err = stmt.QueryRow(id).Scan(&user.Name, &user.Email, &regDate, &birthDate, &user.City,
+	err = stmt.QueryRow(id).Scan(&user.Name, &user.Email, &user.Password, &regDate, &birthDate, &user.City,
 		&user.Sex, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
