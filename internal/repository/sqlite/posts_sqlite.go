@@ -22,9 +22,10 @@ func (pr *PostsRepo) Store(post *entity.Post) error {
 		return fmt.Errorf("PostsRepo - Store - Begin: %w", err)
 	}
 
-	stmt, err := tx.Prepare(
-		`INSERT INTO posts(user_id, date, title, content) 
-			values(?, ?, ?, ?)`)
+	stmt, err := tx.Prepare(`
+	INSERT INTO posts(user_id, date, title, content) 
+		values(?, ?, ?, ?)
+	`)
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Store - Prepare: %w", err)
 	}
@@ -58,9 +59,10 @@ func (pr *PostsRepo) StoreTopicReference(post entity.Post) error {
 		return fmt.Errorf("PostsRepo - StoreTopicReference - Begin: %w", err)
 	}
 
-	stmt, err := tx.Prepare(
-		`INSERT INTO reference_topic(post_id, topic) 
-			values(?, ?)`)
+	stmt, err := tx.Prepare(`
+	INSERT INTO reference_topic(post_id, topic) 
+		values(?, ?)
+	`)
 	if err != nil {
 		return err
 	}
@@ -96,10 +98,10 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 
 	stmt, err := pr.DB.Prepare(`
 	SELECT
-	user_id, date, title, content,
-	(SELECT name FROM users WHERE users.id = user_id) AS user_name,
-	(SELECT date FROM post_likes WHERE post_likes.post_id = ?) AS post_likes,
-	(SELECT date FROM post_dislikes WHERE post_likes.post_id = ?) AS post_dislikes,
+		user_id, date, title, content,
+		(SELECT name FROM users WHERE users.id = user_id) AS user_name,
+		(SELECT date FROM post_likes WHERE post_likes.post_id = ?) AS post_likes,
+		(SELECT date FROM post_dislikes WHERE post_likes.post_id = ?) AS post_dislikes,
 	FROM posts
 	WHERE id = ?
 	`)
@@ -133,8 +135,7 @@ func (pr *PostsRepo) GetIdByCategory(category string) (entity.Post, error) {
 	var post entity.Post
 
 	stmt, err := pr.DB.Prepare(`
-	SELECT
-	post_id
+	SELECT post_id
 	FROM reference_topic
 	WHERE topic = ?
 	`)
@@ -155,8 +156,7 @@ func (pr *PostsRepo) GetIdByCategory(category string) (entity.Post, error) {
 func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
 	categories := []string{}
 	rows, err := pr.DB.Query(`
-	SELECT
-	topic
+	SELECT topic
 	FROM reference_topic
 	WHERE post_id = ?
 	`)

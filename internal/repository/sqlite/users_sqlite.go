@@ -27,9 +27,10 @@ func (ur *UsersRepo) Store(user entity.User) error {
 		return fmt.Errorf("UsersRepo - Store - Begin: %w", err)
 	}
 
-	stmt, err := tx.Prepare(
-		`INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex) 
-			values(?, ?, ?, ?, ?, ?, ?)`)
+	stmt, err := tx.Prepare(`
+	INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex) 
+		values(?, ?, ?, ?, ?, ?, ?)
+	`)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Prepare: %w", err)
 	}
@@ -60,15 +61,17 @@ func (ur *UsersRepo) Store(user entity.User) error {
 func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 	var users []entity.User
 
-	rows, err := ur.DB.Query(`SELECT
-			id, name, email, reg_date, date_of_birth, city, sex,
-			(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
-			(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
-			(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
-			(SELECT post_id FROM post_dislikes WHERE post_dislikes.user_id = users.id) AS post_dislikes,
-			(SELECT comment_id FROM comment_likes WHERE comment_likes.user_id = users.id) AS comment_likes,
-			(SELECT comment_id FROM comment_dislikes WHERE comment_dislikes.user_id = users.id) AS comment_dislikes
-			FROM users`)
+	rows, err := ur.DB.Query(`
+	SELECT
+		id, name, email, reg_date, date_of_birth, city, sex,
+		(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
+		(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
+		(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
+		(SELECT post_id FROM post_dislikes WHERE post_dislikes.user_id = users.id) AS post_dislikes,
+		(SELECT comment_id FROM comment_likes WHERE comment_likes.user_id = users.id) AS comment_likes,
+		(SELECT comment_id FROM comment_dislikes WHERE comment_dislikes.user_id = users.id) AS comment_dislikes
+	FROM users
+	`)
 
 	if err != nil {
 		return nil, fmt.Errorf("UsersRepo - Fetch - Query: %w", err)
@@ -114,16 +117,18 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 
 func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var user entity.User
-	stmt, err := ur.DB.Prepare(`SELECT
-	name, email, password, reg_date, date_of_birth, city, sex,
-	(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
-	(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
-	(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
-	(SELECT post_id FROM post_dislikes WHERE post_dislikes.user_id = users.id) AS post_dislikes,
-	(SELECT comment_id FROM comment_likes WHERE comment_likes.user_id = users.id) AS comment_likes,
-	(SELECT comment_id FROM comment_dislikes WHERE comment_dislikes.user_id = users.id) AS comment_dislikes
+	stmt, err := ur.DB.Prepare(`
+	SELECT
+		name, email, password, reg_date, date_of_birth, city, sex,
+		(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
+		(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
+		(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
+		(SELECT post_id FROM post_dislikes WHERE post_dislikes.user_id = users.id) AS post_dislikes,
+		(SELECT comment_id FROM comment_likes WHERE comment_likes.user_id = users.id) AS comment_likes,
+		(SELECT comment_id FROM comment_dislikes WHERE comment_dislikes.user_id = users.id) AS comment_dislikes
 	FROM users
-	WHERE id = ?`)
+	WHERE id = ?
+	`)
 
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Query: %w", err)
@@ -165,10 +170,12 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 
 func (ur *UsersRepo) GetSession(n int64) (entity.User, error) {
 	var user entity.User
-	stmt, err := ur.DB.Prepare(`SELECT
-	session_token, session_ttl
+	stmt, err := ur.DB.Prepare(`
+	SELECT
+		session_token, session_ttl
 	FROM users
-	WHERE id = ?`)
+	WHERE id = ?
+	`)
 
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetSession - Query: %w", err)
@@ -193,9 +200,11 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Begin: %w", err)
 	}
-	stmt, err := ur.DB.Prepare(`UPDATE users
+	stmt, err := ur.DB.Prepare(`
+	UPDATE users
 	SET email = ?, date_of_birth = ?, city = ?, sex = ?
-	WHERE id = ?`)
+	WHERE id = ?
+	`)
 
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Prepare: %w", err)
@@ -225,9 +234,11 @@ func (ur *UsersRepo) UpdatePassword(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdatePassword - Begin: %w", err)
 	}
-	stmt, err := ur.DB.Prepare(`UPDATE users
+	stmt, err := ur.DB.Prepare(`
+	UPDATE users
 	SET password = ?
-	WHERE id = ?`)
+	WHERE id = ?
+	`)
 
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdatePassword - Prepare: %w", err)
@@ -257,9 +268,11 @@ func (ur *UsersRepo) NewSession(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - NewSession - Begin: %w", err)
 	}
-	stmt, err := ur.DB.Prepare(`UPDATE users
+	stmt, err := ur.DB.Prepare(`
+	UPDATE users
 	SET session_token = ?, session_ttl = ?
-	WHERE id = ?`)
+	WHERE id = ?
+	`)
 
 	if err != nil {
 		return fmt.Errorf("UsersRepo - NewSession - Prepare: %w", err)
@@ -289,9 +302,11 @@ func (ur *UsersRepo) UpdateSession(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdateSession - Begin: %w", err)
 	}
-	stmt, err := ur.DB.Prepare(`UPDATE users
+	stmt, err := ur.DB.Prepare(`
+	UPDATE users
 	SET session_ttl = ?
-	WHERE id = ?`)
+	WHERE id = ?
+	`)
 
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdateSession - Prepare: %w", err)
@@ -321,8 +336,10 @@ func (ur *UsersRepo) Delete(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Delete - Begin: %w", err)
 	}
-	stmt, err := ur.DB.Prepare(`DELETE FROM users
-	WHERE id = ?`)
+	stmt, err := ur.DB.Prepare(`
+	DELETE FROM users
+	WHERE id = ?
+	`)
 
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Delete - Prepare: %w", err)
