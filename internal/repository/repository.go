@@ -11,7 +11,7 @@ type Posts interface {
 	Fetch() ([]entity.Post, error)
 	FetchLiked() ([]entity.Post, error)
 	FetchDisliked() ([]entity.Post, error)
-	GetById(n int) (entity.Post, error)
+	GetById(id int64) (entity.Post, error)
 	GetByCategory(category string) (entity.Post, error)
 	Update(post entity.Post) (entity.Post, error)
 	Delete(post entity.Post) error
@@ -23,8 +23,8 @@ type Posts interface {
 type Users interface {
 	Store(user entity.User) error
 	Fetch() ([]entity.User, error)
-	GetById(n int) (entity.User, error)
-	GetSession(n int) (entity.User, error)
+	GetById(n int64) (entity.User, error)
+	GetSession(n int64) (entity.User, error)
 	UpdateInfo(user entity.User) error
 	UpdatePassword(user entity.User) error
 	NewSession(user entity.User) error
@@ -35,36 +35,11 @@ type Users interface {
 type Comments interface {
 	Store(comment entity.Comment) error
 	Fetch() ([]entity.Comment, error)
-	GetById(n int) (entity.Comment, error)
+	GetById(id int64) (entity.Comment, error)
 	Update(post entity.Comment) (entity.Comment, error)
 	Delete(post entity.Comment) error
 	ThumbsUp(comment entity.Comment) error
 	ThumbsDown(comment entity.Comment) error
-}
-
-type UserFilter struct {
-	Id                    []int
-	Name                  string
-	Email                 string
-	RegDate               []string
-	DateOfBirth           []string
-	City                  []string
-	Sex                   []string
-	CountPosts            []int
-	CountPostReactions    []int
-	CountCommentReactions []int
-}
-
-type PostsFilter struct {
-	Id            []int
-	User          []int
-	Date          []string
-	Title         string
-	Content       string
-	Category      []string
-	CountComments []int
-	CountLikes    []int
-	CountDislikes []int
 }
 
 type Repositories struct {

@@ -22,7 +22,7 @@ func (cr *CommentsRepo) Fetch() ([]entity.Comment, error) {
 	return commets, nil
 }
 
-func (cr *CommentsRepo) GetById(n int) (entity.Comment, error) {
+func (cr *CommentsRepo) GetById(id int64) (entity.Comment, error) {
 	var comment entity.Comment
 	return comment, nil
 }

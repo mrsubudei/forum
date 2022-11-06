@@ -22,8 +22,9 @@ type Users interface {
 	SignUp(u entity.User) error
 	SignIn(u entity.User) error
 	GetAllUsers() ([]entity.User, error)
-	GetById(id int) (entity.User, error)
-	GetSession(id int) (entity.User, error)
+	GetById(id int64) (entity.User, error)
+	GetSession(id int64) (entity.User, error)
+	CheckTTLExpired(user entity.User) (bool, error)
 	UpdateUserInfo(user entity.User, query string) error
 	UpdateSession(user entity.User) error
 	DeleteUser(u entity.User) error

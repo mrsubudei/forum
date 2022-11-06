@@ -10,13 +10,16 @@ import (
 type TokenManager interface {
 	NewToken() (string, error)
 	UpdateTTL() time.Time
-	CheckTTL(TTL time.Time) bool
+	CheckTTLExpired(TTL time.Time) (bool, error)
 }
 
 type Manager struct {
 }
 
-const SessionExpiredTime = 900 //seconds
+const (
+	SessionExpiredTime = 30 //+n seconds
+	TimeFormat         = "2006-01-02 15:04:05"
+)
 
 func NewManager() (*Manager, error) {
 	return &Manager{}, nil
@@ -35,6 +38,12 @@ func (m *Manager) UpdateTTL() time.Time {
 	return TTL
 }
 
-func (m *Manager) CheckTTL(TTL time.Time) bool {
-	return TTL.Before(time.Now())
+func (m *Manager) CheckTTLExpired(TTL time.Time) (bool, error) {
+	now := time.Now()
+	formatted := now.Format(TimeFormat)
+	timeNow, err := time.Parse(TimeFormat, formatted)
+	if err != nil {
+		return false, fmt.Errorf("auth - CheckTTLExpired - Parse: %w", err)
+	}
+	return TTL.Before(timeNow), nil
 }

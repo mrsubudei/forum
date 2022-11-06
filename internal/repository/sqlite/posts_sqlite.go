@@ -98,7 +98,7 @@ func (pr *PostsRepo) FetchDisliked() ([]entity.Post, error) {
 	return posts, nil
 }
 
-func (pr *PostsRepo) GetById(n int) (entity.Post, error) {
+func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	var post entity.Post
 	return post, nil
 }

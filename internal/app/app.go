@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"forum/internal/entity"
 	"forum/internal/repository"
 	"forum/internal/repository/sqlite"
@@ -61,10 +62,15 @@ func Run() {
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	err = useCases.Users.UpdateSession(userFind)
+	// err = useCases.Users.UpdateSession(userFind)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	expired, err := useCases.Users.CheckTTLExpired(userFind)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(expired)
 	// err = useCases.Users.DeleteUser(userFind)
 	// if err != nil {
 	// 	log.Fatal(err)

@@ -112,7 +112,7 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 	return users, nil
 }
 
-func (ur *UsersRepo) GetById(n int) (entity.User, error) {
+func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var user entity.User
 	stmt, err := ur.DB.Prepare(`SELECT
 	name, email, reg_date, date_of_birth, city, sex,
@@ -137,7 +137,7 @@ func (ur *UsersRepo) GetById(n int) (entity.User, error) {
 	var commentDislikes sql.NullInt64
 	var regDate string
 	var birthDate string
-	err = stmt.QueryRow(n).Scan(&user.Name, &user.Email, &regDate, &birthDate, &user.City,
+	err = stmt.QueryRow(id).Scan(&user.Name, &user.Email, &regDate, &birthDate, &user.City,
 		&user.Sex, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
@@ -163,7 +163,7 @@ func (ur *UsersRepo) GetById(n int) (entity.User, error) {
 	return user, nil
 }
 
-func (ur *UsersRepo) GetSession(n int) (entity.User, error) {
+func (ur *UsersRepo) GetSession(n int64) (entity.User, error) {
 	var user entity.User
 	stmt, err := ur.DB.Prepare(`SELECT
 	session_token, session_ttl
@@ -216,6 +216,7 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Commit: %w", err)
 	}
+
 	return nil
 }
 
@@ -247,6 +248,7 @@ func (ur *UsersRepo) UpdatePassword(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdatePassword - Commit: %w", err)
 	}
+
 	return nil
 }
 
@@ -278,6 +280,7 @@ func (ur *UsersRepo) NewSession(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - NewSession - Commit: %w", err)
 	}
+
 	return nil
 }
 
@@ -309,6 +312,7 @@ func (ur *UsersRepo) UpdateSession(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdateSession - Commit: %w", err)
 	}
+
 	return nil
 }
 
@@ -339,5 +343,6 @@ func (ur *UsersRepo) Delete(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Delete - Commit: %w", err)
 	}
+
 	return nil
 }
