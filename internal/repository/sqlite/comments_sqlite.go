@@ -13,7 +13,7 @@ func NewCommentsRepo(sq *sqlite3.Sqlite) *CommentsRepo {
 	return &CommentsRepo{sq}
 }
 
-func (cr *CommentsRepo) Store(c entity.Comment) error {
+func (cr *CommentsRepo) Store(comment entity.Comment) error {
 	return nil
 }
 

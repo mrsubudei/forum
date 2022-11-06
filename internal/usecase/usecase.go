@@ -22,8 +22,8 @@ type Users interface {
 	SignUp(u entity.User) error
 	SignIn(u entity.User) error
 	GetAllUsers() ([]entity.User, error)
-	GetOne() (entity.User, error)
-	UpdateUserInfo() (entity.User, error)
+	GetById(id int) (entity.User, error)
+	UpdateUserInfo(user entity.User, query string) error
 	DeleteUser(u entity.User) error
 }
 

@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"forum/internal/entity"
 	"forum/internal/repository"
 )
@@ -21,6 +22,14 @@ func NewPostsUseCase(repo repository.Posts, userUseCase repository.Users, commen
 }
 
 func (pu *PostsUseCase) CreatePost(p entity.Post) error {
+	err := pu.repo.Store(&p)
+	if err != nil {
+		return fmt.Errorf("PostsUseCase - CreatePost - %w", err)
+	}
+	err = pu.repo.StoreTopicReference(p)
+	if err != nil {
+		return fmt.Errorf("PostsUseCase - CreatePost - %w", err)
+	}
 	return nil
 }
 

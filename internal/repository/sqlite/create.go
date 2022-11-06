@@ -130,7 +130,7 @@ func CreateDB(s *sqlite3.Sqlite) error {
 		return err
 	}
 	referencetopic := `
-	CREATE TABLE IF NOT EXISTS referencetopic (
+	CREATE TABLE IF NOT EXISTS reference_topic (
 		post_id TEXT,
 		topic_id TEXT,
 		PRIMARY KEY(post_id, topic_id),

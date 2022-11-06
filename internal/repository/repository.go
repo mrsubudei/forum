@@ -7,7 +7,7 @@ import (
 )
 
 type Posts interface {
-	Store(p entity.Post) error
+	Store(post *entity.Post) error
 	Fetch() ([]entity.Post, error)
 	FetchLiked() ([]entity.Post, error)
 	FetchDisliked() ([]entity.Post, error)
@@ -17,18 +17,20 @@ type Posts interface {
 	Delete(post entity.Post) error
 	ThumbsUp(post entity.Post) error
 	ThumbsDown(post entity.Post) error
+	StoreTopicReference(post entity.Post) error
 }
 
 type Users interface {
-	Store(u entity.User) error
+	Store(user entity.User) error
 	Fetch() ([]entity.User, error)
 	GetById(n int) (entity.User, error)
-	Update(user entity.User) (entity.User, error)
+	UpdateInfo(user entity.User) error
+	UpdatePassword(user entity.User) error
 	Delete(user entity.User) error
 }
 
 type Comments interface {
-	Store(c entity.Comment) error
+	Store(comment entity.Comment) error
 	Fetch() ([]entity.Comment, error)
 	GetById(n int) (entity.Comment, error)
 	Update(post entity.Comment) (entity.Comment, error)
