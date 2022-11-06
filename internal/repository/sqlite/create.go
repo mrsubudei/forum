@@ -17,7 +17,7 @@ func CreateDB(s *sqlite3.Sqlite) error {
 		city TEXT,
 		sex TEXT,
 		session_token TEXT,
-		token_life_time TEXT
+		session_ttl TEXT
 		);
 	`
 

@@ -5,11 +5,17 @@ import (
 	"fmt"
 	"forum/internal/entity"
 	"forum/pkg/sqlite3"
+	"time"
 )
 
 type UsersRepo struct {
 	*sqlite3.Sqlite
 }
+
+const (
+	TimeFormat      = "2006-01-02 15:04:05"
+	DateParseFormat = "2006-01-02 15:04:05"
+)
 
 func NewUsersRepo(sq *sqlite3.Sqlite) *UsersRepo {
 	return &UsersRepo{sq}
@@ -29,8 +35,11 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(user.Name, user.Email, user.Password, user.RegDate,
-		user.DateOfBirth, user.City, user.Sex)
+	regDate := user.RegDate.Format(TimeFormat)
+	birthDate := user.RegDate.Format(TimeFormat)
+
+	res, err := stmt.Exec(user.Name, user.Email, user.Password, regDate,
+		birthDate, user.City, user.Sex)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Exec: %w", err)
 	}
@@ -73,10 +82,20 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 		var postDislikes sql.NullInt64
 		var commentLikes sql.NullInt64
 		var commentDislikes sql.NullInt64
-		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.RegDate, &user.DateOfBirth, &user.City,
+		var regDate string
+		var birthDate string
+		err = rows.Scan(&user.Id, &user.Name, &user.Email, &regDate, &birthDate, &user.City,
 			&user.Sex, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 		if err != nil {
 			return nil, fmt.Errorf("UsersRepo - Fetch - Scan: %w", err)
+		}
+		regDateParsed, err := time.Parse(DateParseFormat, regDate)
+		if err != nil {
+			return nil, fmt.Errorf("UsersRepo - Fetch - Parse regDate: %w", err)
+		}
+		birthDatePasred, err := time.Parse(DateParseFormat, regDate)
+		if err != nil {
+			return nil, fmt.Errorf("UsersRepo - Fetch - Parse birthDate: %w", err)
 		}
 
 		user.Posts = posts.Int64
@@ -85,6 +104,8 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 		user.PostDislikes = postDislikes.Int64
 		user.CommentLikes = commentLikes.Int64
 		user.CommentDislikes = commentDislikes.Int64
+		user.RegDate = regDateParsed
+		user.DateOfBirth = birthDatePasred
 		users = append(users, user)
 	}
 
@@ -114,19 +135,56 @@ func (ur *UsersRepo) GetById(n int) (entity.User, error) {
 	var postDislikes sql.NullInt64
 	var commentLikes sql.NullInt64
 	var commentDislikes sql.NullInt64
-	err = stmt.QueryRow(n).Scan(&user.Name, &user.Email, &user.RegDate, &user.DateOfBirth, &user.City,
+	var regDate string
+	var birthDate string
+	err = stmt.QueryRow(n).Scan(&user.Name, &user.Email, &regDate, &birthDate, &user.City,
 		&user.Sex, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
-
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
 	}
+	regDateParsed, err := time.Parse(DateParseFormat, regDate)
+	if err != nil {
+		return user, fmt.Errorf("UsersRepo - GetById - Parse regDate: %w", err)
+	}
+	birthDatePasred, err := time.Parse(DateParseFormat, regDate)
+	if err != nil {
+		return user, fmt.Errorf("UsersRepo - GetById - Parse birthDate: %w", err)
+	}
+
 	user.Posts = posts.Int64
 	user.Comments = comments.Int64
 	user.PostLikes = postLikes.Int64
 	user.PostDislikes = postDislikes.Int64
 	user.CommentLikes = commentLikes.Int64
 	user.CommentDislikes = commentDislikes.Int64
+	user.RegDate = regDateParsed
+	user.DateOfBirth = birthDatePasred
 
+	return user, nil
+}
+
+func (ur *UsersRepo) GetSession(n int) (entity.User, error) {
+	var user entity.User
+	stmt, err := ur.DB.Prepare(`SELECT
+	session_token, session_ttl
+	FROM users
+	WHERE id = ?`)
+
+	if err != nil {
+		return user, fmt.Errorf("UsersRepo - GetSession - Query: %w", err)
+	}
+	defer stmt.Close()
+	var sessionTTL string
+	err = stmt.QueryRow(n).Scan(&user.SessionToken, &sessionTTL)
+	if err != nil {
+		return user, fmt.Errorf("UsersRepo - GetSession - Scan: %w", err)
+	}
+
+	TTLParsed, err := time.Parse(DateParseFormat, sessionTTL)
+	if err != nil {
+		return user, fmt.Errorf("UsersRepo - GetSession - Parse TTL: %w", err)
+	}
+	user.SessionTTL = TTLParsed
 	return user, nil
 }
 
@@ -143,8 +201,8 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 		return fmt.Errorf("UsersRepo - Update - Prepare: %w", err)
 	}
 	defer stmt.Close()
-
-	res, err := stmt.Exec(user.Email, user.DateOfBirth, user.City, user.Sex, user.Id)
+	birthDate := user.DateOfBirth.Format(TimeFormat)
+	res, err := stmt.Exec(user.Email, birthDate, user.City, user.Sex, user.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Exec: %w", err)
 	}
@@ -188,6 +246,68 @@ func (ur *UsersRepo) UpdatePassword(user entity.User) error {
 	err = tx.Commit()
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdatePassword - Commit: %w", err)
+	}
+	return nil
+}
+
+func (ur *UsersRepo) NewSession(user entity.User) error {
+	tx, err := ur.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("UsersRepo - NewSession - Begin: %w", err)
+	}
+	stmt, err := ur.DB.Prepare(`UPDATE users
+	SET session_token = ?, session_ttl = ?
+	WHERE id = ?`)
+
+	if err != nil {
+		return fmt.Errorf("UsersRepo - NewSession - Prepare: %w", err)
+	}
+	defer stmt.Close()
+	sessionTTL := user.SessionTTL.Format(TimeFormat)
+	res, err := stmt.Exec(user.SessionToken, sessionTTL, user.Id)
+	if err != nil {
+		return fmt.Errorf("UsersRepo - NewSession - Exec: %w", err)
+	}
+
+	affected, err := res.RowsAffected()
+	if affected != 1 || err != nil {
+		return fmt.Errorf("UsersRepo - NewSession - RowsAffected: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("UsersRepo - NewSession - Commit: %w", err)
+	}
+	return nil
+}
+
+func (ur *UsersRepo) UpdateSession(user entity.User) error {
+	tx, err := ur.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("UsersRepo - UpdateSession - Begin: %w", err)
+	}
+	stmt, err := ur.DB.Prepare(`UPDATE users
+	SET session_ttl = ?
+	WHERE id = ?`)
+
+	if err != nil {
+		return fmt.Errorf("UsersRepo - UpdateSession - Prepare: %w", err)
+	}
+	defer stmt.Close()
+	sessionTTL := user.SessionTTL.Format(TimeFormat)
+	res, err := stmt.Exec(sessionTTL, user.Id)
+	if err != nil {
+		return fmt.Errorf("UsersRepo - UpdateSession - Exec: %w", err)
+	}
+
+	affected, err := res.RowsAffected()
+	if affected != 1 || err != nil {
+		return fmt.Errorf("UsersRepo - UpdateSession - RowsAffected: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("UsersRepo - UpdateSession - Commit: %w", err)
 	}
 	return nil
 }

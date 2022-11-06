@@ -24,8 +24,11 @@ type Users interface {
 	Store(user entity.User) error
 	Fetch() ([]entity.User, error)
 	GetById(n int) (entity.User, error)
+	GetSession(n int) (entity.User, error)
 	UpdateInfo(user entity.User) error
 	UpdatePassword(user entity.User) error
+	NewSession(user entity.User) error
+	UpdateSession(user entity.User) error
 	Delete(user entity.User) error
 }
 

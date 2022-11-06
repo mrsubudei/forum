@@ -1,9 +1,11 @@
 package entity
 
+import "time"
+
 type Post struct {
 	Id            int64      `json:"id,omitempty"`
 	User          User       `json:"user,omitempty"`
-	Date          string     `json:"date,omitempty"`
+	Date          time.Time  `json:"date,omitempty"`
 	Title         string     `json:"title,omitempty"`
 	Content       string     `json:"content,omitempty"`
 	Category      []string   `json:"categories,omitempty"`
@@ -14,7 +16,7 @@ type Post struct {
 }
 
 type Reaction struct {
-	UserId   int64  `json:"user_id,omitempty"`
-	EntityId int64  `json:"entity,omitempty"`
-	Date     string `json:"reaction_date,omitempty"`
+	UserId   int64     `json:"user_id,omitempty"`
+	EntityId int64     `json:"entity,omitempty"`
+	Date     time.Time `json:"reaction_date,omitempty"`
 }

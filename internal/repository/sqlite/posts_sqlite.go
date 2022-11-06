@@ -27,8 +27,8 @@ func (pr *PostsRepo) Store(post *entity.Post) error {
 		return fmt.Errorf("PostsRepo - Store - Prepare: %w", err)
 	}
 	defer stmt.Close()
-
-	res, err := stmt.Exec(post.User.Id, post.Date, post.Title, post.Content)
+	date := post.Date.Format(TimeFormat)
+	res, err := stmt.Exec(post.User.Id, date, post.Title, post.Content)
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Store - Exec: %w", err)
 	}

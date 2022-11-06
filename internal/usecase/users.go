@@ -42,7 +42,28 @@ func (uu *UsersUseCase) SignUp(u entity.User) error {
 	return nil
 }
 
-func (uu *UsersUseCase) SignIn(u entity.User) error {
+func (uu *UsersUseCase) SignIn(user entity.User) error {
+	token, err := uu.tokenManager.NewToken()
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
+	}
+	user.SessionToken = token
+	TTL := uu.tokenManager.UpdateTTL()
+	user.SessionTTL = TTL
+	err = uu.repo.NewSession(user)
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
+	}
+	return nil
+}
+
+func (uu *UsersUseCase) UpdateSession(user entity.User) error {
+	TTL := uu.tokenManager.UpdateTTL()
+	user.SessionTTL = TTL
+	err := uu.UpdateUserInfo(user, "session")
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - UpdateSession - %w", err)
+	}
 	return nil
 }
 
@@ -64,6 +85,15 @@ func (uu *UsersUseCase) GetById(id int) (entity.User, error) {
 	return user, nil
 }
 
+func (uu *UsersUseCase) GetSession(id int) (entity.User, error) {
+	var user entity.User
+	user, err := uu.repo.GetSession(id)
+	if err != nil {
+		return user, fmt.Errorf("UsersUseCase - GetSession - %w", err)
+	}
+	return user, nil
+}
+
 func (uu *UsersUseCase) UpdateUserInfo(user entity.User, query string) error {
 	switch query {
 	case "info":
@@ -78,6 +108,11 @@ func (uu *UsersUseCase) UpdateUserInfo(user entity.User, query string) error {
 		}
 		user.Password = hashed
 		err = uu.repo.UpdatePassword(user)
+		if err != nil {
+			return fmt.Errorf("UsersUseCase - UpdateUserInfo - %w", err)
+		}
+	case "session":
+		err := uu.repo.UpdateSession(user)
 		if err != nil {
 			return fmt.Errorf("UsersUseCase - UpdateUserInfo - %w", err)
 		}
