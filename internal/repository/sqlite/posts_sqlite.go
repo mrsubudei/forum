@@ -130,8 +130,8 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	return post, nil
 }
 
-func (pr *PostsRepo) GetIdByCategory(category string) (entity.Post, error) {
-	var post entity.Post
+func (pr *PostsRepo) GetIdByCategory(category string) (int64, error) {
+	var id int64
 
 	stmt, err := pr.DB.Prepare(`
 	SELECT post_id
@@ -140,16 +140,16 @@ func (pr *PostsRepo) GetIdByCategory(category string) (entity.Post, error) {
 	`)
 
 	if err != nil {
-		return post, fmt.Errorf("PostsRepo - GetById - Query: %w", err)
+		return 0, fmt.Errorf("PostsRepo - GetById - Query: %w", err)
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(category).Scan(&post.Id)
+	err = stmt.QueryRow(category).Scan(&id)
 	if err != nil {
-		return post, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)
+		return 0, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)
 	}
 
-	return post, nil
+	return id, nil
 }
 
 func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
@@ -180,7 +180,7 @@ func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
 func (pr *PostsRepo) Update(post entity.Post) error {
 	tx, err := pr.DB.Begin()
 	if err != nil {
-		return fmt.Errorf("UsersRepo - Update - Begin: %w", err)
+		return fmt.Errorf("PostsRepo - Update - Begin: %w", err)
 	}
 	stmt, err := pr.DB.Prepare(`
 	UPDATE posts
@@ -189,29 +189,58 @@ func (pr *PostsRepo) Update(post entity.Post) error {
 	`)
 
 	if err != nil {
-		return fmt.Errorf("UsersRepo - Update - Prepare: %w", err)
+		return fmt.Errorf("PostsRepo - Update - Prepare: %w", err)
 	}
 	defer stmt.Close()
 
 	res, err := stmt.Exec(post.Title, post.Content, post.Id)
 	if err != nil {
-		return fmt.Errorf("UsersRepo - Update - Exec: %w", err)
+		return fmt.Errorf("PostsRepo - Update - Exec: %w", err)
 	}
 
 	affected, err := res.RowsAffected()
 	if affected != 1 || err != nil {
-		return fmt.Errorf("UsersRepo - Update - RowsAffected: %w", err)
+		return fmt.Errorf("PostsRepo - Update - RowsAffected: %w", err)
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return fmt.Errorf("UsersRepo - Update - Commit: %w", err)
+		return fmt.Errorf("PostsRepo - Update - Commit: %w", err)
 	}
 
 	return nil
 }
 
 func (pr *PostsRepo) Delete(post entity.Post) error {
+	tx, err := pr.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("PostsRepo - Delete - Begin: %w", err)
+	}
+	stmt, err := pr.DB.Prepare(`
+	DELETE FROM posts
+	WHERE id = ?
+	`)
+
+	if err != nil {
+		return fmt.Errorf("PostsRepo - Delete - Prepare: %w", err)
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Exec(post.Id)
+	if err != nil {
+		return fmt.Errorf("PostsRepo - Delete - Exec: %w", err)
+	}
+
+	affected, err := res.RowsAffected()
+	if affected != 1 || err != nil {
+		return fmt.Errorf("PostsRepo - Delete - RowsAffected: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("PostsRepo - Delete - Commit: %w", err)
+	}
+
 	return nil
 }
 

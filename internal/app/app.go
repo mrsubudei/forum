@@ -135,11 +135,13 @@ func Run() {
 		log.Fatal(err)
 	}
 	post := entity.Post{
-		Id:   1,
-		User: user,
-		Date: parsed,
+		Id:      1,
+		Title:   "new title",
+		Content: "new content",
+		User:    user,
+		Date:    parsed,
 	}
-	err = useCases.Posts.MakeReaction(post, "dislike")
+	err = useCases.Posts.DeletePost(post)
 	if err != nil {
 		log.Fatal(err)
 	}

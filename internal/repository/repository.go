@@ -10,6 +10,7 @@ type Posts interface {
 	Store(post *entity.Post) error
 	Fetch() ([]entity.Post, error)
 	GetById(id int64) (entity.Post, error)
+	GetIdByCategory(category string) (int64, error)
 	Update(post entity.Post) error
 	Delete(post entity.Post) error
 	StoreLike(post entity.Post) error

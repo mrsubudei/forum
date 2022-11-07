@@ -59,29 +59,38 @@ func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 
 func (pu *PostsUseCase) GetByCategory(category string) (entity.Post, error) {
 	var post entity.Post
-	// post, err := pu.repo.GetById(id)
-	// if err != nil {
-	// 	return post, fmt.Errorf("PostsUseCase - GetById - %w", err)
-	// }
-
+	id, err := pu.repo.GetIdByCategory(category)
+	if err != nil {
+		return post, fmt.Errorf("PostsUseCase - GetByCategory #1 - %w", err)
+	}
+	post, err = pu.repo.GetById(id)
+	if err != nil {
+		return post, fmt.Errorf("PostsUseCase - GetByCategory #2 - %w", err)
+	}
 	return post, nil
 }
 
 func (pu *PostsUseCase) UpdatePost(post entity.Post) (entity.Post, error) {
+	err := pu.repo.Update(post)
+	if err != nil {
+		return post, fmt.Errorf("PostsUseCase - UpdatePost - %w", err)
+	}
 	return post, nil
 }
 
 func (pu *PostsUseCase) DeletePost(post entity.Post) error {
+	err := pu.repo.Delete(post)
+	if err != nil {
+		return fmt.Errorf("PostsUseCase - DeletePost - %w", err)
+	}
 	return nil
 }
 
 func (pu *PostsUseCase) MakeReaction(post entity.Post, command string) error {
 	switch command {
 	case ReactionLike:
-
 		err := pu.repo.StoreLike(post)
 		if err != nil {
-
 			if strings.Contains(err.Error(), UniqueReactionErr) {
 				err = pu.repo.DeleteLike(post)
 				if err != nil {
