@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"forum/internal/entity"
 	"forum/internal/repository"
+	"strings"
 )
 
 type PostsUseCase struct {
@@ -12,6 +13,15 @@ type PostsUseCase struct {
 	userUseCase    repository.Users
 	commentUseCase repository.Comments
 }
+
+const (
+	PostCommentedQuery = "commented"
+	PostLikedQuery     = "liked"
+	PostDislikedQuery  = "disliked"
+	ReactionLike       = "like"
+	ReactionDislike    = "dislike"
+	UniqueReactionErr  = "UNIQUE constraint failed"
+)
 
 func NewPostsUseCase(repo repository.Posts, userUseCase repository.Users, commentUseCase repository.Comments) *PostsUseCase {
 	return &PostsUseCase{
@@ -38,25 +48,86 @@ func (pu *PostsUseCase) GetAllPosts(p entity.Post) ([]entity.Post, error) {
 	return posts, nil
 }
 
-func (pu *PostsUseCase) GetOne(p entity.Post) (entity.Post, error) {
-	var post entity.Post
+func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
+	post, err := pu.repo.GetById(id)
+	if err != nil {
+		return post, fmt.Errorf("PostsUseCase - GetById - %w", err)
+	}
+
 	return post, nil
 }
 
-func (pu *PostsUseCase) UpdatePost(p entity.Post) (entity.Post, error) {
+func (pu *PostsUseCase) GetByCategory(category string) (entity.Post, error) {
 	var post entity.Post
+	// post, err := pu.repo.GetById(id)
+	// if err != nil {
+	// 	return post, fmt.Errorf("PostsUseCase - GetById - %w", err)
+	// }
+
 	return post, nil
 }
 
-func (pu *PostsUseCase) DeletePost(p entity.Post) error {
+func (pu *PostsUseCase) UpdatePost(post entity.Post) (entity.Post, error) {
+	return post, nil
+}
+
+func (pu *PostsUseCase) DeletePost(post entity.Post) error {
 	return nil
 }
 
-func (pu *PostsUseCase) MakeReaction(p entity.Post) error {
+func (pu *PostsUseCase) MakeReaction(post entity.Post, command string) error {
+	switch command {
+	case ReactionLike:
+
+		err := pu.repo.StoreLike(post)
+		if err != nil {
+
+			if strings.Contains(err.Error(), UniqueReactionErr) {
+				err = pu.repo.DeleteLike(post)
+				if err != nil {
+					return fmt.Errorf("PostsUseCase - MakeReaction - case ReactionLike - %w", err)
+				}
+				return nil
+			}
+			return fmt.Errorf("PostsUseCase - MakeReaction - case ReactionLike -  %w", err)
+		}
+		err = pu.repo.DeleteDislike(post)
+		if err != nil {
+			return fmt.Errorf("PostsUseCase - MakeReaction - case ReactionLike -  %w", err)
+		}
+	case ReactionDislike:
+		err := pu.repo.StoreDislike(post)
+		if err != nil {
+			if strings.Contains(err.Error(), UniqueReactionErr) {
+				err = pu.repo.DeleteDislike(post)
+				if err != nil {
+					return fmt.Errorf("PostsUseCase - MakeReaction - case ReactionDisike - %w", err)
+				}
+				return nil
+			}
+			return fmt.Errorf("PostsUseCase - MakeReaction - case ReactionDisike - %w", err)
+		}
+		err = pu.repo.DeleteLike(post)
+		if err != nil {
+			return fmt.Errorf("PostsUseCase - MakeReaction - case ReactionDisike - %w", err)
+		}
+	}
 	return nil
 }
 
-func (pu *PostsUseCase) DeleteReaction(p entity.Post) error {
+func (pu *PostsUseCase) DeleteReaction(post entity.Post, command string) error {
+	switch command {
+	case ReactionLike:
+		err := pu.repo.DeleteLike(post)
+		if err != nil {
+			return fmt.Errorf("PostsUseCase - DeleteReaction - %w", err)
+		}
+	case ReactionDislike:
+		err := pu.repo.DeleteDislike(post)
+		if err != nil {
+			return fmt.Errorf("PostsUseCase - DeleteReaction - %w", err)
+		}
+	}
 	return nil
 }
 

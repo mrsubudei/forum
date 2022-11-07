@@ -11,11 +11,12 @@ import (
 type Posts interface {
 	CreatePost(p entity.Post) error
 	GetAllPosts(p entity.Post) ([]entity.Post, error)
-	GetOne(p entity.Post) (entity.Post, error)
+	GetById(id int64) (entity.Post, error)
+	GetByCategory(category string) (entity.Post, error)
 	UpdatePost(p entity.Post) (entity.Post, error)
 	DeletePost(p entity.Post) error
-	MakeReaction(p entity.Post) error
-	DeleteReaction(p entity.Post) error
+	MakeReaction(p entity.Post, command string) error
+	DeleteReaction(post entity.Post, command string) error
 }
 
 type Users interface {
@@ -24,9 +25,9 @@ type Users interface {
 	GetAllUsers() ([]entity.User, error)
 	GetById(id int64) (entity.User, error)
 	GetSession(id int64) (entity.User, error)
-	CheckSession(user entity.User) (bool, error)
-	UpdateUserInfo(user entity.User, query string) error
-	UpdateSession(user entity.User) error
+	CheckSession(u entity.User) (bool, error)
+	UpdateUserInfo(u entity.User, query string) error
+	UpdateSession(u entity.User) error
 	DeleteUser(u entity.User) error
 }
 

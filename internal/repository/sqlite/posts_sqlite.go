@@ -92,7 +92,6 @@ func (pr *PostsRepo) Fetch() ([]entity.Post, error) {
 	return posts, nil
 }
 
-//todo
 func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	var post entity.Post
 
@@ -101,13 +100,13 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 		user_id, date, title, content,
 		(SELECT name FROM users WHERE users.id = user_id) AS user_name,
 		(SELECT date FROM post_likes WHERE post_likes.post_id = ?) AS post_likes,
-		(SELECT date FROM post_dislikes WHERE post_likes.post_id = ?) AS post_dislikes,
+		(SELECT date FROM post_dislikes WHERE post_likes.post_id = ?) AS post_dislikes
 	FROM posts
 	WHERE id = ?
 	`)
 
 	if err != nil {
-		return post, fmt.Errorf("PostsRepo - GetById - Query: %w", err)
+		return post, fmt.Errorf("PostsRepo - GetById - Prepare: %w", err)
 	}
 	defer stmt.Close()
 	var postsLikes sql.NullInt64
@@ -115,7 +114,7 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	var date string
 
 	err = stmt.QueryRow(id, id, id).Scan(&post.User.Id, &date, &post.Title, &post.Content,
-		&post.User.Name, &post.Likes, &post.Dislikes)
+		&post.User.Name, &postsLikes, &postDislikes)
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)
 	}
@@ -235,6 +234,10 @@ func (pr *PostsRepo) StoreLike(post entity.Post) error {
 
 	res, err := stmt.Exec(post.Id, post.User.Id, date)
 	if err != nil {
+		tx.Commit()
+		if err != nil {
+			return fmt.Errorf("PostsRepo - StoreLike - Exec err Commit: %w", err)
+		}
 		return fmt.Errorf("PostsRepo - StoreLike - Exec: %w", err)
 	}
 	affected, err := res.RowsAffected()
@@ -264,14 +267,9 @@ func (pr *PostsRepo) DeleteLike(post entity.Post) error {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(post.Id)
+	_, err = stmt.Exec(post.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - DeleteLike - Exec: %w", err)
-	}
-
-	affected, err := res.RowsAffected()
-	if affected != 1 || err != nil {
-		return fmt.Errorf("UsersRepo - DeleteLike - RowsAffected: %w", err)
 	}
 
 	err = tx.Commit()
@@ -301,6 +299,10 @@ func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 
 	res, err := stmt.Exec(post.Id, post.User.Id, date)
 	if err != nil {
+		tx.Commit()
+		if err != nil {
+			return fmt.Errorf("PostsRepo - StoreDislike - Exec err Commit: %w", err)
+		}
 		return fmt.Errorf("PostsRepo - StoreDislike - Exec: %w", err)
 	}
 	affected, err := res.RowsAffected()
@@ -330,14 +332,9 @@ func (pr *PostsRepo) DeleteDislike(post entity.Post) error {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(post.Id)
+	_, err = stmt.Exec(post.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - DeleteDislike - Exec: %w", err)
-	}
-
-	affected, err := res.RowsAffected()
-	if affected != 1 || err != nil {
-		return fmt.Errorf("UsersRepo - DeleteDislike - RowsAffected: %w", err)
 	}
 
 	err = tx.Commit()

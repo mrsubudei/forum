@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"forum/internal/entity"
 	"forum/internal/repository"
 	"forum/internal/repository/sqlite"
@@ -35,26 +34,26 @@ func Run() {
 		TokenManager: tokenManager,
 	})
 
-	regDate := "2022-11-10"
-	date, err := time.Parse("2006-01-02", regDate)
-	if err != nil {
-		log.Fatal(err)
-	}
-	dateOfBirth := "1989-06-19"
-	birthDate, err := time.Parse("2006-01-02", dateOfBirth)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// regDate := "2022-11-10"
+	// date, err := time.Parse("2006-01-02", regDate)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// dateOfBirth := "1989-06-19"
+	// birthDate, err := time.Parse("2006-01-02", dateOfBirth)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	user := entity.User{
-		// Name:        "Bobik1",
-		Email:       "bobik@gmail.com",
-		Password:    "vivse",
-		RegDate:     date,
-		DateOfBirth: birthDate,
-		City:        "Astana",
-		Sex:         "Male",
-	}
+	// user := entity.User{
+	// 	// Name:        "Bobik1",
+	// 	Email:       "bobik@gmail.com",
+	// 	Password:    "vivse",
+	// 	RegDate:     date,
+	// 	DateOfBirth: birthDate,
+	// 	City:        "Astana",
+	// 	Sex:         "Male",
+	// }
 	// id := int64(4)
 	// userFind := entity.User{
 	// 	Id: id,
@@ -64,10 +63,10 @@ func Run() {
 	// 	fmt.Println(err)
 	// }
 
-	err = useCases.Users.SignIn(user)
-	if err != nil {
-		fmt.Println(err)
-	}
+	// err = useCases.Users.SignIn(user)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
 	// err = useCases.Users.UpdateSession(userFind)
 	// if err != nil {
@@ -126,4 +125,27 @@ func Run() {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Println(UserSession)
+
+	user := entity.User{
+		Id: 1,
+	}
+	date := "2022-11-07 15:00:45"
+	parsed, err := time.Parse("2006-01-02 15:04:05", date)
+	if err != nil {
+		log.Fatal(err)
+	}
+	post := entity.Post{
+		Id:   1,
+		User: user,
+		Date: parsed,
+	}
+	err = useCases.Posts.MakeReaction(post, "dislike")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// post, err := useCases.Posts.GetById(1)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(post.Id, post.Title, post.Content, post.Date, post.User.Id, post.User.Name)
 }
