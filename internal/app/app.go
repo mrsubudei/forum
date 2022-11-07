@@ -47,8 +47,7 @@ func Run() {
 	}
 
 	user := entity.User{
-		Id:          1,
-		Name:        "Bobik",
+		// Name:        "Bobik1",
 		Email:       "bobik@gmail.com",
 		Password:    "vivse",
 		RegDate:     date,
@@ -62,16 +61,12 @@ func Run() {
 	// }
 	// err = useCases.Users.SignUp(user)
 	// if err != nil {
-	// 	log.Fatal(err)
+	// 	fmt.Println(err)
 	// }
 
 	err = useCases.Users.SignIn(user)
 	if err != nil {
-		if err.Error() == entity.ErrUserPasswordIncorrect.Error() {
-			fmt.Println("wrong pass")
-		} else {
-			log.Fatal(err)
-		}
+		fmt.Println(err)
 	}
 
 	// err = useCases.Users.UpdateSession(userFind)

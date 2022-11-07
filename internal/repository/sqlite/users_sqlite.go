@@ -115,6 +115,44 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 	return users, nil
 }
 
+func (ur *UsersRepo) GetId(user entity.User) (int64, error) {
+	var id int64
+	switch {
+	case user.Name != "":
+		stmt, err := ur.DB.Prepare(`
+		SELECT id
+		FROM users
+		WHERE name = ?
+		`)
+		if err != nil {
+			return 0, fmt.Errorf("UsersRepo - GetId - case Name - Query: %w", err)
+		}
+		defer stmt.Close()
+
+		err = stmt.QueryRow(user.Name).Scan(&id)
+		if err != nil {
+			return 0, fmt.Errorf("UsersRepo - GetId - case Name - Scan: %w", err)
+		}
+	case user.Email != "":
+		stmt, err := ur.DB.Prepare(`
+		SELECT id
+		FROM users
+		WHERE email = ?
+		`)
+		if err != nil {
+			return 0, fmt.Errorf("UsersRepo - GetId - case Email - Query: %w", err)
+		}
+		defer stmt.Close()
+
+		err = stmt.QueryRow(user.Email).Scan(&id)
+		if err != nil {
+			return 0, fmt.Errorf("UsersRepo - GetId - case Email - Scan: %w", err)
+		}
+	}
+
+	return id, nil
+}
+
 func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var user entity.User
 	stmt, err := ur.DB.Prepare(`

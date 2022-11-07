@@ -24,6 +24,7 @@ type Posts interface {
 type Users interface {
 	Store(user entity.User) error
 	Fetch() ([]entity.User, error)
+	GetId(user entity.User) (int64, error)
 	GetById(n int64) (entity.User, error)
 	GetSession(n int64) (entity.User, error)
 	UpdateInfo(user entity.User) error

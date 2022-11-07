@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"forum/internal/entity"
 	"forum/internal/repository"
+	"strings"
 
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
@@ -21,6 +22,8 @@ const (
 	UpdateInfoQuery     = "info"
 	UpdatePasswordQuery = "password"
 	UpdateSessionQuery  = "session"
+	UniqueEmailErr      = "UNIQUE constraint failed: users.email"
+	UniqueNameErr       = "UNIQUE constraint failed: users.name"
 )
 
 func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
@@ -35,6 +38,10 @@ func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
 }
 
 func (uu *UsersUseCase) SignUp(user entity.User) error {
+	// todo add this into handler
+	// if !checkEmail(user.Email) {
+	// 	return entity.ErrUserEmailIncorrect
+	// }
 	hashed, err := uu.hasher.Hash(user.Password)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignUp - %w", err)
@@ -43,6 +50,12 @@ func (uu *UsersUseCase) SignUp(user entity.User) error {
 
 	err = uu.repo.Store(user)
 	if err != nil {
+		if strings.Contains(err.Error(), UniqueEmailErr) {
+			return entity.ErrUserEmailAlreadyExists
+		}
+		if strings.Contains(err.Error(), UniqueNameErr) {
+			return entity.ErrUserNameAlreadyExists
+		}
 		return fmt.Errorf("UsersUseCase - SignUp - %w", err)
 	}
 
@@ -50,7 +63,15 @@ func (uu *UsersUseCase) SignUp(user entity.User) error {
 }
 
 func (uu *UsersUseCase) SignIn(user entity.User) error {
-	existUserInfo, err := uu.GetById(user.Id)
+	id, err := uu.repo.GetId(user)
+	if id == 0 {
+		return entity.ErrUserNotFound
+	}
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
+	}
+
+	existUserInfo, err := uu.GetById(id)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
 	}
@@ -68,11 +89,11 @@ func (uu *UsersUseCase) SignIn(user entity.User) error {
 	user.SessionToken = token
 	TTL := uu.tokenManager.UpdateTTL()
 	user.SessionTTL = TTL
+	user.Id = id
 	err = uu.repo.NewSession(user)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
 	}
-
 	return nil
 }
 
@@ -171,3 +192,8 @@ func (uu *UsersUseCase) DeleteUser(u entity.User) error {
 	}
 	return nil
 }
+
+// func checkEmail(address string) bool {
+// 	_, err := mail.ParseAddress(address)
+// 	return err == nil
+// }

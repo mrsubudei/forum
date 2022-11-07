@@ -17,7 +17,7 @@ type Manager struct {
 }
 
 const (
-	SessionExpiredTime = 30 //+n seconds
+	SessionExpiredTime = 900 //+n seconds
 	TimeFormat         = "2006-01-02 15:04:05"
 )
 
