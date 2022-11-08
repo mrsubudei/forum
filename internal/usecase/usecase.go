@@ -36,7 +36,7 @@ type Comments interface {
 	UpdateComment(c entity.Comment) error
 	DeleteComment(c entity.Comment) error
 	MakeReaction(comment entity.Comment, command string) error
-	DeleteReaction(c entity.Comment) error
+	DeleteReaction(comment entity.Comment, command string) error
 }
 
 type UseCases struct {

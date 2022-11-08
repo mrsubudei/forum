@@ -1,7 +1,7 @@
 package app
 
 import (
-	"forum/internal/entity"
+	"fmt"
 	"forum/internal/repository"
 	"forum/internal/repository/sqlite"
 	"forum/internal/usecase"
@@ -9,7 +9,6 @@ import (
 	"forum/pkg/hasher"
 	"forum/pkg/sqlite3"
 	"log"
-	"time"
 )
 
 func Run() {
@@ -126,30 +125,33 @@ func Run() {
 	// }
 	// fmt.Println(UserSession)
 
-	user := entity.User{
-		Id: 2,
-	}
-	date := "2022-11-07 15:00:45"
-	parsed, err := time.Parse("2006-01-02 15:04:05", date)
-	if err != nil {
-		log.Fatal(err)
-	}
-	post := entity.Post{
-		Id:   2,
-		User: user,
-	}
-	comment := entity.Comment{
-		Id:      1,
-		Post:    post,
-		User:    user,
-		Date:    parsed,
-		Content: "sdf",
-	}
-	err = useCases.Comments.MakeReaction(comment, "dislike")
+	// user := entity.User{
+	// 	Id: 2,
+	// }
+	// date := "2022-11-07 15:00:45"
+	// parsed, err := time.Parse("2006-01-02 15:04:05", date)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// post := entity.Post{
+	// 	Id:   2,
+
+	// }
+	// comment := entity.Comment{
+	// 	Id:      1,
+	// 	Post:    post,
+	// 	User:    user,
+	// 	Date:    parsed,
+	// 	Content: "sdfgdf",
+	// }
+	// err = useCases.Comments.MakeReaction(comment, "dislike")
 	// err = useCases.Comments.WriteComment(comment)
+	post, err := useCases.Posts.GetById(2)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Printf("%#v\n", post)
 
 	// comments, err := useCases.Comments.GetAllComments()
 	// if err != nil {

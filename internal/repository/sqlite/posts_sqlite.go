@@ -98,13 +98,12 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	stmt, err := pr.DB.Prepare(`
 	SELECT
 		user_id, date, title, content,
-		(SELECT name FROM users WHERE users.id = user_id) AS user_name,
-		(SELECT date FROM post_likes WHERE post_likes.post_id = ?) AS post_likes,
-		(SELECT date FROM post_dislikes WHERE post_likes.post_id = ?) AS post_dislikes
+		(SELECT name FROM users WHERE users.id = posts.user_id) AS user_name,
+		(SELECT COUNT(*) FROM post_likes ) AS post_likes,
+		(SELECT COUNT(*) FROM post_dislikes ) AS post_dislikes
 	FROM posts
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Prepare: %w", err)
 	}
@@ -113,7 +112,7 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	var postDislikes sql.NullInt64
 	var date string
 
-	err = stmt.QueryRow(id, id, id).Scan(&post.User.Id, &date, &post.Title, &post.Content,
+	err = stmt.QueryRow(id).Scan(&post.User.Id, &date, &post.Title, &post.Content,
 		&post.User.Name, &postsLikes, &postDislikes)
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)
@@ -138,7 +137,6 @@ func (pr *PostsRepo) GetIdByCategory(category string) (int64, error) {
 	FROM reference_topic
 	WHERE topic = ?
 	`)
-
 	if err != nil {
 		return 0, fmt.Errorf("PostsRepo - GetById - Query: %w", err)
 	}
@@ -159,7 +157,6 @@ func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
 	FROM reference_topic
 	WHERE post_id = ?
 	`)
-
 	if err != nil {
 		return nil, fmt.Errorf("PostsRepo - GetRelatedCategories - Query: %w", err)
 	}
@@ -187,7 +184,6 @@ func (pr *PostsRepo) Update(post entity.Post) error {
 	SET title = ?, content = ?
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Update - Prepare: %w", err)
 	}
@@ -220,7 +216,6 @@ func (pr *PostsRepo) Delete(post entity.Post) error {
 	DELETE FROM posts
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Delete - Prepare: %w", err)
 	}
@@ -290,7 +285,6 @@ func (pr *PostsRepo) DeleteLike(post entity.Post) error {
 	DELETE FROM post_likes
 	WHERE post_id = ?
 	`)
-
 	if err != nil {
 		return fmt.Errorf("UsersRepo - DeleteLike - Prepare: %w", err)
 	}
@@ -355,7 +349,6 @@ func (pr *PostsRepo) DeleteDislike(post entity.Post) error {
 	DELETE FROM post_dislikes
 	WHERE post_id = ?
 	`)
-
 	if err != nil {
 		return fmt.Errorf("UsersRepo - DeleteDislike - Prepare: %w", err)
 	}

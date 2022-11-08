@@ -50,11 +50,13 @@ func (pu *PostsUseCase) GetAllPosts(p entity.Post) ([]entity.Post, error) {
 
 func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 	post, err := pu.repo.GetById(id)
+	post.Id = id
 	if err != nil {
 		return post, fmt.Errorf("PostsUseCase - GetById - %w", err)
 	}
-
-	return post, nil
+	posts := []entity.Post{post}
+	pu.fillPostDetails(&posts)
+	return posts[0], nil
 }
 
 func (pu *PostsUseCase) GetByCategory(category string) (entity.Post, error) {
@@ -141,13 +143,14 @@ func (pu *PostsUseCase) DeleteReaction(post entity.Post, command string) error {
 }
 
 func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
-	// for i := 0; i < len(*posts); i++ {
-	// 	categories, err := pu.repo.GetRelatedCategories((*posts)[i])
-	// 	if err != nil {
-	// 		return fmt.Errorf("PostsUseCase - fillPostDetails - %w", err)
-	// 	}
-	// 	(*posts)[i].Category = categories
-	// }
+	for i := 0; i < len(*posts); i++ {
+		categories, err := pu.repo.GetRelatedCategories((*posts)[i])
+		if err != nil {
+			return fmt.Errorf("PostsUseCase - fillPostDetails - %w", err)
+		}
+		fmt.Println(categories)
+		(*posts)[i].Category = append((*posts)[i].Category, categories...)
+	}
 	// mapPosts := make(map[int64]entity.Post)
 	// for _, post := range *posts {
 	// 	mapPosts[post.Id] = entity.Post{}

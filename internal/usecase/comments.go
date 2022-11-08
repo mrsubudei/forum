@@ -39,10 +39,18 @@ func (cu *CommentsUseCase) GetAllComments() ([]entity.Comment, error) {
 }
 
 func (cu *CommentsUseCase) UpdateComment(comment entity.Comment) error {
+	err := cu.repo.Update(comment)
+	if err != nil {
+		return fmt.Errorf("CommentsUseCase - UpdateComment - %w", err)
+	}
 	return nil
 }
 
 func (cu *CommentsUseCase) DeleteComment(comment entity.Comment) error {
+	err := cu.repo.Delete(comment)
+	if err != nil {
+		return fmt.Errorf("CommentsUseCase - DeleteComment - %w", err)
+	}
 	return nil
 }
 
@@ -84,6 +92,18 @@ func (cu *CommentsUseCase) MakeReaction(comment entity.Comment, command string) 
 	return nil
 }
 
-func (cu *CommentsUseCase) DeleteReaction(comment entity.Comment) error {
+func (cu *CommentsUseCase) DeleteReaction(comment entity.Comment, command string) error {
+	switch command {
+	case ReactionLike:
+		err := cu.repo.DeleteLike(comment)
+		if err != nil {
+			return fmt.Errorf("CommentsUseCase - DeleteReaction - %w", err)
+		}
+	case ReactionDislike:
+		err := cu.repo.DeleteDislike(comment)
+		if err != nil {
+			return fmt.Errorf("CommentsUseCase - DeleteReaction - %w", err)
+		}
+	}
 	return nil
 }

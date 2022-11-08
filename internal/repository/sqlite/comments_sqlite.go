@@ -123,11 +123,68 @@ func (cr *CommentsRepo) GetById(id int64) (entity.Comment, error) {
 	return comment, nil
 }
 
-func (cr *CommentsRepo) Update(comment entity.Comment) (entity.Comment, error) {
-	return comment, nil
+func (cr *CommentsRepo) Update(comment entity.Comment) error {
+	tx, err := cr.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("CommentsRepo - Update - Begin: %w", err)
+	}
+	stmt, err := cr.DB.Prepare(`
+	UPDATE comments
+	SET content = ?
+	WHERE id = ?
+	`)
+	if err != nil {
+		return fmt.Errorf("CommentsRepo - Update - Prepare: %w", err)
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Exec(comment.Content, comment.Id)
+	if err != nil {
+		return fmt.Errorf("CommentsRepo - Update - Exec: %w", err)
+	}
+
+	affected, err := res.RowsAffected()
+	if affected != 1 || err != nil {
+		return fmt.Errorf("CommentsRepo - Update - RowsAffected: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("CommentsRepo - Update - Commit: %w", err)
+	}
+
+	return nil
 }
 
 func (cr *CommentsRepo) Delete(comment entity.Comment) error {
+	tx, err := cr.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("CommentsRepo - Delete - Begin: %w", err)
+	}
+	stmt, err := cr.DB.Prepare(`
+	DELETE FROM comments
+	WHERE id = ?
+	`)
+	if err != nil {
+		return fmt.Errorf("CommentsRepo - Delete - Prepare: %w", err)
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Exec(comment.Id)
+	if err != nil {
+		return fmt.Errorf("CommentsRepo - Delete - Exec: %w", err)
+	}
+
+	affected, err := res.RowsAffected()
+	if affected != 1 || err != nil {
+		return fmt.Errorf("CommentsRepo - Delete - RowsAffected: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("CommentsRepo - Delete - Commit: %w", err)
+	}
+
 	return nil
 }
 
