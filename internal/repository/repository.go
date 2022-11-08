@@ -40,8 +40,10 @@ type Comments interface {
 	GetById(id int64) (entity.Comment, error)
 	Update(post entity.Comment) (entity.Comment, error)
 	Delete(post entity.Comment) error
-	ThumbsUp(comment entity.Comment) error
-	ThumbsDown(comment entity.Comment) error
+	StoreLike(comment entity.Comment) error
+	DeleteLike(comment entity.Comment) error
+	StoreDislike(comment entity.Comment) error
+	DeleteDislike(comment entity.Comment) error
 }
 
 type Repositories struct {

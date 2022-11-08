@@ -3,7 +3,6 @@ package usecase
 import (
 	"forum/internal/entity"
 	"forum/internal/repository"
-
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
 )
@@ -32,11 +31,11 @@ type Users interface {
 }
 
 type Comments interface {
-	WriteComment(p entity.Post) error
-	GetAllComments(p entity.Post) error
+	WriteComment(c entity.Comment) error
+	GetAllComments() ([]entity.Comment, error)
 	UpdateComment(c entity.Comment) error
 	DeleteComment(c entity.Comment) error
-	MakeReaction(c entity.Comment) error
+	MakeReaction(comment entity.Comment, command string) error
 	DeleteReaction(c entity.Comment) error
 }
 

@@ -127,7 +127,7 @@ func Run() {
 	// fmt.Println(UserSession)
 
 	user := entity.User{
-		Id: 1,
+		Id: 2,
 	}
 	date := "2022-11-07 15:00:45"
 	parsed, err := time.Parse("2006-01-02 15:04:05", date)
@@ -135,16 +135,32 @@ func Run() {
 		log.Fatal(err)
 	}
 	post := entity.Post{
+		Id:   2,
+		User: user,
+	}
+	comment := entity.Comment{
 		Id:      1,
-		Title:   "new title",
-		Content: "new content",
+		Post:    post,
 		User:    user,
 		Date:    parsed,
+		Content: "sdf",
 	}
-	err = useCases.Posts.DeletePost(post)
+	err = useCases.Comments.MakeReaction(comment, "dislike")
+	// err = useCases.Comments.WriteComment(comment)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// comments, err := useCases.Comments.GetAllComments()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// for i := 0; i < len(comments); i++ {
+
+	// 	fmt.Print(comments[i].TotalLikes)
+	// 	fmt.Print(comments[i].TotalDislikes)
+	// 	fmt.Println()
+	// }
 	// post, err := useCases.Posts.GetById(1)
 	// if err != nil {
 	// 	log.Fatal(err)
