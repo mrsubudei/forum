@@ -10,7 +10,7 @@ type Post struct {
 	Content       string     `json:"content,omitempty"`
 	Categories    []string   `json:"categories,omitempty"`
 	Comments      []Comment  `json:"comments,omitempty"`
-	CountComments int64      `json:"total_comments,omitempty"`
+	TotalComments int64      `json:"total_comments,omitempty"`
 	Likes         []Reaction `json:"likes,omitempty"`
 	TotalLikes    int64      `json:"total_likes,omitempty"`
 	Dislikes      []Reaction `json:"dislkes,omitempty"`

@@ -107,3 +107,12 @@ func (cu *CommentsUseCase) DeleteReaction(comment entity.Comment, command string
 	}
 	return nil
 }
+
+func (cu *CommentsUseCase) GetReactions(id int64) (entity.Comment, error) {
+	comment, err := cu.repo.FetchReactions(id)
+	if err != nil {
+		return comment, fmt.Errorf("CommentUseCase - GetReactions - %w", err)
+	}
+
+	return comment, nil
+}

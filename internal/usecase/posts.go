@@ -205,6 +205,7 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 		wgComments.Wait()
 		for i := 0; i < len(*posts); i++ {
 			(*posts)[i].Comments = append((*posts)[i].Comments, commentsSlice[i]...)
+			(*posts)[i].TotalComments = int64(len((*posts)[i].Comments))
 		}
 		close(commentsDone)
 	}()
@@ -229,4 +230,13 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 	}
 
 	return nil
+}
+
+func (pu *PostsUseCase) GetReactions(id int64) (entity.Post, error) {
+	post, err := pu.repo.FetchReactions(id)
+	if err != nil {
+		return post, fmt.Errorf("PostsUseCase - GetReactions - %w", err)
+	}
+
+	return post, nil
 }

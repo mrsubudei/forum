@@ -320,3 +320,64 @@ func (pr *CommentsRepo) DeleteDislike(comment entity.Comment) error {
 
 	return nil
 }
+
+func (pr *CommentsRepo) FetchReactions(id int64) (entity.Comment, error) {
+	var comment entity.Comment
+	var likes []entity.Reaction
+	var dislikes []entity.Reaction
+
+	rowsLikes, err := pr.DB.Query(`
+		SELECT user_id, date
+		FROM comment_likes
+		WHERE comment_id = ?
+	`, id)
+
+	if err != nil {
+		return comment, fmt.Errorf("CommentsRepo - FetchReactions - likes - Query: %w", err)
+	}
+	defer rowsLikes.Close()
+
+	for rowsLikes.Next() {
+		var like entity.Reaction
+		var date string
+		err = rowsLikes.Scan(&like.UserId, &date)
+		if err != nil {
+			return comment, fmt.Errorf("CommentsRepo - FetchReactions - likes - Scan: %w", err)
+		}
+		dateParsed, err := time.Parse(DateParseFormat, date)
+		if err != nil {
+			return comment, fmt.Errorf("CommentsRepo - FetchReactions - likes - Parse date: %w", err)
+		}
+		like.Date = dateParsed
+		likes = append(likes, like)
+	}
+
+	rowsDislikes, err := pr.DB.Query(`
+		SELECT user_id, date
+		FROM comment_dislikes
+		WHERE comment_id = ?
+	`, id)
+
+	if err != nil {
+		return comment, fmt.Errorf("CommentsRepo - FetchReactions - dislikes - Query: %w", err)
+	}
+	defer rowsDislikes.Close()
+
+	for rowsDislikes.Next() {
+		var dislike entity.Reaction
+		var date string
+		err = rowsDislikes.Scan(&dislike.UserId, &date)
+		if err != nil {
+			return comment, fmt.Errorf("CommentsRepo - FetchReactions - dislikes - Scan: %w", err)
+		}
+		dateParsed, err := time.Parse(DateParseFormat, date)
+		if err != nil {
+			return comment, fmt.Errorf("CommentsRepo - FetchReactions - dislikes - Parse date: %w", err)
+		}
+		dislike.Date = dateParsed
+		likes = append(likes, dislike)
+	}
+	comment.Likes = append(comment.Likes, likes...)
+	comment.Dislikes = append(comment.Dislikes, dislikes...)
+	return comment, nil
+}

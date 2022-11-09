@@ -19,6 +19,7 @@ type Posts interface {
 	DeleteDislike(post entity.Post) error
 	StoreTopicReference(post entity.Post) error
 	GetRelatedCategories(post entity.Post) ([]string, error)
+	FetchReactions(id int64) (entity.Post, error)
 }
 
 type Users interface {
@@ -44,6 +45,7 @@ type Comments interface {
 	DeleteLike(comment entity.Comment) error
 	StoreDislike(comment entity.Comment) error
 	DeleteDislike(comment entity.Comment) error
+	FetchReactions(id int64) (entity.Comment, error)
 }
 
 type Repositories struct {
