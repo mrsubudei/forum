@@ -156,7 +156,7 @@ func Run() {
 	fmt.Println("post date: ", post.Date)
 	fmt.Println("post title: ", post.Title)
 	fmt.Println("post content: ", post.Content)
-	fmt.Println("post categories: ", post.Category)
+	fmt.Println("post categories: ", post.Categories)
 	fmt.Println("post count comments: ", post.CountComments)
 	fmt.Println("post likes: ", post.TotalLikes)
 	fmt.Println("post dislikes: ", post.TotalDislikes)

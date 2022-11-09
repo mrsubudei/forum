@@ -68,8 +68,8 @@ func (pr *PostsRepo) StoreTopicReference(post entity.Post) error {
 	}
 	defer stmt.Close()
 
-	for i := 0; i < len(post.Category); i++ {
-		res, err := stmt.Exec(post.Id, post.Category[i])
+	for i := 0; i < len(post.Categories); i++ {
+		res, err := stmt.Exec(post.Id, post.Categories[i])
 		if err != nil {
 			return fmt.Errorf("PostsRepo - StoreTopicReference - Exec: %w", err)
 		}

@@ -5,6 +5,7 @@ import (
 	"forum/internal/entity"
 	"forum/internal/repository"
 	"strings"
+	"sync"
 )
 
 type PostsUseCase struct {
@@ -146,22 +147,73 @@ func (pu *PostsUseCase) DeleteReaction(post entity.Post, command string) error {
 }
 
 func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
+	wgCategory := sync.WaitGroup{}
+	wgComments := sync.WaitGroup{}
+
+	categorySlice := make([][]string, len(*posts))
+	commentsSlice := make([][]entity.Comment, len(*posts))
+
+	errChan := make(chan error, 1)
+
+	categoryDone := make(chan interface{})
+	commentsDone := make(chan interface{})
+
 	for i := 0; i < len(*posts); i++ {
-		categories, err := pu.repo.GetRelatedCategories((*posts)[i])
-		if err != nil {
-			return fmt.Errorf("PostsUseCase - fillPostDetails - %w", err)
-		}
-		fmt.Println(categories)
-		(*posts)[i].Category = append((*posts)[i].Category, categories...)
+		wgCategory.Add(1)
+		go func(n int) {
+			defer wgCategory.Done()
+			categories, err := pu.repo.GetRelatedCategories((*posts)[n])
+			if err != nil {
+				errChan <- fmt.Errorf("PostsUseCase - fillPostDetails - Categories fill %w", err)
+			}
+			categorySlice[n] = categories
+		}(i)
 	}
 
 	for i := 0; i < len(*posts); i++ {
-		comments, err := pu.commentUseCase.Fetch((*posts)[i].Id)
-		if err != nil {
-			return fmt.Errorf("PostsUseCase - fillPostDetails - %w", err)
-		}
-		(*posts)[i].Comments = append((*posts)[i].Comments, comments...)
+		wgComments.Add(1)
+		go func(n int) {
+			defer wgComments.Done()
+			comments, err := pu.commentUseCase.Fetch((*posts)[n].Id)
+			if err != nil {
+				errChan <- fmt.Errorf("PostsUseCase - fillPostDetails - Comments fill %w", err)
+			}
+			commentsSlice[n] = comments
+		}(i)
 	}
 
+	go func() {
+		wgCategory.Wait()
+		for i := 0; i < len(*posts); i++ {
+			(*posts)[i].Categories = append((*posts)[i].Categories, categorySlice[i]...)
+		}
+		close(categoryDone)
+	}()
+
+	go func() {
+		wgComments.Wait()
+		for i := 0; i < len(*posts); i++ {
+			(*posts)[i].Comments = append((*posts)[i].Comments, commentsSlice[i]...)
+		}
+		close(commentsDone)
+	}()
+
+	for {
+		select {
+		case <-errChan:
+			return <-errChan
+		case _, ok := <-categoryDone:
+			if !ok {
+				categoryDone = nil
+			}
+		case _, ok := <-commentsDone:
+			if !ok {
+				commentsDone = nil
+			}
+		}
+		if commentsDone == nil && categoryDone == nil {
+			break
+		}
+	}
 	return nil
 }

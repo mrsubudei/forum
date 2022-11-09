@@ -8,7 +8,7 @@ type Post struct {
 	Date          time.Time  `json:"date,omitempty"`
 	Title         string     `json:"title,omitempty"`
 	Content       string     `json:"content,omitempty"`
-	Category      []string   `json:"categories,omitempty"`
+	Categories    []string   `json:"categories,omitempty"`
 	Comments      []Comment  `json:"comments,omitempty"`
 	CountComments int64      `json:"total_comments,omitempty"`
 	Likes         []Reaction `json:"likes,omitempty"`
