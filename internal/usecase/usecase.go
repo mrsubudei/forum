@@ -32,7 +32,7 @@ type Users interface {
 
 type Comments interface {
 	WriteComment(c entity.Comment) error
-	GetAllComments() ([]entity.Comment, error)
+	GetAllComments(postId int64) ([]entity.Comment, error)
 	UpdateComment(c entity.Comment) error
 	DeleteComment(c entity.Comment) error
 	MakeReaction(comment entity.Comment, command string) error

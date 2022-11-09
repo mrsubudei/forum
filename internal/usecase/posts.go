@@ -55,7 +55,10 @@ func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 		return post, fmt.Errorf("PostsUseCase - GetById - %w", err)
 	}
 	posts := []entity.Post{post}
-	pu.fillPostDetails(&posts)
+	err = pu.fillPostDetails(&posts)
+	if err != nil {
+		return post, fmt.Errorf("PostsUseCase - GetById - %w", err)
+	}
 	return posts[0], nil
 }
 
@@ -151,11 +154,14 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 		fmt.Println(categories)
 		(*posts)[i].Category = append((*posts)[i].Category, categories...)
 	}
-	// mapPosts := make(map[int64]entity.Post)
-	// for _, post := range *posts {
-	// 	mapPosts[post.Id] = entity.Post{}
-	// }
-	// chanPost := make(chan entity.Post)
-	// for postId :=
+
+	for i := 0; i < len(*posts); i++ {
+		comments, err := pu.commentUseCase.Fetch((*posts)[i].Id)
+		if err != nil {
+			return fmt.Errorf("PostsUseCase - fillPostDetails - %w", err)
+		}
+		(*posts)[i].Comments = append((*posts)[i].Comments, comments...)
+	}
+
 	return nil
 }

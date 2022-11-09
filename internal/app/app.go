@@ -151,7 +151,19 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%#v\n", post)
+	fmt.Println("post id: ", post.Id)
+	fmt.Println("post user id: ", post.User.Id)
+	fmt.Println("post date: ", post.Date)
+	fmt.Println("post title: ", post.Title)
+	fmt.Println("post content: ", post.Content)
+	fmt.Println("post categories: ", post.Category)
+	fmt.Println("post count comments: ", post.CountComments)
+	fmt.Println("post likes: ", post.TotalLikes)
+	fmt.Println("post dislikes: ", post.TotalDislikes)
+
+	for i := 0; i < len(post.Comments); i++ {
+		fmt.Printf("comment %d %#v\n", i, post.Comments[i])
+	}
 
 	// comments, err := useCases.Comments.GetAllComments()
 	// if err != nil {

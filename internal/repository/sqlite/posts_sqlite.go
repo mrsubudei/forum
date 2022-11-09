@@ -151,12 +151,13 @@ func (pr *PostsRepo) GetIdByCategory(category string) (int64, error) {
 }
 
 func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
+
 	categories := []string{}
 	rows, err := pr.DB.Query(`
 	SELECT topic
 	FROM reference_topic
 	WHERE post_id = ?
-	`)
+	`, post.Id)
 	if err != nil {
 		return nil, fmt.Errorf("PostsRepo - GetRelatedCategories - Query: %w", err)
 	}
@@ -164,7 +165,7 @@ func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
 
 	for rows.Next() {
 		var category string
-		err = rows.Scan(category)
+		err = rows.Scan(&category)
 		if err != nil {
 			return nil, fmt.Errorf("PostsRepo - GetRelatedCategories - Scan: %w", err)
 		}

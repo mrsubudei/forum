@@ -30,8 +30,8 @@ func (cu *CommentsUseCase) WriteComment(comment entity.Comment) error {
 	return nil
 }
 
-func (cu *CommentsUseCase) GetAllComments() ([]entity.Comment, error) {
-	comments, err := cu.repo.Fetch()
+func (cu *CommentsUseCase) GetAllComments(postId int64) ([]entity.Comment, error) {
+	comments, err := cu.repo.Fetch(postId)
 	if err != nil {
 		return nil, fmt.Errorf("CommentsUseCase - GetAllComments - %w", err)
 	}

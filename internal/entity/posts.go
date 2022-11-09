@@ -18,7 +18,6 @@ type Post struct {
 }
 
 type Reaction struct {
-	UserId   int64     `json:"user_id,omitempty"`
-	EntityId int64     `json:"entity,omitempty"`
-	Date     time.Time `json:"reaction_date,omitempty"`
+	UserId int64     `json:"user_id,omitempty"`
+	Date   time.Time `json:"reaction_date,omitempty"`
 }
