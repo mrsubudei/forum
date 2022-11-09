@@ -139,7 +139,6 @@ func (uu *UsersUseCase) CheckSession(user entity.User) (bool, error) {
 }
 
 func (uu *UsersUseCase) GetAllUsers() ([]entity.User, error) {
-	var users []entity.User
 	users, err := uu.repo.Fetch()
 	if err != nil {
 		return nil, fmt.Errorf("UsersUseCase - GetAllUsers - %w", err)

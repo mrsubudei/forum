@@ -9,7 +9,7 @@ import (
 
 type Posts interface {
 	CreatePost(p entity.Post) error
-	GetAllPosts(p entity.Post) ([]entity.Post, error)
+	GetAllPosts() ([]entity.Post, error)
 	GetById(id int64) (entity.Post, error)
 	GetByCategory(category string) (entity.Post, error)
 	UpdatePost(p entity.Post) (entity.Post, error)

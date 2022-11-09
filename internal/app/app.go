@@ -135,8 +135,11 @@ func Run() {
 	// }
 	// post := entity.Post{
 	// 	Id:   2,
-
+	// 	Date: parsed,
+	// 	User: user,
 	// }
+	posts, err := useCases.Posts.GetAllPosts()
+
 	// comment := entity.Comment{
 	// 	Id:      1,
 	// 	Post:    post,
@@ -146,24 +149,28 @@ func Run() {
 	// }
 	// err = useCases.Comments.MakeReaction(comment, "dislike")
 	// err = useCases.Comments.WriteComment(comment)
-	post, err := useCases.Posts.GetById(2)
+	// post, err := useCases.Posts.GetById(2)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("post id: ", post.Id)
-	fmt.Println("post user id: ", post.User.Id)
-	fmt.Println("post date: ", post.Date)
-	fmt.Println("post title: ", post.Title)
-	fmt.Println("post content: ", post.Content)
-	fmt.Println("post categories: ", post.Categories)
-	fmt.Println("post count comments: ", post.CountComments)
-	fmt.Println("post likes: ", post.TotalLikes)
-	fmt.Println("post dislikes: ", post.TotalDislikes)
-
-	for i := 0; i < len(post.Comments); i++ {
-		fmt.Printf("comment %d %#v\n", i, post.Comments[i])
+	for i := 0; i < len(posts); i++ {
+		fmt.Printf("%#v\n", posts[i])
 	}
+
+	// fmt.Println("post id: ", post.Id)
+	// fmt.Println("post user id: ", post.User.Id)
+	// fmt.Println("post date: ", post.Date)
+	// fmt.Println("post title: ", post.Title)
+	// fmt.Println("post content: ", post.Content)
+	// fmt.Println("post categories: ", post.Categories)
+	// fmt.Println("post count comments: ", post.CountComments)
+	// fmt.Println("post likes: ", post.TotalLikes)
+	// fmt.Println("post dislikes: ", post.TotalDislikes)
+
+	// for i := 0; i < len(post.Comments); i++ {
+	// 	fmt.Printf("comment %d %#v\n", i, post.Comments[i])
+	// }
 
 	// comments, err := useCases.Comments.GetAllComments()
 	// if err != nil {

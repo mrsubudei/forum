@@ -89,6 +89,41 @@ func (pr *PostsRepo) StoreTopicReference(post entity.Post) error {
 
 func (pr *PostsRepo) Fetch() ([]entity.Post, error) {
 	var posts []entity.Post
+
+	rows, err := pr.DB.Query(`
+	SELECT
+		id, user_id, date, title, content,
+		(SELECT name FROM users WHERE users.id = posts.user_id) AS user_name,
+		(SELECT COUNT(*) FROM post_likes ) AS post_likes,
+		(SELECT COUNT(*) FROM post_dislikes ) AS post_dislikes
+	FROM posts
+	`)
+
+	if err != nil {
+		return nil, fmt.Errorf("PostsRepo - Fetch - Query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post entity.Post
+		var postsLikes sql.NullInt64
+		var postDislikes sql.NullInt64
+		var date string
+		err = rows.Scan(&post.Id, &post.User.Id, &date, &post.Title, &post.Content,
+			&post.User.Name, &postsLikes, &postDislikes)
+		if err != nil {
+			return posts, fmt.Errorf("PostsRepo - Fetch - Scan: %w", err)
+		}
+		dateParsed, err := time.Parse(DateParseFormat, date)
+		if err != nil {
+			return posts, fmt.Errorf("PostsRepo - Fetch - Parse date: %w", err)
+		}
+		post.TotalLikes = postsLikes.Int64
+		post.TotalDislikes = postDislikes.Int64
+		post.Date = dateParsed
+		posts = append(posts, post)
+	}
+
 	return posts, nil
 }
 
