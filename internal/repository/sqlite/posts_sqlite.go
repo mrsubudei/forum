@@ -94,8 +94,8 @@ func (pr *PostsRepo) Fetch() ([]entity.Post, error) {
 	SELECT
 		id, user_id, date, title, content,
 		(SELECT name FROM users WHERE users.id = posts.user_id) AS user_name,
-		(SELECT COUNT(*) FROM post_likes ) AS post_likes,
-		(SELECT COUNT(*) FROM post_dislikes ) AS post_dislikes
+		(SELECT COUNT(*) FROM post_likes WHERE post_likes.post_id = posts.id) AS post_likes,
+		(SELECT COUNT(*) FROM post_dislikes WHERE post_dislikes.post_id = posts.id) AS post_dislikes
 	FROM posts
 	`)
 

@@ -1,7 +1,7 @@
 package app
 
 import (
-	"forum/internal/entity"
+	"fmt"
 	"forum/internal/repository"
 	"forum/internal/repository/sqlite"
 	"forum/internal/usecase"
@@ -9,7 +9,6 @@ import (
 	"forum/pkg/hasher"
 	"forum/pkg/sqlite3"
 	"log"
-	"time"
 )
 
 func Run() {
@@ -95,11 +94,11 @@ func Run() {
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	date := "2022-11-07 15:00:45"
-	parsed, err := time.Parse("2006-01-02 15:04:05", date)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// date := "2022-11-07 15:00:45"
+	// parsed, err := time.Parse("2006-01-02 15:04:05", date)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	// post := entity.Post{
 	// 	Id: 1,
@@ -114,15 +113,15 @@ func Run() {
 	// 		"weather",
 	// 	},
 	// }
-	comment := entity.Comment{
-		Id:     1,
-		UserId: 3,
-		Date:   parsed,
-	}
-	err = useCases.Comments.MakeReaction(comment, "like")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// comment := entity.Comment{
+	// 	Id:     1,
+	// 	UserId: 3,
+	// 	Date:   parsed,
+	// }
+	// err = useCases.Comments.MakeReaction(comment, "like")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	// fetchedUsers, err := useCases.Users.GetAllUsers()
 	// if err != nil {
 	// 	log.Fatal(err)
@@ -210,4 +209,20 @@ func Run() {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Println(post.Id, post.Title, post.Content, post.Date, post.User.Id, post.User.Name)
+	posts, err := useCases.Posts.GetAllPosts()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i := 0; i < len(posts); i++ {
+		fmt.Print("id:", posts[i].Id, " ")
+		fmt.Print("user id:", posts[i].User.Id, " ")
+		fmt.Print("user name:", posts[i].User.Name, " ")
+		fmt.Print("title:", posts[i].Title, " ")
+		fmt.Print("content", posts[i].Content, " ")
+		fmt.Print("categories", posts[i].Categories, " ")
+		fmt.Print("total comments", posts[i].TotalComments, " ")
+		fmt.Print("total likes", posts[i].TotalLikes, " ")
+		fmt.Print("total dislikes", posts[i].TotalDislikes, " ")
+		fmt.Println()
+	}
 }
