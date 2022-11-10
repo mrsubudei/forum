@@ -319,14 +319,14 @@ func (pr *PostsRepo) DeleteLike(post entity.Post) error {
 	}
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM post_likes
-	WHERE post_id = ?
+	WHERE post_id = ? AND user_id = ?
 	`)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - DeleteLike - Prepare: %w", err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(post.Id)
+	_, err = stmt.Exec(post.Id, post.User.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - DeleteLike - Exec: %w", err)
 	}
@@ -383,14 +383,14 @@ func (pr *PostsRepo) DeleteDislike(post entity.Post) error {
 	}
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM post_dislikes
-	WHERE post_id = ?
+	WHERE post_id = ? AND user_id = ?
 	`)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - DeleteDislike - Prepare: %w", err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(post.Id)
+	_, err = stmt.Exec(post.Id, post.User.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - DeleteDislike - Exec: %w", err)
 	}

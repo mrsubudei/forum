@@ -87,17 +87,25 @@ func Run() {
 	// 	log.Fatal(err)
 	// }
 
-	userP := entity.User{
-		Id: 2,
-	}
-	date := "2022-11-10 15:00:01"
+	// userP := entity.User{
+	// 	Id: 2,
+	// }
+	// date := "2022-11-10 15:00:01"
+	// parsed, err := time.Parse("2006-01-02 15:04:05", date)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	date := "2022-11-07 15:00:45"
 	parsed, err := time.Parse("2006-01-02 15:04:05", date)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	post := entity.Post{
-		User:    userP,
+		Id: 1,
+		User: entity.User{
+			Id: 3,
+		},
 		Date:    parsed,
 		Title:   "Pogoda",
 		Content: "sdfsddfsdgdfg",
@@ -107,7 +115,7 @@ func Run() {
 		},
 	}
 
-	err = useCases.Posts.CreatePost(post)
+	err = useCases.Posts.MakeReaction(post, "dislike")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -132,18 +140,23 @@ func Run() {
 	// fmt.Println(UserSession)
 
 	// user := entity.User{
-	// 	Id: 2,
+	// 	Id: 1,
 	// }
-	// date := "2022-11-07 15:00:45"
-	// parsed, err := time.Parse("2006-01-02 15:04:05", date)
+
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
 	// post := entity.Post{
-	// 	Id:   2,
-	// 	Date: parsed,
+	// 	Id:   1,
 	// 	User: user,
 	// }
+	// comment := entity.Comment{
+	// 	PostId:  2,
+	// 	UserId:  3,
+	// 	Date:    parsed,
+	// 	Content: "pshel nah",
+	// }
+	// err = useCases.Comments.WriteComment(comment)
 	// posts, err := useCases.Posts.GetAllPosts()
 
 	// comment := entity.Comment{
