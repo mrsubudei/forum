@@ -134,8 +134,8 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	SELECT
 		user_id, date, title, content,
 		(SELECT name FROM users WHERE users.id = posts.user_id) AS user_name,
-		(SELECT COUNT(*) FROM post_likes ) AS post_likes,
-		(SELECT COUNT(*) FROM post_dislikes ) AS post_dislikes
+		(SELECT COUNT(*) FROM post_likes WHERE post_id = ?) AS post_likes,
+		(SELECT COUNT(*) FROM post_dislikes WHERE post_id = ?) AS post_dislikes
 	FROM posts
 	WHERE id = ?
 	`)
@@ -147,7 +147,7 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	var postDislikes sql.NullInt64
 	var date string
 
-	err = stmt.QueryRow(id).Scan(&post.User.Id, &date, &post.Title, &post.Content,
+	err = stmt.QueryRow(id, id, id).Scan(&post.User.Id, &date, &post.Title, &post.Content,
 		&post.User.Name, &postsLikes, &postDislikes)
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)

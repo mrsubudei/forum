@@ -209,20 +209,20 @@ func Run() {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Println(post.Id, post.Title, post.Content, post.Date, post.User.Id, post.User.Name)
-	posts, err := useCases.Posts.GetAllPosts()
+	post, err := useCases.Posts.GetById(1)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for i := 0; i < len(posts); i++ {
-		fmt.Print("id:", posts[i].Id, " ")
-		fmt.Print("user id:", posts[i].User.Id, " ")
-		fmt.Print("user name:", posts[i].User.Name, " ")
-		fmt.Print("title:", posts[i].Title, " ")
-		fmt.Print("content", posts[i].Content, " ")
-		fmt.Print("categories", posts[i].Categories, " ")
-		fmt.Print("total comments", posts[i].TotalComments, " ")
-		fmt.Print("total likes", posts[i].TotalLikes, " ")
-		fmt.Print("total dislikes", posts[i].TotalDislikes, " ")
-		fmt.Println()
-	}
+	// for i := 0; i < len(posts); i++ {
+	fmt.Print("id:", post.Id, " ")
+	fmt.Print("user id:", post.User.Id, " ")
+	fmt.Print("user name:", post.User.Name, " ")
+	fmt.Print("title:", post.Title, " ")
+	fmt.Print("content", post.Content, " ")
+	fmt.Print("categories", post.Categories, " ")
+	fmt.Print("total comments", post.TotalComments, " ")
+	fmt.Print("total likes", post.TotalLikes, " ")
+	fmt.Print("total dislikes", post.TotalDislikes, " ")
+	fmt.Println()
+	// }
 }
