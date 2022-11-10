@@ -101,21 +101,25 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	post := entity.Post{
-		Id: 1,
-		User: entity.User{
-			Id: 3,
-		},
-		Date:    parsed,
-		Title:   "Pogoda",
-		Content: "sdfsddfsdgdfg",
-		Categories: []string{
-			"cinema",
-			"weather",
-		},
+	// post := entity.Post{
+	// 	Id: 1,
+	// 	User: entity.User{
+	// 		Id: 3,
+	// 	},
+	// 	Date:    parsed,
+	// 	Title:   "Pogoda",
+	// 	Content: "sdfsddfsdgdfg",
+	// 	Categories: []string{
+	// 		"cinema",
+	// 		"weather",
+	// 	},
+	// }
+	comment := entity.Comment{
+		Id:     1,
+		UserId: 3,
+		Date:   parsed,
 	}
-
-	err = useCases.Posts.MakeReaction(post, "dislike")
+	err = useCases.Comments.MakeReaction(comment, "like")
 	if err != nil {
 		log.Fatal(err)
 	}

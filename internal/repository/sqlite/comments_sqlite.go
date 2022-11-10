@@ -237,14 +237,14 @@ func (pr *CommentsRepo) DeleteLike(comment entity.Comment) error {
 	}
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM comment_likes
-	WHERE comment_id = ?
+	WHERE comment_id = ? AND user_id = ?
 	`)
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteLike - Prepare: %w", err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(comment.Id)
+	_, err = stmt.Exec(comment.Id, comment.UserId)
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteLike - Exec: %w", err)
 	}
@@ -301,14 +301,14 @@ func (pr *CommentsRepo) DeleteDislike(comment entity.Comment) error {
 	}
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM comment_dislikes
-	WHERE comment_id = ?
+	WHERE comment_id = ? AND user_id = ?
 	`)
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteDislike - Prepare: %w", err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(comment.Id)
+	_, err = stmt.Exec(comment.Id, comment.UserId)
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteDislike - Exec: %w", err)
 	}
