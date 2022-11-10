@@ -112,13 +112,19 @@ func (uu *UsersUseCase) GetSession(id int64) (entity.User, error) {
 	var user entity.User
 	user, err := uu.repo.GetSession(id)
 	if err != nil {
+		if strings.Contains(err.Error(), NoRowsResultErr) {
+			return user, entity.ErrUserNotFound
+		}
 		return user, fmt.Errorf("UsersUseCase - GetSession - %w", err)
 	}
-
+	user.Id = id
 	return user, nil
 }
 
 func (uu *UsersUseCase) CheckSession(user entity.User) (bool, error) {
+	if user.Id == 0 {
+		return false, nil
+	}
 	existUserInfo, err := uu.GetSession(user.Id)
 	if err != nil {
 		return false, fmt.Errorf("UsersUseCase - CheckTTLExpired - %w", err)
@@ -132,10 +138,13 @@ func (uu *UsersUseCase) CheckSession(user entity.User) (bool, error) {
 	//check token life time
 	expired, err := uu.tokenManager.CheckTTLExpired(existUserInfo.SessionTTL)
 	if err != nil {
+		if strings.Contains(err.Error(), NoRowsResultErr) {
+			return false, entity.ErrUserNotFound
+		}
 		return false, fmt.Errorf("UsersUseCase - CheckTTLExpired - %w", err)
 	}
 
-	return expired, nil
+	return !expired, nil
 }
 
 func (uu *UsersUseCase) GetAllUsers() ([]entity.User, error) {
@@ -151,9 +160,12 @@ func (uu *UsersUseCase) GetById(id int64) (entity.User, error) {
 	var user entity.User
 	user, err := uu.repo.GetById(id)
 	if err != nil {
+		if strings.Contains(err.Error(), NoRowsResultErr) {
+			return user, entity.ErrUserNotFound
+		}
 		return user, fmt.Errorf("UsersUseCase - GetById - %w", err)
 	}
-
+	user.Id = id
 	return user, nil
 }
 

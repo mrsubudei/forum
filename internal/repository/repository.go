@@ -37,7 +37,7 @@ type Users interface {
 
 type Comments interface {
 	Store(comment entity.Comment) error
-	Fetch(id int64) ([]entity.Comment, error)
+	Fetch(postId int64) ([]entity.Comment, error)
 	GetById(id int64) (entity.Comment, error)
 	Update(comment entity.Comment) error
 	Delete(post entity.Comment) error

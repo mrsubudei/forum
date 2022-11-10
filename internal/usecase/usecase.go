@@ -13,7 +13,7 @@ type Posts interface {
 	GetById(id int64) (entity.Post, error)
 	GetOneByCategory(category string) (entity.Post, error)
 	GetAllByCategory(category string) ([]entity.Post, error)
-	UpdatePost(p entity.Post) (entity.Post, error)
+	UpdatePost(post entity.Post) error
 	DeletePost(p entity.Post) error
 	MakeReaction(p entity.Post, command string) error
 	DeleteReaction(post entity.Post, command string) error

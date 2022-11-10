@@ -219,17 +219,21 @@ func (ur *UsersRepo) GetSession(n int64) (entity.User, error) {
 		return user, fmt.Errorf("UsersRepo - GetSession - Query: %w", err)
 	}
 	defer stmt.Close()
-	var sessionTTL string
-	err = stmt.QueryRow(n).Scan(&user.SessionToken, &sessionTTL)
+	var sessionToken sql.NullString
+	var sessionTTL sql.NullString
+	err = stmt.QueryRow(n).Scan(&sessionToken, &sessionTTL)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetSession - Scan: %w", err)
 	}
-
-	TTLParsed, err := time.Parse(DateParseFormat, sessionTTL)
+	if sessionTTL.String == "" {
+		return user, entity.ErrUserNotFound
+	}
+	TTLParsed, err := time.Parse(DateParseFormat, sessionTTL.String)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetSession - Parse TTL: %w", err)
 	}
 	user.SessionTTL = TTLParsed
+	user.SessionToken = sessionToken.String
 	return user, nil
 }
 

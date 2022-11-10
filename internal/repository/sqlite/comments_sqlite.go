@@ -58,8 +58,8 @@ func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
 	SELECT
 		id, post_id, user_id, date, content,
 		(SELECT name from users WHERE users.id = comments.user_id) AS user_name,
-		(SELECT COUNT(*) FROM comment_likes) AS comment_likes,
-		(SELECT COUNT(*) FROM comment_dislikes) AS comment_dislikes
+		(SELECT COUNT(*) FROM comment_likes WHERE comment_likes.comment_id = comments.id) AS comment_likes,
+		(SELECT COUNT(*) FROM comment_dislikes WHERE comment_dislikes.comment_id = comments.id) AS comment_dislikes
 	FROM comments
 	WHERE post_id = ?
 	`, postId)
@@ -94,14 +94,14 @@ func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
 	return commets, nil
 }
 
-func (cr *CommentsRepo) GetById(id int64) (entity.Comment, error) {
+func (cr *CommentsRepo) GetById(commentId int64) (entity.Comment, error) {
 	var comment entity.Comment
 
 	stmt, err := cr.DB.Prepare(`
 	SELECT
 		id, post_id, user_id, date, content
-		(SELECT COUNT(*) FROM comment_likes WHERE post_likes.post_id = comments.post_id) AS comment_likes,
-		(SELECT COUNT(*) FROM comment_dislikes WHERE post_likes.post_id = comments.post_id) AS comment_dislikes
+		(SELECT COUNT(*) FROM comment_likes WHERE comment_id = ?) AS comment_likes,
+		(SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = ?) AS comment_dislikes
 	FROM comments
 	WHERE id = ?
 	`)
@@ -112,7 +112,7 @@ func (cr *CommentsRepo) GetById(id int64) (entity.Comment, error) {
 	var commentLikes sql.NullInt64
 	var commentDislikes sql.NullInt64
 	var date string
-	err = stmt.QueryRow(id).Scan(&comment.Id, &comment.PostId, &comment.UserId, &date, &comment.Content, &commentLikes, &commentDislikes)
+	err = stmt.QueryRow(commentId).Scan(&comment.Id, &comment.PostId, &comment.UserId, &date, &comment.Content, &commentLikes, &commentDislikes)
 	if err != nil {
 		return comment, fmt.Errorf("CommentsRepo - GetById - Scan: %w", err)
 	}

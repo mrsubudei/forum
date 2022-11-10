@@ -50,27 +50,40 @@ func Run() {
 	// }
 
 	// user := entity.User{
-	// 	Name:        "Zhorik",
-	// 	Email:       "Zhor@gmail1.com",
-	// 	Password:    "vivsef",
-	// 	RegDate:     date,
-	// 	DateOfBirth: birthDate,
-	// 	City:        "Astana",
-	// 	Sex:         "Male",
+	// 	Id:       1,
+	// 	Name:     "Zhorik",
+	// 	Email:    "Zhor@gmail1.com",
+	// 	Password: "vivsef",
+	// RegDate:     date,
+	// DateOfBirth: birthDate,
+	// 	City: "Astana",
+	// 	Sex:  "Male",
 	// }
 	// id := int64(4)
 	// userFind := entity.User{
 	// 	Id: id,
 	// }
-	// err = useCases.Users.SignUp(user)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
 	// err = useCases.Users.SignIn(user)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
+	// u := entity.User{
+	// 	Id: 3,
+	// }
+
+	// u, err := useCases.Users.GetSession(3)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(u.Id, u.Name, u.SessionToken, u.SessionTTL)
+	// ok, err := useCases.Users.CheckSession(u)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(ok)
+	// err = useCases.Users.SignIn(user)
+
+	// fmt.Println(ok)
 
 	// err = useCases.Users.UpdateSession(userFind)
 	// if err != nil {
@@ -106,19 +119,23 @@ func Run() {
 	// 		Id: 3,
 	// 	},
 	// 	Date:    parsed,
-	// 	Title:   "Pogoda",
-	// 	Content: "sdfsddfsdgdfg",
+	// 	Title:   "updated2",
+	// 	Content: "updated2",
 	// 	Categories: []string{
 	// 		"cinema",
-	// 		"weather",
 	// 	},
 	// }
+	// err = useCases.Posts.DeletePost(post)
 	// comment := entity.Comment{
 	// 	Id:     1,
 	// 	UserId: 3,
 	// 	Date:   parsed,
 	// }
 	// err = useCases.Comments.MakeReaction(comment, "like")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// post1, err := useCases.Posts.GetById(1)
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
@@ -209,20 +226,50 @@ func Run() {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Println(post.Id, post.Title, post.Content, post.Date, post.User.Id, post.User.Name)
-	posts, err := useCases.Posts.GetOneByCategory("cahrs")
+	// posts, err := useCases.Posts.GetAllByCategory("cinema")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// for i := 0; i < len(posts); i++ {
+	// 	fmt.Print("id:", posts[i].Id, " ")
+	// 	fmt.Print("user id:", posts[i].User.Id, " ")
+	// 	fmt.Print("user name:", posts[i].User.Name, " ")
+	// 	fmt.Print("title:", posts[i].Title, " ")
+	// 	fmt.Print("content", posts[i].Content, " ")
+	// 	fmt.Print("categories", posts[i].Categories, " ")
+	// 	fmt.Print("total comments", posts[i].TotalComments, " ")
+	// 	fmt.Print("total likes", posts[i].TotalLikes, " ")
+	// 	fmt.Print("total dislikes", posts[i].TotalDislikes, " ")
+	// 	fmt.Println()
+	// }
+	// date := "2022-01-07"
+	// parsed, err := time.Parse("2006-01-02", date)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// user := entity.User{
+	// 	Id:    1,
+	// 	Email: "updated",
+	// 	// DateOfBirth: parsed,
+	// 	City: "updated",
+	// 	Sex:  "updated",
+	// }
+	// err = useCases.Users.DeleteUser(user)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// upd, err := useCases.Users.GetById(1)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// for i := 0; i < len(users); i++ {
+	// fmt.Printf("%#v\n", upd)
+	// }
+	comments, err := useCases.Comments.GetAllComments(1)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// for i := 0; i < len(posts); i++ {
-	fmt.Print("id:", posts.Id, " ")
-	fmt.Print("user id:", posts.User.Id, " ")
-	fmt.Print("user name:", posts.User.Name, " ")
-	fmt.Print("title:", posts.Title, " ")
-	fmt.Print("content", posts.Content, " ")
-	fmt.Print("categories", posts.Categories, " ")
-	fmt.Print("total comments", posts.TotalComments, " ")
-	fmt.Print("total likes", posts.TotalLikes, " ")
-	fmt.Print("total dislikes", posts.TotalDislikes, " ")
-	fmt.Println()
-	// }
+	for i := 0; i < len(comments); i++ {
+		fmt.Printf("%#v\n", comments[i])
+	}
 }

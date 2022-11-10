@@ -50,7 +50,9 @@ func (pu *PostsUseCase) GetAllPosts() ([]entity.Post, error) {
 	if err != nil {
 		return posts, fmt.Errorf("PostsUseCase - GetAllPosts - %w", err)
 	}
-
+	if len(posts) == 0 {
+		return posts, entity.ErrPostNotFound
+	}
 	err = pu.fillPostDetails(&posts)
 	if err != nil {
 		return posts, fmt.Errorf("PostsUseCase - GetById - %w", err)
@@ -111,12 +113,12 @@ func (pu *PostsUseCase) GetAllByCategory(category string) ([]entity.Post, error)
 	return posts, nil
 }
 
-func (pu *PostsUseCase) UpdatePost(post entity.Post) (entity.Post, error) {
+func (pu *PostsUseCase) UpdatePost(post entity.Post) error {
 	err := pu.repo.Update(post)
 	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - UpdatePost - %w", err)
+		return fmt.Errorf("PostsUseCase - UpdatePost - %w", err)
 	}
-	return post, nil
+	return nil
 }
 
 func (pu *PostsUseCase) DeletePost(post entity.Post) error {
