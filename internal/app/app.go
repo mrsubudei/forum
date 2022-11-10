@@ -1,7 +1,7 @@
 package app
 
 import (
-	"fmt"
+	"forum/internal/entity"
 	"forum/internal/repository"
 	"forum/internal/repository/sqlite"
 	"forum/internal/usecase"
@@ -9,6 +9,7 @@ import (
 	"forum/pkg/hasher"
 	"forum/pkg/sqlite3"
 	"log"
+	"time"
 )
 
 func Run() {
@@ -19,6 +20,11 @@ func Run() {
 	defer sq.Close()
 	repositories := repository.NewRepositories(sq)
 	err = sqlite.CreateDB(sq)
+	if err != nil {
+		log.Fatal(err)
+	}
+	categ := []string{"cars", "weather"}
+	err = sqlite.CreateCategories(sq, categ)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,16 +44,16 @@ func Run() {
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	// dateOfBirth := "1989-06-19"
+	// dateOfBirth := "1989-01-19"
 	// birthDate, err := time.Parse("2006-01-02", dateOfBirth)
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
 
 	// user := entity.User{
-	// 	// Name:        "Bobik1",
-	// 	Email:       "bobik@gmail.com",
-	// 	Password:    "vivse",
+	// 	Name:        "Zhorik",
+	// 	Email:       "Zhor@gmail1.com",
+	// 	Password:    "vivsef",
 	// 	RegDate:     date,
 	// 	DateOfBirth: birthDate,
 	// 	City:        "Astana",
@@ -81,30 +87,30 @@ func Run() {
 	// 	log.Fatal(err)
 	// }
 
-	// userP := entity.User{
-	// 	Id: 1,
-	// }
-	// date := "2022-11-10 15:00:01"
-	// parsed, err := time.Parse("2006-01-02 15:04:05", date)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	userP := entity.User{
+		Id: 2,
+	}
+	date := "2022-11-10 15:00:01"
+	parsed, err := time.Parse("2006-01-02 15:04:05", date)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// post := entity.Post{
-	// 	User:    userP,
-	// 	Date:    parsed,
-	// 	Title:   "Carsd",
-	// 	Content: "sdfsddf",
-	// 	Category: []string{
-	// 		"cars",
-	// 		"mars",
-	// 	},
-	// }
+	post := entity.Post{
+		User:    userP,
+		Date:    parsed,
+		Title:   "Pogoda",
+		Content: "sdfsddfsdgdfg",
+		Categories: []string{
+			"cinema",
+			"weather",
+		},
+	}
 
-	// err = useCases.Posts.CreatePost(post)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	err = useCases.Posts.CreatePost(post)
+	if err != nil {
+		log.Fatal(err)
+	}
 	// fetchedUsers, err := useCases.Users.GetAllUsers()
 	// if err != nil {
 	// 	log.Fatal(err)
@@ -138,7 +144,7 @@ func Run() {
 	// 	Date: parsed,
 	// 	User: user,
 	// }
-	posts, err := useCases.Posts.GetAllPosts()
+	// posts, err := useCases.Posts.GetAllPosts()
 
 	// comment := entity.Comment{
 	// 	Id:      1,
@@ -150,13 +156,13 @@ func Run() {
 	// err = useCases.Comments.MakeReaction(comment, "dislike")
 	// err = useCases.Comments.WriteComment(comment)
 	// post, err := useCases.Posts.GetById(2)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	for i := 0; i < len(posts); i++ {
-		fmt.Printf("%#v\n", posts[i])
-	}
+	// for i := 0; i < len(posts); i++ {
+	// 	fmt.Printf("%#v\n", posts[i])
+	// }
 
 	// fmt.Println("post id: ", post.Id)
 	// fmt.Println("post user id: ", post.User.Id)
