@@ -11,7 +11,8 @@ type Posts interface {
 	CreatePost(p entity.Post) error
 	GetAllPosts() ([]entity.Post, error)
 	GetById(id int64) (entity.Post, error)
-	GetByCategory(category string) (entity.Post, error)
+	GetOneByCategory(category string) (entity.Post, error)
+	GetAllByCategory(category string) ([]entity.Post, error)
 	UpdatePost(p entity.Post) (entity.Post, error)
 	DeletePost(p entity.Post) error
 	MakeReaction(p entity.Post, command string) error
@@ -35,8 +36,8 @@ type Comments interface {
 	GetAllComments(postId int64) ([]entity.Comment, error)
 	UpdateComment(c entity.Comment) error
 	DeleteComment(c entity.Comment) error
-	MakeReaction(comment entity.Comment, command string) error
-	DeleteReaction(comment entity.Comment, command string) error
+	MakeReaction(c entity.Comment, command string) error
+	DeleteReaction(c entity.Comment, command string) error
 }
 
 type UseCases struct {

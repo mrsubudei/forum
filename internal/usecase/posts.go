@@ -22,6 +22,7 @@ const (
 	ReactionLike       = "like"
 	ReactionDislike    = "dislike"
 	UniqueReactionErr  = "UNIQUE constraint failed"
+	NoRowsResultErr    = "no rows in result set"
 )
 
 func NewPostsUseCase(repo repository.Posts, userUseCase repository.Users, commentUseCase repository.Comments) *PostsUseCase {
@@ -61,6 +62,9 @@ func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 	post, err := pu.repo.GetById(id)
 	post.Id = id
 	if err != nil {
+		if strings.Contains(err.Error(), NoRowsResultErr) {
+			return post, entity.ErrPostNotFound
+		}
 		return post, fmt.Errorf("PostsUseCase - GetById - %w", err)
 	}
 	posts := []entity.Post{post}
@@ -71,17 +75,40 @@ func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 	return posts[0], nil
 }
 
-func (pu *PostsUseCase) GetByCategory(category string) (entity.Post, error) {
+func (pu *PostsUseCase) GetOneByCategory(category string) (entity.Post, error) {
 	var post entity.Post
-	id, err := pu.repo.GetIdByCategory(category)
+	ids, err := pu.repo.GetIdsByCategory(category)
 	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetByCategory #1 - %w", err)
+		return post, fmt.Errorf("PostsUseCase - GetOneByCategory #1 - %w", err)
 	}
-	post, err = pu.repo.GetById(id)
+	if len(ids) == 0 {
+		return post, entity.ErrPostNotFound
+	}
+	post, err = pu.GetById(ids[0])
 	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetByCategory #2 - %w", err)
+		return post, fmt.Errorf("PostsUseCase - GetOneByCategory #2 - %w", err)
 	}
 	return post, nil
+}
+
+func (pu *PostsUseCase) GetAllByCategory(category string) ([]entity.Post, error) {
+	var posts []entity.Post
+	ids, err := pu.repo.GetIdsByCategory(category)
+	if err != nil {
+		return posts, fmt.Errorf("PostsUseCase - GetAllByCategory #1 - %w", err)
+	}
+	if len(ids) == 0 {
+		return posts, entity.ErrPostNotFound
+	}
+
+	for i := 0; i < len(ids); i++ {
+		post, err := pu.GetById(ids[i])
+		if err != nil {
+			return posts, fmt.Errorf("PostsUseCase - GetOneByCategory #2 - %w", err)
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
 }
 
 func (pu *PostsUseCase) UpdatePost(post entity.Post) (entity.Post, error) {

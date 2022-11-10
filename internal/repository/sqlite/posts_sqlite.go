@@ -164,25 +164,29 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	return post, nil
 }
 
-func (pr *PostsRepo) GetIdByCategory(category string) (int64, error) {
-	var id int64
+func (pr *PostsRepo) GetIdsByCategory(category string) ([]int64, error) {
+	var ids []int64
 
-	stmt, err := pr.DB.Prepare(`
+	rows, err := pr.DB.Query(`
 	SELECT post_id
 	FROM reference_topic
 	WHERE topic = ?
-	`)
+	`, category)
 	if err != nil {
-		return 0, fmt.Errorf("PostsRepo - GetById - Query: %w", err)
+		return nil, fmt.Errorf("PostsRepo - GetIdsByCategory - Query: %w", err)
 	}
-	defer stmt.Close()
+	defer rows.Close()
 
-	err = stmt.QueryRow(category).Scan(&id)
-	if err != nil {
-		return 0, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)
+	for rows.Next() {
+		var id int64
+		rows.Scan(&id)
+		if err != nil {
+			return nil, fmt.Errorf("PostsRepo - GetIdsByCategory - Scan: %w", err)
+		}
+		ids = append(ids, id)
 	}
 
-	return id, nil
+	return ids, nil
 }
 
 func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {

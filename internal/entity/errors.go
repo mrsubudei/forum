@@ -3,7 +3,8 @@ package entity
 import "errors"
 
 var (
-	ErrUserNotFound           = errors.New("user doesn't exists")
+	ErrUserNotFound           = errors.New("user doesn't exist")
+	ErrPostNotFound           = errors.New("post wasn't found")
 	ErrUserEmailAlreadyExists = errors.New("user with such email already exists")
 	ErrUserNameAlreadyExists  = errors.New("user with such name already exists")
 	ErrUserPasswordIncorrect  = errors.New("password is incorrect")
