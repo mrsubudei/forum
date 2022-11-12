@@ -1,14 +1,21 @@
 package app
 
 import (
+	"errors"
 	"fmt"
+	v1 "forum/internal/controller/http/v1"
 	"forum/internal/repository"
 	"forum/internal/repository/sqlite"
 	"forum/internal/usecase"
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
+	"forum/pkg/httpserver"
 	"forum/pkg/sqlite3"
 	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func Run() {
@@ -22,8 +29,7 @@ func Run() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	categ := []string{"cars", "weather"}
-	err = sqlite.CreateCategories(sq, categ)
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,239 +43,22 @@ func Run() {
 		Hasher:       hasher,
 		TokenManager: tokenManager,
 	})
+	handler := v1.NewHandler(useCases)
+	server := httpserver.NewServer(handler)
+	fmt.Println("starting server..")
 
-	// regDate := "2022-11-10"
-	// date, err := time.Parse("2006-01-02", regDate)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// dateOfBirth := "1989-01-19"
-	// birthDate, err := time.Parse("2006-01-02", dateOfBirth)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	go func() {
+		if err := server.Run(); !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("error occurred while running http server: %s\n", err.Error())
+		}
+	}()
+	fmt.Println("Server started")
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 
-	// user := entity.User{
-	// 	Id:       1,
-	// 	Name:     "Zhorik",
-	// 	Email:    "Zhor@gmail1.com",
-	// 	Password: "vivsef",
-	// RegDate:     date,
-	// DateOfBirth: birthDate,
-	// 	City: "Astana",
-	// 	Sex:  "Male",
-	// }
-	// id := int64(4)
-	// userFind := entity.User{
-	// 	Id: id,
-	// }
-	// err = useCases.Users.SignIn(user)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// u := entity.User{
-	// 	Id: 3,
-	// }
-
-	// u, err := useCases.Users.GetSession(3)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(u.Id, u.Name, u.SessionToken, u.SessionTTL)
-	// ok, err := useCases.Users.CheckSession(u)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(ok)
-	// err = useCases.Users.SignIn(user)
-
-	// fmt.Println(ok)
-
-	// err = useCases.Users.UpdateSession(userFind)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// expired, err := useCases.Users.CheckTTLExpired(userFind)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(expired)
-	// err = useCases.Users.DeleteUser(userFind)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// userP := entity.User{
-	// 	Id: 2,
-	// }
-	// date := "2022-11-10 15:00:01"
-	// parsed, err := time.Parse("2006-01-02 15:04:05", date)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// date := "2022-11-07 15:00:45"
-	// parsed, err := time.Parse("2006-01-02 15:04:05", date)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// post := entity.Post{
-	// 	Id: 1,
-	// 	User: entity.User{
-	// 		Id: 3,
-	// 	},
-	// 	Date:    parsed,
-	// 	Title:   "updated2",
-	// 	Content: "updated2",
-	// 	Categories: []string{
-	// 		"cinema",
-	// 	},
-	// }
-	// err = useCases.Posts.DeletePost(post)
-	// comment := entity.Comment{
-	// 	Id:     1,
-	// 	UserId: 3,
-	// 	Date:   parsed,
-	// }
-	// err = useCases.Comments.MakeReaction(comment, "like")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// post1, err := useCases.Posts.GetById(1)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fetchedUsers, err := useCases.Users.GetAllUsers()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// for i := 0; i < len(fetchedUsers); i++ {
-	// 	fmt.Println(fetchedUsers[i])
-	// }
-
-	// userByid, err := useCases.Users.GetById(2)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(userByid.Name)
-
-	// UserSession, err := useCases.Users.GetSession(1)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(UserSession)
-
-	// user := entity.User{
-	// 	Id: 1,
-	// }
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// post := entity.Post{
-	// 	Id:   1,
-	// 	User: user,
-	// }
-	// comment := entity.Comment{
-	// 	PostId:  2,
-	// 	UserId:  3,
-	// 	Date:    parsed,
-	// 	Content: "pshel nah",
-	// }
-	// err = useCases.Comments.WriteComment(comment)
-	// posts, err := useCases.Posts.GetAllPosts()
-
-	// comment := entity.Comment{
-	// 	Id:      1,
-	// 	Post:    post,
-	// 	User:    user,
-	// 	Date:    parsed,
-	// 	Content: "sdfgdf",
-	// }
-	// err = useCases.Comments.MakeReaction(comment, "dislike")
-	// err = useCases.Comments.WriteComment(comment)
-	// post, err := useCases.Posts.GetById(2)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// for i := 0; i < len(posts); i++ {
-	// 	fmt.Printf("%#v\n", posts[i])
-	// }
-
-	// fmt.Println("post id: ", post.Id)
-	// fmt.Println("post user id: ", post.User.Id)
-	// fmt.Println("post date: ", post.Date)
-	// fmt.Println("post title: ", post.Title)
-	// fmt.Println("post content: ", post.Content)
-	// fmt.Println("post categories: ", post.Categories)
-	// fmt.Println("post count comments: ", post.CountComments)
-	// fmt.Println("post likes: ", post.TotalLikes)
-	// fmt.Println("post dislikes: ", post.TotalDislikes)
-
-	// for i := 0; i < len(post.Comments); i++ {
-	// 	fmt.Printf("comment %d %#v\n", i, post.Comments[i])
-	// }
-
-	// comments, err := useCases.Comments.GetAllComments()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// for i := 0; i < len(comments); i++ {
-
-	// 	fmt.Print(comments[i].TotalLikes)
-	// 	fmt.Print(comments[i].TotalDislikes)
-	// 	fmt.Println()
-	// }
-	// post, err := useCases.Posts.GetById(1)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(post.Id, post.Title, post.Content, post.Date, post.User.Id, post.User.Name)
-	// posts, err := useCases.Posts.GetAllByCategory("cinema")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// for i := 0; i < len(posts); i++ {
-	// 	fmt.Print("id:", posts[i].Id, " ")
-	// 	fmt.Print("user id:", posts[i].User.Id, " ")
-	// 	fmt.Print("user name:", posts[i].User.Name, " ")
-	// 	fmt.Print("title:", posts[i].Title, " ")
-	// 	fmt.Print("content", posts[i].Content, " ")
-	// 	fmt.Print("categories", posts[i].Categories, " ")
-	// 	fmt.Print("total comments", posts[i].TotalComments, " ")
-	// 	fmt.Print("total likes", posts[i].TotalLikes, " ")
-	// 	fmt.Print("total dislikes", posts[i].TotalDislikes, " ")
-	// 	fmt.Println()
-	// }
-	// date := "2022-01-07"
-	// parsed, err := time.Parse("2006-01-02", date)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// user := entity.User{
-	// 	Id:    1,
-	// 	Email: "updated",
-	// 	// DateOfBirth: parsed,
-	// 	City: "updated",
-	// 	Sex:  "updated",
-	// }
-	// err = useCases.Users.DeleteUser(user)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// upd, err := useCases.Users.GetById(1)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// for i := 0; i < len(users); i++ {
-	// fmt.Printf("%#v\n", upd)
-	// }
-	comments, err := useCases.Comments.GetAllComments(1)
+	<-quit
+	err = server.Shutdown()
 	if err != nil {
-		log.Fatal(err)
-	}
-	for i := 0; i < len(comments); i++ {
-		fmt.Printf("%#v\n", comments[i])
+		fmt.Printf("app - Run - httpServer.Shutdown: %s\n", err.Error())
 	}
 }

@@ -467,3 +467,68 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 	post.Dislikes = append(post.Dislikes, dislikes...)
 	return post, nil
 }
+
+func (pr *PostsRepo) StoreCategories(categories []string) error {
+	var existedCategories []string
+	rows, err := pr.DB.Query(`
+	SELECT name
+	FROM topics
+	`)
+	if err != nil {
+		return fmt.Errorf("PostsRepo - CreateCategories - Query: %w", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var category string
+		err = rows.Scan(&category)
+		if err != nil {
+			return fmt.Errorf("PostsRepo - CreateCategories - Scan: %w", err)
+		}
+		existedCategories = append(existedCategories, category)
+	}
+	var categoriesToAdd []string
+	for i := 0; i < len(categories); i++ {
+		exist := false
+		for j := 0; j < len(existedCategories); j++ {
+			if categories[i] == existedCategories[j] {
+				exist = true
+			}
+		}
+		if !exist {
+			categoriesToAdd = append(categoriesToAdd, categories[i])
+		}
+	}
+
+	tx, err := pr.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("PostsRepo - CreateCategories - Begin: %w", err)
+	}
+
+	stmt, err := tx.Prepare(`
+	INSERT INTO topics(name) 
+		values(?)
+	`)
+	if err != nil {
+		return fmt.Errorf("PostsRepo - CreateCategories - Prepare: %w", err)
+	}
+	defer stmt.Close()
+
+	for i := 0; i < len(categoriesToAdd); i++ {
+		res, err := stmt.Exec(categoriesToAdd[i])
+		if err != nil {
+			return fmt.Errorf("PostsRepo - CreateCategories - Exec: %w", err)
+		}
+
+		affected, err := res.RowsAffected()
+		if affected != 1 || err != nil {
+			return fmt.Errorf("PostsRepo - CreateCategories - RowsAffected: %w", err)
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("PostsRepo - CreateCategories - Commit: %w", err)
+	}
+
+	return nil
+}

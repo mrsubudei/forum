@@ -20,6 +20,7 @@ type Posts interface {
 	StoreTopicReference(post entity.Post) error
 	GetRelatedCategories(post entity.Post) ([]string, error)
 	FetchReactions(id int64) (entity.Post, error)
+	StoreCategories(categories []string) error
 }
 
 type Users interface {

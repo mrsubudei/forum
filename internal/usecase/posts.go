@@ -269,3 +269,12 @@ func (pu *PostsUseCase) GetReactions(id int64) (entity.Post, error) {
 
 	return post, nil
 }
+
+func (pu *PostsUseCase) CreateCategories(categories []string) error {
+	err := pu.repo.StoreCategories(categories)
+	if err != nil {
+		return fmt.Errorf("PostsUseCase - CreateCategories - %w", err)
+	}
+
+	return nil
+}
