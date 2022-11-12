@@ -32,7 +32,7 @@ func NewServer(handler *v1.Handler) *Server {
 }
 
 func (s *Server) Run() error {
-	http.HandleFunc("/a", s.handler.MainHandler)
+	http.HandleFunc("/", s.handler.MainHandler)
 	return s.httpServer.ListenAndServe()
 }
 

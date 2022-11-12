@@ -2,12 +2,13 @@ package v1
 
 import (
 	"fmt"
-	"forum/internal/entity"
 	"net/http"
-	"text/template"
+	"time"
 )
 
 func (h *Handler) MainHandler(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(3 * time.Second)
+	_, _ = fmt.Fprintln(w, "ok")
 	// if r.URL.Path != "/" {
 	// 	http.Error(w, "404: Page is Not Found", http.StatusNotFound)
 	// 	return
@@ -16,20 +17,19 @@ func (h *Handler) MainHandler(w http.ResponseWriter, r *http.Request) {
 	// 	http.Error(w, "405: Method is not Allowed", http.StatusMethodNotAllowed)
 	// 	return
 	// }
-	fmt.Println("zashel")
-	html, err := template.ParseFiles("templates/index.html")
-	if err != nil {
-		http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	user := entity.User{
-		Name: "Ivan",
-	}
-	err = html.Execute(w, user)
-	if err != nil {
-		http.Error(w, "404: Not Found", 404)
-		return
-	}
+	// html, err := template.ParseFiles("templates/index.html")
+	// if err != nil {
+	// 	http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+	// 	return
+	// }
+	// user := entity.User{
+	// 	Name: "Ivan",
+	// }
+	// err = html.Execute(w, user)
+	// if err != nil {
+	// 	http.Error(w, "404: Not Found", 404)
+	// 	return
+	// }
 
 	//-------------------------------
 	// regDate := "2022-11-10"

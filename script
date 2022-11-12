@@ -2,5 +2,5 @@
 
 while true
 do
-    curl localhost:8087/slow || sleep 1
+    curl localhost:8087/ || sleep 1
 done    
