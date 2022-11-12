@@ -74,68 +74,48 @@
         <div id="content_section">
             <div class="frame">
                 <div id="main_content_section">
-                    <a id="top"></a>
-                    <div class="pagesection_top">
-                        <div class="pagelinks floatleft">Страницы: [<strong>1</strong>] <a class="navPages"
-                                href="index.php@board=22.50">2</a> <a class="navPages"
-                                href="index.php@board=22.100">3</a> <span style="font-weight: bold;"
-                                onclick="expandPages(this, 'http://forum.kris.kz/index.php?board=22.%1$d', 150, 300, 50);"
-                                onmouseover="this.style.cursor='pointer';"> ... </span><a class="navPages"
-                                href="index.php@board=22.300">7</a> </div>
+                    <div class="navigate_section">
+                        <ul>
+                            <li><img src="http://forum.kris.kz/Themes/classic/images/icons/folder_open.png" alt="+">
+                            </li>
+                            <li>
+                                <a href="/"><span>Форум школы Алем</span></a> »
+                            </li>
+                            <li class="last">
+                                <a href="/signin_page"><span>Вход</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <script type="text/javascript" src="http://forum.kris.kz/Themes/default/scripts/sha1.js"></script>
 
-                    </div>
-                    <div class="tborder topic_table" id="messageindex">
-                        <table class="table_grid" cellspacing="0">
-                            <thead>
-                                <tr class="catbg3">
-                                    <th scope="col" class="first_th" width="1%" colspan="2">&nbsp;</th>
-                                    <th scope="col" class="lefttext">
-                                        Пост/Автор</th>
-                                    <th scope="col" width="7%">
-                                        Комментариев
-                                    </th>
-                                    <th scope="col" class="smalltext center" width="7%">
-                                        Лайков</th>
-                                    <th scope="col" class="smalltext center" width="7%">
-                                        Дизлайков</th>
-                                </tr>
-                            </thead>
-                            {{range .}}
-                            <tr>
-                                <td class="icon1 windowbg">
-                                    <img src="/templates/img/topic/veryhot_post_sticky.gif" alt="">
-                                </td>
-                                <td class="icon2 windowbg">
-                                    <img src="/templates/img/post/xx.gif" alt="" />
-                                </td>
-                                <td class="subject stickybg2">
-                                    <div class="post_title">
-                                        <strong>
-                                            <span>
-                                                <a href="/posts/{{.Id}}">{{.Title}}</a> <br>
-                                                Темы: {{range .Categories}}
-                                                <a href="/categories/{{.}}">{{.}}</a>
-                                                {{end}}
-                                            </span>
-                                        </strong>
-                                        <p>Автор: <a href="/users/{{.User.Id}}">{{.User.Name}}</a>
-                                        </p>
-                                    </div>
-                                </td>
-                                <td class="stats windowbg">
-                                    <a href="/post-comments/{{.Id}}">{{.TotalComments}}</a>
-                                </td>
-                                <td class="stats windowbg">
-                                    <a href="/post-likes/{{.Id}}">{{.TotalLikes}}</a>
-                                </td>
-                                <td class="stats windowbg">
-                                    <a href="/post-dislikes/{{.Id}}">{{.TotalDislikes}}</a>
-                                </td>
-                            </tr>
-                            {{end}}
-                        </table>
-                    </div>
-                    <script type="text/javascript" src="Themes/default/scripts/topic.js"></script>
+                    <form action="/signin/" name="frmLogin" id="frmLogin" method="post">
+                        <div class="tborder login">
+                            <div class="cat_bar">
+                                <h3 class="catbg">
+                                    <span class="ie6_header floatleft"><img src="/templates/img/icons/login_sm.gif"
+                                            alt="" class="icon"> Вход</span>
+                                </h3>
+                            </div>
+                            <span class="upperframe"><span></span></span>
+                            <div class="roundframe"><br class="clear">
+                                <p class="error">{{.Message}}</p>
+                                <dl>
+                                    <dt>Имя пользователя:</dt>
+                                    <dd><input type="text" name="user" size="20" value="" class="input_text"
+                                            required="required"></dd>
+                                    <dt>Пароль:</dt>
+                                    <dd><input type="password" name="password" value="" size="20" class="input_password"
+                                            required="required">
+                                    </dd>
+                                </dl>
+                                <p><input type="submit" value="Вход" class="button_submit"></p>
+                            </div>
+                            <span class="lowerframe"><span></span></span>
+                        </div>
+                    </form>
+                    <script type="text/javascript"><!-- // -->
+                    < ![CDATA[document.forms.frmLogin.user.focus(); // ]]>
+                    </script>
                 </div>
             </div>
         </div>

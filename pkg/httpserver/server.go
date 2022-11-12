@@ -33,6 +33,12 @@ func NewServer(handler *v1.Handler) *Server {
 
 func (s *Server) Run() error {
 	http.HandleFunc("/", s.handler.MainHandler)
+	http.HandleFunc("/signin_page/", s.handler.SignInPageHandler)
+	http.HandleFunc("/signup_page/", s.handler.SignUpPageHandler)
+	http.HandleFunc("/signin/", s.handler.SignInHandler)
+	http.HandleFunc("/signup/", s.handler.SignUpHandler)
+	http.Handle("/templates/css/", http.StripPrefix("/templates/css/", http.FileServer(http.Dir("templates/css"))))
+	http.Handle("/templates/img/", http.StripPrefix("/templates/img/", http.FileServer(http.Dir("templates/img"))))
 	return s.httpServer.ListenAndServe()
 }
 

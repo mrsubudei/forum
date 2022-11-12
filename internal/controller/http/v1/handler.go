@@ -5,11 +5,11 @@ import (
 )
 
 type Handler struct {
-	services *usecase.UseCases
+	usecases *usecase.UseCases
 }
 
 func NewHandler(services *usecase.UseCases) *Handler {
 	return &Handler{
-		services: services,
+		usecases: services,
 	}
 }

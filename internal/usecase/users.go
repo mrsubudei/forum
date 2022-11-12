@@ -80,7 +80,6 @@ func (uu *UsersUseCase) SignIn(user entity.User) error {
 	if err != nil {
 		return entity.ErrUserPasswordIncorrect
 	}
-
 	token, err := uu.tokenManager.NewToken()
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
@@ -90,6 +89,7 @@ func (uu *UsersUseCase) SignIn(user entity.User) error {
 	TTL := uu.tokenManager.UpdateTTL()
 	user.SessionTTL = TTL
 	user.Id = id
+
 	err = uu.repo.NewSession(user)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
