@@ -37,42 +37,48 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
-	errors := ErrMessage{}
 
 	if r.URL.Path != "/" {
 		errors.Code = http.StatusNotFound
-		errors.Message = pageNotFound
+		errors.Message = errPageNotFound
 		h.Errors(w, errors)
 		return
 	}
 	if r.Method != http.MethodGet {
-		http.Error(w, "405: Method is not Allowed", http.StatusMethodNotAllowed)
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
 		return
 	}
 	html, err := template.ParseFiles("templates/index.html")
 	if err != nil {
-		http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
 		return
 	}
 	posts, err := h.usecases.Posts.GetAllPosts()
 	if err != nil {
-		http.Error(w, "404: Not Found", 404)
+		errors.Code = http.StatusBadRequest
+		errors.Message = errBadRequest
+		h.Errors(w, errors)
 		return
 	}
 	content.Posts = posts
 
 	err = html.Execute(w, content)
 	if err != nil {
-		http.Error(w, "404: Not Found", 404)
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
 		return
 	}
 }
 
 func (h *Handler) Errors(w http.ResponseWriter, errors ErrMessage) {
-
 	html, err := template.ParseFiles("templates/errors.html")
 	if err != nil {
-		http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, errInternalServer, http.StatusInternalServerError)
 		return
 	}
 

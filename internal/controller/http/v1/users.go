@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"forum/internal/entity"
 	"net/http"
 	"net/mail"
@@ -15,14 +14,19 @@ type ErrMessage struct {
 }
 
 var (
-	sessionDomain    = "localhost"
-	userNotExist     = "Такого пользователя не существует"
-	userPassWrong    = "Неверный пароль, попробуйте ещё раз"
-	passwordsNotSame = "Пароли не совпадают"
-	emailFormatWrong = "Неправильный формат почты"
-	userEmailExist   = "Пользователь с такой почтой уже существует"
-	userNameExist    = "Пользователь с таким именем уже существует"
-	pageNotFound     = "Страница не найдена"
+	DateFormat          = "2006-01-02"
+	sessionDomain       = "localhost"
+	userNotExist        = "Такого пользователя не существует"
+	userPassWrong       = "Неверный пароль, попробуйте ещё раз"
+	passwordsNotSame    = "Пароли не совпадают"
+	emailFormatWrong    = "Неправильный формат почты"
+	userEmailExist      = "Пользователь с такой почтой уже существует"
+	userNameExist       = "Пользователь с таким именем уже существует"
+	errPageNotFound     = "Страница не найдена"
+	errBadRequest       = "Некорректный запрос"
+	errInternalServer   = "Ошибка сервера"
+	errMethodNotAllowed = "Метод не разрешен"
+	errors              ErrMessage
 )
 
 func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,43 +37,55 @@ func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	html, err := template.ParseFiles("templates/login.html")
 	if err != nil {
-		http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
 		return
 	}
 	err = html.Execute(w, nil)
 	if err != nil {
-		http.Error(w, "404: Not Found", 404)
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
 		return
 	}
 }
 
 func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/signup_page/" {
-		http.Error(w, "404: Page is Not Found", http.StatusNotFound)
-		return
-	}
-
 	html, err := template.ParseFiles("templates/registration.html")
 	if err != nil {
-		http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
 		return
 	}
 
 	err = html.Execute(w, nil)
 	if err != nil {
-		http.Error(w, "404: Not Found", 404)
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
 		return
 	}
 }
 
 func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "405: Method is not Allowed", http.StatusMethodNotAllowed)
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
 		return
 	}
 	r.ParseForm()
 	data := r.Form["user"][0]
 	password := r.Form["password"][0]
+
+	if data == "" || password == "" {
+		errors.Code = http.StatusBadRequest
+		errors.Message = errBadRequest
+		h.Errors(w, errors)
+		return
+	}
 
 	user := entity.User{
 		Password: password,
@@ -94,24 +110,32 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	if !valid {
 		html, err := template.ParseFiles("templates/login.html")
 		if err != nil {
-			http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
 			return
 		}
 		err = html.Execute(w, s)
 		if err != nil {
-			http.Error(w, "404: Not Found", 404)
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
 			return
 		}
 	} else {
 		id, err := h.usecases.Users.GetIdBy(user)
 		if err != nil {
-			http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
 			return
 		}
 
 		userWithSession, err := h.usecases.Users.GetSession(id)
 		if err != nil {
-			http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
 			return
 		}
 
@@ -142,6 +166,14 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.Form["email"][0]
 	password := r.Form["password"][0]
 	confirmPassword := r.Form["confirm_password"][0]
+
+	if name == "" || email == "" || password == "" || confirmPassword == "" {
+		errors.Code = http.StatusBadRequest
+		errors.Message = errBadRequest
+		h.Errors(w, errors)
+		return
+	}
+
 	if len(r.Form["date_of_birth"]) != 0 {
 		dateOfBirth = r.Form["date_of_birth"][0]
 	}
@@ -164,9 +196,11 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		valid = false
 	}
 	if dateOfBirth != "" {
-		parsed, err = time.Parse("2006-01-02", dateOfBirth)
+		parsed, err = time.Parse(DateFormat, dateOfBirth)
 		if err != nil {
-			http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
 			return
 		}
 	}
@@ -191,12 +225,16 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if !valid {
 		html, err := template.ParseFiles("templates/registration.html")
 		if err != nil {
-			http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
 			return
 		}
 		err = html.Execute(w, s)
 		if err != nil {
-			http.Error(w, "404: Not Found", 404)
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
 			return
 		}
 	} else {
@@ -209,7 +247,9 @@ func (h *Handler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.usecases.Users.DeleteSession(foundUser)
 	if err != nil {
-		fmt.Println("errorchik")
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
 	}
 	time.Sleep(time.Second)
 	http.Redirect(w, r, "/", http.StatusFound)
