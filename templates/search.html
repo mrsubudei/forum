@@ -7,10 +7,8 @@
     <link href="/templates/css/style.css" rel="stylesheet" type="text/css" />
     <title>Forum</title>
 </head>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <body>
-
     <div id="wrapper" style="width: 98%">
         <div id="header">
             <div class="frame">
@@ -79,49 +77,24 @@
                             </li>
                         </ul>
                     </div>
-                    <form action="/signup/" name="frmLogin" id="frmLogin" method="post">
-                        <div class="tborder login">
-                            <div class="cat_bar">
-                                <h3 class="catbg">
-                                    <span class="ie6_header floatleft"><img src="/templates/img/icons/login_sm.gif"
-                                            alt="" class="icon"> Вход</span>
-                                </h3>
-                            </div>
-                            <span class="upperframe"><span></span></span>
-                            <div class="roundframe"><br class="clear">
-                                <p class="error">{{.Message}}</p>
-                                <dl>
-                                    <dt>Имя пользователя:</dt>
-                                    <dd><input type="text" name="user" size="20" class="input_text" required="required">
-                                    </dd>
-                                    <dt>Почта:</dt>
-                                    <dd><input type="text" name="email" size="20" class="input_text"
-                                            required="required">
-                                    </dd>
-                                    <dt>Пароль:</dt>
-                                    <dd><input name="password" id="password" type="password" minlength="5"
-                                            maxlength="14" size="20" class="input_text" required="required">
-                                    </dd>
-                                    <dt>Подтверждение пароля:</dt>
-                                    <dd><input name="confirm_password" id="confirm_password" type="password"
-                                            minlength="5" maxlength="14" size="20" class="input_text"
-                                            required="required">
-                                    </dd>
-                                    <dt>Город:</dt>
-                                    <dd><input name="city" type="text" size="20" class="input_text">
-                                    </dd>
-                                    <dt>Дата рождения:</dt>
-                                    <dd><input name="date_of_birth" type="date" size="20" class="input_text">
-                                    </dd>
-                                    <dt>Пол:</dt>
-                                    <dd><input type="radio" name="gender" value="Мужчина"> М
-                                        <input type="radio" name="gender" value="Женщина"> Ж
-                                    </dd>
-                                </dl>
-                                <p><input type="submit" value="Создать" class="button_submit"></p>
-                            </div>
-                            <span class="lowerframe"><span></span></span>
+                    <form action="/search/" method="POST" id="searchform">
+                        <div class="cat_bar">
+                            <h3 class="catbg">
+                                <span class="ie6_header floatleft"><img src="/temlates/img/buttons/search.png" alt=""
+                                        class="icon">Параметры поиска</span>
+                            </h3>
                         </div>
+                        <fieldset id="simple_search">
+                            <div class="roundframe">
+                                <div id="search_term_input">
+                                    <strong>Искать:</strong>
+                                    <input type="text" name="search" value="" maxlength="100" size="40"
+                                        class="input_text" required="required">
+                                    &nbsp;<input type="submit" value="Поиск" class="button_submit">
+                                </div>
+                                <p class="smalltext"><em>Например: </em> «Доктор Хаус» — сериал</p>
+                            </div>
+                        </fieldset>
                     </form>
                 </div>
             </div>

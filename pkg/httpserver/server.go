@@ -38,6 +38,8 @@ func (s *Server) Run() error {
 	http.HandleFunc("/signin/", s.handler.SignInHandler)
 	http.HandleFunc("/signup/", s.handler.SignUpHandler)
 	http.HandleFunc("/signout/", s.handler.SignOutHandler)
+	http.HandleFunc("/search_page/", s.handler.SearchPageHandler)
+	http.HandleFunc("/search/", s.handler.SearchHandler)
 	http.Handle("/templates/css/", http.StripPrefix("/templates/css/", http.FileServer(http.Dir("templates/css"))))
 	http.Handle("/templates/img/", http.StripPrefix("/templates/img/", http.FileServer(http.Dir("templates/img"))))
 	return s.httpServer.ListenAndServe()

@@ -77,15 +77,16 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	data := r.Form["user"][0]
-	password := r.Form["password"][0]
 
-	if data == "" || password == "" {
+	if len(r.Form["user"]) == 0 || len(r.Form["password"]) == 0 {
 		errors.Code = http.StatusBadRequest
 		errors.Message = errBadRequest
 		h.Errors(w, errors)
 		return
 	}
+
+	data := r.Form["user"][0]
+	password := r.Form["password"][0]
 
 	user := entity.User{
 		Password: password,
@@ -152,7 +153,9 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "405: Method is not Allowed", http.StatusMethodNotAllowed)
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
 		return
 	}
 	r.ParseForm()
@@ -162,17 +165,18 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	var parsed time.Time
 	var err error
 
-	name := r.Form["user"][0]
-	email := r.Form["email"][0]
-	password := r.Form["password"][0]
-	confirmPassword := r.Form["confirm_password"][0]
-
-	if name == "" || email == "" || password == "" || confirmPassword == "" {
+	if len(r.Form["user"]) == 0 || len(r.Form["password"]) == 0 ||
+		len(r.Form["email"]) == 0 || len(r.Form["confirm_password"]) == 0 {
 		errors.Code = http.StatusBadRequest
 		errors.Message = errBadRequest
 		h.Errors(w, errors)
 		return
 	}
+
+	name := r.Form["user"][0]
+	email := r.Form["email"][0]
+	password := r.Form["password"][0]
+	confirmPassword := r.Form["confirm_password"][0]
 
 	if len(r.Form["date_of_birth"]) != 0 {
 		dateOfBirth = r.Form["date_of_birth"][0]

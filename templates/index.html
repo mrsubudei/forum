@@ -13,14 +13,6 @@
         <div id="header">
             <div class="frame">
                 <div id="top_section">
-                    <div id="time">
-                        <form id="search_form" action="/search_page/" method="GET" accept-charset="UTF-8">
-                            <input type="text" name="search" value="" class="input_text" />&nbsp;
-                            <input type="submit" name="submit" value="Поиск" class="button_submit" />
-                            <input type="hidden" name="advanced" value="0" />
-                            <input type="hidden" name="brd[22]" value="22" />
-                        </form>
-                    </div>
                     {{if .Unauthorized}}
                     <div class="user"><br /><br />Пожалуйста, <a href="/signin_page/">войдите</a> или <a
                             href="signup_page">зарегистрируйтесь</a>.
@@ -43,7 +35,7 @@
                             </a>
                         </li>
                         <li id="button_search">
-                            <a class="firstlevel" href="index.php@action=search">
+                            <a class="firstlevel" href="/search_page/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/search.png"
                                         alt="*" />Поиск</span>
                             </a>
@@ -86,14 +78,6 @@
             <div class="frame">
                 <div id="main_content_section">
                     <a id="top"></a>
-                    <div class="pagesection_top">
-                        <div class="pagelinks floatleft">Страницы: [<strong>1</strong>] <a class="navPages"
-                                href="index.php@board=22.50">2</a> <a class="navPages"
-                                href="index.php@board=22.100">3</a> <span style="font-weight: bold;"
-                                onmouseover="this.style.cursor='pointer';"> ... </span><a class="navPages"
-                                href="index.php@board=22.300">7</a> </div>
-
-                    </div>
                     <div class="tborder topic_table" id="messageindex">
                         <table class="table_grid" cellspacing="0">
                             <thead>

@@ -3780,12 +3780,6 @@ div#profile_success {
 	margin-right: 1em;
 }
 
-#permissions {
-	/*border-right: 1px solid #6E94B7; Fjernet p.g.a /index.php?action=profile;area=permissions;u=2 */
-	/*border-bottom: 1px solid #6E94B7; Fjernet p.g.a /index.php?action=profile;area=permissions;u=2 */
-	/*border-left: 1px solid #6E94B7; Fjernet p.g.a /index.php?action=profile;area=permissions;u=2 */
-}
-
 #permissions .windowbg span.botslice {
 	border-bottom: none !important;
 }
