@@ -62,15 +62,15 @@ func (cu *CommentsUseCase) MakeReaction(comment entity.Comment, command string) 
 			if strings.Contains(err.Error(), UniqueReactionErr) {
 				err = cu.repo.DeleteLike(comment)
 				if err != nil {
-					return fmt.Errorf("CommentsUseCase - MakeReaction - case ReactionLike - %w", err)
+					return fmt.Errorf("CommentsUseCase - MakeReaction #1 - %w", err)
 				}
 				return nil
 			}
-			return fmt.Errorf("CommentsUseCase - MakeReaction - case ReactionLike -  %w", err)
+			return fmt.Errorf("CommentsUseCase - MakeReaction #2 -  %w", err)
 		}
 		err = cu.repo.DeleteDislike(comment)
 		if err != nil {
-			return fmt.Errorf("CommentsUseCase - MakeReaction - case ReactionLike -  %w", err)
+			return fmt.Errorf("CommentsUseCase - MakeReaction #3 -  %w", err)
 		}
 	case ReactionDislike:
 		err := cu.repo.StoreDislike(comment)
@@ -78,15 +78,15 @@ func (cu *CommentsUseCase) MakeReaction(comment entity.Comment, command string) 
 			if strings.Contains(err.Error(), UniqueReactionErr) {
 				err = cu.repo.DeleteDislike(comment)
 				if err != nil {
-					return fmt.Errorf("CommentsUseCase - MakeReaction - case ReactionDisike - %w", err)
+					return fmt.Errorf("CommentsUseCase - MakeReaction #4 - %w", err)
 				}
 				return nil
 			}
-			return fmt.Errorf("CommentsUseCase - MakeReaction - case ReactionDisike - %w", err)
+			return fmt.Errorf("CommentsUseCase - MakeReaction #5 - %w", err)
 		}
 		err = cu.repo.DeleteLike(comment)
 		if err != nil {
-			return fmt.Errorf("CommentsUseCase - MakeReaction - case ReactionDisike - %w", err)
+			return fmt.Errorf("CommentsUseCase - MakeReaction #6 - %w", err)
 		}
 	}
 	return nil
@@ -97,12 +97,12 @@ func (cu *CommentsUseCase) DeleteReaction(comment entity.Comment, command string
 	case ReactionLike:
 		err := cu.repo.DeleteLike(comment)
 		if err != nil {
-			return fmt.Errorf("CommentsUseCase - DeleteReaction - %w", err)
+			return fmt.Errorf("CommentsUseCase - DeleteReaction #1 - %w", err)
 		}
 	case ReactionDislike:
 		err := cu.repo.DeleteDislike(comment)
 		if err != nil {
-			return fmt.Errorf("CommentsUseCase - DeleteReaction - %w", err)
+			return fmt.Errorf("CommentsUseCase - DeleteReaction #2 - %w", err)
 		}
 	}
 	return nil

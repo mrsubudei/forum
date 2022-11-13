@@ -25,6 +25,7 @@ type Users interface {
 	SignIn(u entity.User) error
 	GetAllUsers() ([]entity.User, error)
 	GetById(id int64) (entity.User, error)
+	GetIdBy(user entity.User) (int64, error)
 	GetSession(id int64) (entity.User, error)
 	CheckSession(u entity.User) (bool, error)
 	UpdateUserInfo(u entity.User, query string) error

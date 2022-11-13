@@ -28,7 +28,9 @@ const (
 )
 
 func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
-	tokenManager auth.TokenManager, postUseCase repository.Posts, commentUseCase repository.Comments) *UsersUseCase {
+	tokenManager auth.TokenManager, postUseCase repository.Posts,
+	commentUseCase repository.Comments) *UsersUseCase {
+
 	return &UsersUseCase{
 		repo:           repo,
 		hasher:         hasher,
@@ -42,7 +44,7 @@ func (uu *UsersUseCase) SignUp(user entity.User) error {
 
 	hashed, err := uu.hasher.Hash(user.Password)
 	if err != nil {
-		return fmt.Errorf("UsersUseCase - SignUp - %w", err)
+		return fmt.Errorf("UsersUseCase - SignUp #1 - %w", err)
 	}
 	user.Password = hashed
 
@@ -57,7 +59,7 @@ func (uu *UsersUseCase) SignUp(user entity.User) error {
 		if strings.Contains(err.Error(), UniqueNameErr) {
 			return entity.ErrUserNameAlreadyExists
 		}
-		return fmt.Errorf("UsersUseCase - SignUp - %w", err)
+		return fmt.Errorf("UsersUseCase - SignUp #2 - %w", err)
 	}
 
 	return nil
@@ -65,16 +67,17 @@ func (uu *UsersUseCase) SignUp(user entity.User) error {
 
 func (uu *UsersUseCase) SignIn(user entity.User) error {
 	id, err := uu.repo.GetId(user)
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - SignIn #1 - %w", err)
+	}
+
 	if id == 0 {
 		return entity.ErrUserNotFound
-	}
-	if err != nil {
-		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
 	}
 
 	existUserInfo, err := uu.GetById(id)
 	if err != nil {
-		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
+		return fmt.Errorf("UsersUseCase - SignIn #2 - %w", err)
 	}
 
 	err = uu.hasher.CheckPassword(existUserInfo.Password, user.Password)
@@ -83,7 +86,7 @@ func (uu *UsersUseCase) SignIn(user entity.User) error {
 	}
 	token, err := uu.tokenManager.NewToken()
 	if err != nil {
-		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
+		return fmt.Errorf("UsersUseCase - SignIn #3 - %w", err)
 	}
 
 	user.SessionToken = token
@@ -93,9 +96,22 @@ func (uu *UsersUseCase) SignIn(user entity.User) error {
 
 	err = uu.repo.NewSession(user)
 	if err != nil {
-		return fmt.Errorf("UsersUseCase - SignIn - %w", err)
+		return fmt.Errorf("UsersUseCase - SignIn #4 - %w", err)
 	}
 	return nil
+}
+
+func (uu *UsersUseCase) GetIdBy(user entity.User) (int64, error) {
+	id, err := uu.repo.GetId(user)
+
+	if err != nil {
+		return 0, fmt.Errorf("UsersUseCase - GetIdBy - %w", err)
+	}
+
+	if id == 0 {
+		return 0, entity.ErrUserNotFound
+	}
+	return id, nil
 }
 
 func (uu *UsersUseCase) UpdateSession(user entity.User) error {
@@ -128,7 +144,7 @@ func (uu *UsersUseCase) CheckSession(user entity.User) (bool, error) {
 	}
 	existUserInfo, err := uu.GetSession(user.Id)
 	if err != nil {
-		return false, fmt.Errorf("UsersUseCase - CheckTTLExpired - %w", err)
+		return false, fmt.Errorf("UsersUseCase - CheckSession #1 - %w", err)
 	}
 
 	//check token
@@ -142,7 +158,7 @@ func (uu *UsersUseCase) CheckSession(user entity.User) (bool, error) {
 		if strings.Contains(err.Error(), NoRowsResultErr) {
 			return false, entity.ErrUserNotFound
 		}
-		return false, fmt.Errorf("UsersUseCase - CheckTTLExpired - %w", err)
+		return false, fmt.Errorf("UsersUseCase - CheckSession #2 - %w", err)
 	}
 
 	return !expired, nil
@@ -175,22 +191,22 @@ func (uu *UsersUseCase) UpdateUserInfo(user entity.User, query string) error {
 	case UpdateInfoQuery:
 		err := uu.repo.UpdateInfo(user)
 		if err != nil {
-			return fmt.Errorf("UsersUseCase - UpdateUserInfo - %w", err)
+			return fmt.Errorf("UsersUseCase - UpdateUserInfo #1 - %w", err)
 		}
 	case UpdatePasswordQuery:
 		hashed, err := uu.hasher.Hash(user.Password)
 		if err != nil {
-			return fmt.Errorf("UsersUseCase - UpdateUserInfo - %w", err)
+			return fmt.Errorf("UsersUseCase - UpdateUserInfo #2 - %w", err)
 		}
 		user.Password = hashed
 		err = uu.repo.UpdatePassword(user)
 		if err != nil {
-			return fmt.Errorf("UsersUseCase - UpdateUserInfo - %w", err)
+			return fmt.Errorf("UsersUseCase - UpdateUserInfo #3 - %w", err)
 		}
 	case UpdateSessionQuery:
 		err := uu.repo.UpdateSession(user)
 		if err != nil {
-			return fmt.Errorf("UsersUseCase - UpdateUserInfo - %w", err)
+			return fmt.Errorf("UsersUseCase - UpdateUserInfo #4 - %w", err)
 		}
 	}
 

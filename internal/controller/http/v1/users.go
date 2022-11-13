@@ -107,6 +107,25 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
+		id, err := h.usecases.Users.GetIdBy(user)
+		if err != nil {
+			http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		userWithSession, err := h.usecases.Users.GetSession(id)
+		if err != nil {
+			http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:    "token",
+			Value:   userWithSession.SessionToken,
+			Expires: userWithSession.SessionTTL,
+			Path:    "/",
+			Domain:  "localhost",
+		})
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
 }

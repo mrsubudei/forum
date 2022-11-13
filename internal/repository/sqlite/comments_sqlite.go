@@ -214,7 +214,7 @@ func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 	if err != nil {
 		tx.Commit()
 		if err != nil {
-			return fmt.Errorf("CommentsRepo - StoreLike - Exec err Commit: %w", err)
+			return fmt.Errorf("CommentsRepo - StoreLike - Exec - Commit: %w", err)
 		}
 		return fmt.Errorf("CommentsRepo - StoreLike - Exec: %w", err)
 	}
@@ -278,7 +278,7 @@ func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 	if err != nil {
 		tx.Commit()
 		if err != nil {
-			return fmt.Errorf("CommentsRepo - StoreDislike - Exec err Commit: %w", err)
+			return fmt.Errorf("CommentsRepo - StoreDislike - Exec - Commit: %w", err)
 		}
 		return fmt.Errorf("CommentsRepo - StoreDislike - Exec: %w", err)
 	}

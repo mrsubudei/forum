@@ -300,7 +300,7 @@ func (pr *PostsRepo) StoreLike(post entity.Post) error {
 	if err != nil {
 		tx.Commit()
 		if err != nil {
-			return fmt.Errorf("PostsRepo - StoreLike - Exec err Commit: %w", err)
+			return fmt.Errorf("PostsRepo - StoreLike - Exec Commit: %w", err)
 		}
 		return fmt.Errorf("PostsRepo - StoreLike - Exec: %w", err)
 	}
@@ -319,25 +319,25 @@ func (pr *PostsRepo) StoreLike(post entity.Post) error {
 func (pr *PostsRepo) DeleteLike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
 	if err != nil {
-		return fmt.Errorf("UsersRepo - DeleteLike - Begin: %w", err)
+		return fmt.Errorf("PostsRepo - DeleteLike - Begin: %w", err)
 	}
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM post_likes
 	WHERE post_id = ? AND user_id = ?
 	`)
 	if err != nil {
-		return fmt.Errorf("UsersRepo - DeleteLike - Prepare: %w", err)
+		return fmt.Errorf("PostsRepo - DeleteLike - Prepare: %w", err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(post.Id, post.User.Id)
 	if err != nil {
-		return fmt.Errorf("UsersRepo - DeleteLike - Exec: %w", err)
+		return fmt.Errorf("PostsRepo - DeleteLike - Exec: %w", err)
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return fmt.Errorf("UsersRepo - DeleteLike - Commit: %w", err)
+		return fmt.Errorf("PostsRepo - DeleteLike - Commit: %w", err)
 	}
 
 	return nil
@@ -364,7 +364,7 @@ func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 	if err != nil {
 		tx.Commit()
 		if err != nil {
-			return fmt.Errorf("PostsRepo - StoreDislike - Exec err Commit: %w", err)
+			return fmt.Errorf("PostsRepo - StoreDislike - Exec Commit: %w", err)
 		}
 		return fmt.Errorf("PostsRepo - StoreDislike - Exec: %w", err)
 	}
@@ -383,25 +383,25 @@ func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 func (pr *PostsRepo) DeleteDislike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
 	if err != nil {
-		return fmt.Errorf("UsersRepo - DeleteDislike - Begin: %w", err)
+		return fmt.Errorf("PostsRepo - DeleteDislike - Begin: %w", err)
 	}
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM post_dislikes
 	WHERE post_id = ? AND user_id = ?
 	`)
 	if err != nil {
-		return fmt.Errorf("UsersRepo - DeleteDislike - Prepare: %w", err)
+		return fmt.Errorf("PostsRepo - DeleteDislike - Prepare: %w", err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(post.Id, post.User.Id)
 	if err != nil {
-		return fmt.Errorf("UsersRepo - DeleteDislike - Exec: %w", err)
+		return fmt.Errorf("PostsRepo - DeleteDislike - Exec: %w", err)
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return fmt.Errorf("UsersRepo - DeleteDislike - Commit: %w", err)
+		return fmt.Errorf("PostsRepo - DeleteDislike - Commit: %w", err)
 	}
 
 	return nil
@@ -475,14 +475,14 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 	FROM topics
 	`)
 	if err != nil {
-		return fmt.Errorf("PostsRepo - CreateCategories - Query: %w", err)
+		return fmt.Errorf("PostsRepo - StoreCategories - Query: %w", err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var category string
 		err = rows.Scan(&category)
 		if err != nil {
-			return fmt.Errorf("PostsRepo - CreateCategories - Scan: %w", err)
+			return fmt.Errorf("PostsRepo - StoreCategories - Scan: %w", err)
 		}
 		existedCategories = append(existedCategories, category)
 	}
@@ -501,7 +501,7 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 
 	tx, err := pr.DB.Begin()
 	if err != nil {
-		return fmt.Errorf("PostsRepo - CreateCategories - Begin: %w", err)
+		return fmt.Errorf("PostsRepo - StoreCategories - Begin: %w", err)
 	}
 
 	stmt, err := tx.Prepare(`
@@ -509,25 +509,25 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 		values(?)
 	`)
 	if err != nil {
-		return fmt.Errorf("PostsRepo - CreateCategories - Prepare: %w", err)
+		return fmt.Errorf("PostsRepo - StoreCategories - Prepare: %w", err)
 	}
 	defer stmt.Close()
 
 	for i := 0; i < len(categoriesToAdd); i++ {
 		res, err := stmt.Exec(categoriesToAdd[i])
 		if err != nil {
-			return fmt.Errorf("PostsRepo - CreateCategories - Exec: %w", err)
+			return fmt.Errorf("PostsRepo - StoreCategories - Exec: %w", err)
 		}
 
 		affected, err := res.RowsAffected()
 		if affected != 1 || err != nil {
-			return fmt.Errorf("PostsRepo - CreateCategories - RowsAffected: %w", err)
+			return fmt.Errorf("PostsRepo - StoreCategories - RowsAffected: %w", err)
 		}
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return fmt.Errorf("PostsRepo - CreateCategories - Commit: %w", err)
+		return fmt.Errorf("PostsRepo - StoreCategories - Commit: %w", err)
 	}
 
 	return nil
