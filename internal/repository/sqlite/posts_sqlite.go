@@ -30,7 +30,7 @@ func (pr *PostsRepo) Store(post *entity.Post) error {
 		return fmt.Errorf("PostsRepo - Store - Prepare: %w", err)
 	}
 	defer stmt.Close()
-	date := post.Date.Format(TimeFormat)
+	date := post.Date.Format(DateAndTimeFormat)
 	res, err := stmt.Exec(post.User.Id, date, post.Title, post.Content)
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Store - Exec: %w", err)
@@ -114,7 +114,7 @@ func (pr *PostsRepo) Fetch() ([]entity.Post, error) {
 		if err != nil {
 			return posts, fmt.Errorf("PostsRepo - Fetch - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateParseFormat, date)
+		dateParsed, err := time.Parse(DateAndTimeFormat, date)
 		if err != nil {
 			return posts, fmt.Errorf("PostsRepo - Fetch - Parse date: %w", err)
 		}
@@ -152,7 +152,7 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)
 	}
-	dateParsed, err := time.Parse(DateParseFormat, date)
+	dateParsed, err := time.Parse(DateAndTimeFormat, date)
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Parse regDate: %w", err)
 	}
@@ -294,7 +294,7 @@ func (pr *PostsRepo) StoreLike(post entity.Post) error {
 	}
 	defer stmt.Close()
 
-	date := post.Date.Format(TimeFormat)
+	date := post.Date.Format(DateAndTimeFormat)
 
 	res, err := stmt.Exec(post.Id, post.User.Id, date)
 	if err != nil {
@@ -358,7 +358,7 @@ func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 	}
 	defer stmt.Close()
 
-	date := post.Date.Format(TimeFormat)
+	date := post.Date.Format(DateAndTimeFormat)
 
 	res, err := stmt.Exec(post.Id, post.User.Id, date)
 	if err != nil {
@@ -430,7 +430,7 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 		if err != nil {
 			return post, fmt.Errorf("PostsRepo - FetchReactions - likes - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateParseFormat, date)
+		dateParsed, err := time.Parse(DateAndTimeFormat, date)
 		if err != nil {
 			return post, fmt.Errorf("PostsRepo - FetchReactions - likes - Parse date: %w", err)
 		}
@@ -456,7 +456,7 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 		if err != nil {
 			return post, fmt.Errorf("PostsRepo - FetchReactions - dislikes - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateParseFormat, date)
+		dateParsed, err := time.Parse(DateAndTimeFormat, date)
 		if err != nil {
 			return post, fmt.Errorf("PostsRepo - FetchReactions - dislikes - Parse date: %w", err)
 		}

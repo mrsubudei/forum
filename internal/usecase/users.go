@@ -5,6 +5,7 @@ import (
 	"forum/internal/entity"
 	"forum/internal/repository"
 	"strings"
+	"time"
 
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
@@ -38,15 +39,15 @@ func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
 }
 
 func (uu *UsersUseCase) SignUp(user entity.User) error {
-	// todo add this into handler
-	// if !checkEmail(user.Email) {
-	// 	return entity.ErrUserEmailIncorrect
-	// }
+
 	hashed, err := uu.hasher.Hash(user.Password)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignUp - %w", err)
 	}
 	user.Password = hashed
+
+	timeNow := time.Now()
+	user.RegDate = timeNow
 
 	err = uu.repo.Store(user)
 	if err != nil {
@@ -203,8 +204,3 @@ func (uu *UsersUseCase) DeleteUser(u entity.User) error {
 	}
 	return nil
 }
-
-// func checkEmail(address string) bool {
-// 	_, err := mail.ParseAddress(address)
-// 	return err == nil
-// }

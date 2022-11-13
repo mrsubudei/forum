@@ -23,7 +23,6 @@
                             <input type="hidden" name="advanced" value="0" />
                             <input type="hidden" name="brd[22]" value="22" />
                         </form>
-                        <p> 12 Ноябрь 2022, 10:40:37</p>
                     </div>
 
                     <div class="user"><br /><br />Пожалуйста, <a href="/signin_page/">войдите</a> или <a
@@ -52,9 +51,9 @@
                             </a>
                         </li>
                         <li id="button_calendar">
-                            <a class="firstlevel" href="index.php@action=calendar">
+                            <a class="firstlevel" href="/add_category">
                                 <span class="firstlevel"><img src="/templates/img/buttons/calendar.png"
-                                        alt="*" />Календарь</span>
+                                        alt="*" />Добавить тему</span>
                             </a>
                         </li>
                         <li id="button_login">
@@ -110,27 +109,30 @@
                                             required="required">
                                     </dd>
                                     <dt>Пароль:</dt>
-                                    <dd><input name="password" id="password" type="password" size="20"
-                                            class="input_password" required="required">
+                                    <dd><input name="password" id="password" type="password" minlength="5"
+                                            maxlength="14" size="20" class="input_text" required="required">
                                     </dd>
-                                    <span id="message1" style="color:red"> </span> <br><br>
                                     <dt>Подтверждение пароля:</dt>
-                                    <dd><input name="confirm_password" id="confirm_password" type="password" size="20"
-                                            class="input_password" required="required">
+                                    <dd><input name="confirm_password" id="confirm_password" type="password"
+                                            minlength="5" maxlength="14" size="20" class="input_text"
+                                            required="required">
+                                    </dd>
+                                    <dt>Город:</dt>
+                                    <dd><input name="city" type="text" size="20" class="input_text">
                                     </dd>
                                     <dt>Дата рождения:</dt>
-                                    <dd><input name="date_of_birth" type="text" size="20" class="input_password">
+                                    <dd><input name="date_of_birth" type="date" size="20" class="input_text">
                                     </dd>
-                                    <span id="message2" style="color:red"> </span> <br><br>
+                                    <dt>Пол:</dt>
+                                    <dd><input type="radio" name="gender" value="Мужчина"> М
+                                        <input type="radio" name="gender" value="Женщина"> Ж
+                                    </dd>
                                 </dl>
-                                <p><input type="submit" value="Вход" class="button_submit"></p>
+                                <p><input type="submit" value="Создать" class="button_submit"></p>
                             </div>
                             <span class="lowerframe"><span></span></span>
                         </div>
                     </form>
-                    <script type="text/javascript"><!-- // -->
-                    < ![CDATA[document.forms.frmLogin.user.focus(); // ]]>
-                    </script>
                 </div>
             </div>
         </div>

@@ -31,7 +31,7 @@ func (cr *CommentsRepo) Store(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	date := comment.Date.Format(TimeFormat)
+	date := comment.Date.Format(DateAndTimeFormat)
 
 	res, err := stmt.Exec(comment.PostId, comment.UserId, date, comment.Content)
 	if err != nil {
@@ -80,7 +80,7 @@ func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
 			return nil, fmt.Errorf("CommentsRepo - Fetch - Scan: %w", err)
 		}
 
-		dateParsed, err := time.Parse(DateParseFormat, date)
+		dateParsed, err := time.Parse(DateAndTimeFormat, date)
 		if err != nil {
 			return nil, fmt.Errorf("CommentsRepo - Fetch - Parse date: %w", err)
 		}
@@ -116,7 +116,7 @@ func (cr *CommentsRepo) GetById(commentId int64) (entity.Comment, error) {
 	if err != nil {
 		return comment, fmt.Errorf("CommentsRepo - GetById - Scan: %w", err)
 	}
-	regDateParsed, err := time.Parse(DateParseFormat, date)
+	regDateParsed, err := time.Parse(DateAndTimeFormat, date)
 	if err != nil {
 		return comment, fmt.Errorf("CommentsRepo - GetById - Parse regDate: %w", err)
 	}
@@ -208,7 +208,7 @@ func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	date := comment.Date.Format(TimeFormat)
+	date := comment.Date.Format(DateAndTimeFormat)
 
 	res, err := stmt.Exec(comment.Id, comment.UserId, date)
 	if err != nil {
@@ -272,7 +272,7 @@ func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	date := comment.Date.Format(TimeFormat)
+	date := comment.Date.Format(DateAndTimeFormat)
 
 	res, err := stmt.Exec(comment.Id, comment.UserId, date)
 	if err != nil {
@@ -344,7 +344,7 @@ func (pr *CommentsRepo) FetchReactions(id int64) (entity.Comment, error) {
 		if err != nil {
 			return comment, fmt.Errorf("CommentsRepo - FetchReactions - likes - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateParseFormat, date)
+		dateParsed, err := time.Parse(DateAndTimeFormat, date)
 		if err != nil {
 			return comment, fmt.Errorf("CommentsRepo - FetchReactions - likes - Parse date: %w", err)
 		}
@@ -370,7 +370,7 @@ func (pr *CommentsRepo) FetchReactions(id int64) (entity.Comment, error) {
 		if err != nil {
 			return comment, fmt.Errorf("CommentsRepo - FetchReactions - dislikes - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateParseFormat, date)
+		dateParsed, err := time.Parse(DateAndTimeFormat, date)
 		if err != nil {
 			return comment, fmt.Errorf("CommentsRepo - FetchReactions - dislikes - Parse date: %w", err)
 		}

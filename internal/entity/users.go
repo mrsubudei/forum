@@ -10,7 +10,7 @@ type User struct {
 	RegDate         time.Time `json:"registration_date,omitempty"`
 	DateOfBirth     time.Time `json:"date_of_birth,omitempty"`
 	City            string    `json:"city,omitempty"`
-	Sex             string    `json:"sex,omitempty"`
+	Gender          string    `json:"sex,omitempty"`
 	SessionToken    string    `json:"token,omitempty"`
 	SessionTTL      time.Time `json:"token_expiration,omitempty"`
 	Posts           int64     `json:"posts,omitempty"`

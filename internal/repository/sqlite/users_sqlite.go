@@ -13,8 +13,8 @@ type UsersRepo struct {
 }
 
 const (
-	TimeFormat      = "2006-01-02 15:04:05"
-	DateParseFormat = "2006-01-02 15:04:05"
+	DateFormat        = "2006-01-02"
+	DateAndTimeFormat = "2006-01-02 15:04:05"
 )
 
 func NewUsersRepo(sq *sqlite3.Sqlite) *UsersRepo {
@@ -36,11 +36,11 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	}
 	defer stmt.Close()
 
-	regDate := user.RegDate.Format(TimeFormat)
-	birthDate := user.RegDate.Format(TimeFormat)
+	regDate := user.RegDate.Format(DateFormat)
+	birthDate := user.DateOfBirth.Format(DateFormat)
 
 	res, err := stmt.Exec(user.Name, user.Email, user.Password, regDate,
-		birthDate, user.City, user.Sex)
+		birthDate, user.City, user.Gender)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Exec: %w", err)
 	}
@@ -88,15 +88,15 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 		var regDate string
 		var birthDate string
 		err = rows.Scan(&user.Id, &user.Name, &user.Email, &regDate, &birthDate, &user.City,
-			&user.Sex, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
+			&user.Gender, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 		if err != nil {
 			return nil, fmt.Errorf("UsersRepo - Fetch - Scan: %w", err)
 		}
-		regDateParsed, err := time.Parse(DateParseFormat, regDate)
+		regDateParsed, err := time.Parse(DateFormat, regDate)
 		if err != nil {
 			return nil, fmt.Errorf("UsersRepo - Fetch - Parse regDate: %w", err)
 		}
-		birthDatePasred, err := time.Parse(DateParseFormat, regDate)
+		birthDatePasred, err := time.Parse(DateFormat, regDate)
 		if err != nil {
 			return nil, fmt.Errorf("UsersRepo - Fetch - Parse birthDate: %w", err)
 		}
@@ -181,15 +181,15 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var regDate string
 	var birthDate string
 	err = stmt.QueryRow(id).Scan(&user.Name, &user.Email, &user.Password, &regDate, &birthDate, &user.City,
-		&user.Sex, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
+		&user.Gender, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
 	}
-	regDateParsed, err := time.Parse(DateParseFormat, regDate)
+	regDateParsed, err := time.Parse(DateFormat, regDate)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Parse regDate: %w", err)
 	}
-	birthDatePasred, err := time.Parse(DateParseFormat, regDate)
+	birthDatePasred, err := time.Parse(DateFormat, regDate)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Parse birthDate: %w", err)
 	}
@@ -228,7 +228,7 @@ func (ur *UsersRepo) GetSession(n int64) (entity.User, error) {
 	if sessionTTL.String == "" {
 		return user, entity.ErrUserNotFound
 	}
-	TTLParsed, err := time.Parse(DateParseFormat, sessionTTL.String)
+	TTLParsed, err := time.Parse(DateAndTimeFormat, sessionTTL.String)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetSession - Parse TTL: %w", err)
 	}
@@ -252,8 +252,8 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 		return fmt.Errorf("UsersRepo - Update - Prepare: %w", err)
 	}
 	defer stmt.Close()
-	birthDate := user.DateOfBirth.Format(TimeFormat)
-	res, err := stmt.Exec(user.Email, birthDate, user.City, user.Sex, user.Id)
+	birthDate := user.DateOfBirth.Format(DateFormat)
+	res, err := stmt.Exec(user.Email, birthDate, user.City, user.Gender, user.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Exec: %w", err)
 	}
@@ -320,7 +320,7 @@ func (ur *UsersRepo) NewSession(user entity.User) error {
 		return fmt.Errorf("UsersRepo - NewSession - Prepare: %w", err)
 	}
 	defer stmt.Close()
-	sessionTTL := user.SessionTTL.Format(TimeFormat)
+	sessionTTL := user.SessionTTL.Format(DateAndTimeFormat)
 	res, err := stmt.Exec(user.SessionToken, sessionTTL, user.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - NewSession - Exec: %w", err)
@@ -354,7 +354,7 @@ func (ur *UsersRepo) UpdateSession(user entity.User) error {
 		return fmt.Errorf("UsersRepo - UpdateSession - Prepare: %w", err)
 	}
 	defer stmt.Close()
-	sessionTTL := user.SessionTTL.Format(TimeFormat)
+	sessionTTL := user.SessionTTL.Format(DateAndTimeFormat)
 	res, err := stmt.Exec(sessionTTL, user.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdateSession - Exec: %w", err)

@@ -3,6 +3,7 @@ package v1
 import (
 	"forum/internal/entity"
 	"net/http"
+	"net/mail"
 	"text/template"
 	"time"
 )
@@ -13,9 +14,10 @@ type signInErr struct {
 }
 
 var (
-	userNotExist     = "Такого пользователя не существует."
-	userPassWrong    = "Неверный пароль, попробуйте ещё раз."
+	userNotExist     = "Такого пользователя не существует"
+	userPassWrong    = "Неверный пароль, попробуйте ещё раз"
 	passwordsNotSame = "Пароли не совпадают"
+	emailFormatWrong = "Неправильный формат почты"
 	userEmailExist   = "Пользователь с такой почтой уже существует"
 	userNameExist    = "Пользователь с таким именем уже существует"
 )
@@ -70,12 +72,16 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	name := r.Form["user"][0]
+	data := r.Form["user"][0]
 	password := r.Form["password"][0]
 
 	user := entity.User{
-		Name:     name,
 		Password: password,
+	}
+	if checkEmail(data) {
+		user.Email = data
+	} else {
+		user.Name = data
 	}
 	err := h.usecases.Users.SignIn(user)
 
@@ -90,7 +96,6 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !valid {
-		s.Message = userPassWrong
 		html, err := template.ParseFiles("templates/login.html")
 		if err != nil {
 			http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
@@ -112,38 +117,60 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
+	var dateOfBirth string
+	var city string
+	var gender string
+	var parsed time.Time
+	var err error
+
 	name := r.Form["user"][0]
 	email := r.Form["email"][0]
 	password := r.Form["password"][0]
 	confirmPassword := r.Form["confirm_password"][0]
-	dateOfBirth := r.Form["date_of_birth"][0]
+	if len(r.Form["date_of_birth"]) != 0 {
+		dateOfBirth = r.Form["date_of_birth"][0]
+	}
+	if len(r.Form["city"]) != 0 {
+		city = r.Form["city"][0]
+	}
+	if len(r.Form["gender"]) != 0 {
+		gender = r.Form["gender"][0]
+	}
 
 	s := signInErr{}
 	valid := true
 
+	if !checkEmail(email) {
+		s.Message = emailFormatWrong
+		valid = false
+	}
 	if password != confirmPassword {
 		s.Message = passwordsNotSame
 		valid = false
 	}
-	parsed, err := time.Parse("2006-01-02", dateOfBirth)
-	if err != nil {
-		http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
-		return
+	if dateOfBirth != "" {
+		parsed, err = time.Parse("2006-01-02", dateOfBirth)
+		if err != nil {
+			http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	user := entity.User{
 		Name:        name,
 		Password:    password,
 		Email:       email,
+		City:        city,
+		Gender:      gender,
 		DateOfBirth: parsed,
 	}
 	err = h.usecases.Users.SignUp(user)
 
 	if err == entity.ErrUserEmailAlreadyExists {
-		s.Message = userNotExist
+		s.Message = userEmailExist
 		valid = false
-	} else if err == entity.ErrUserPasswordIncorrect {
-		s.Message = userPassWrong
+	} else if err == entity.ErrUserNameAlreadyExists {
+		s.Message = userNameExist
 		valid = false
 	}
 	if !valid {
@@ -158,6 +185,11 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/signin_page", http.StatusFound)
 	}
+}
+
+func checkEmail(address string) bool {
+	_, err := mail.ParseAddress(address)
+	return err == nil
 }
