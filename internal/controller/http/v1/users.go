@@ -22,23 +22,20 @@ var (
 	emailFormatWrong = "Неправильный формат почты"
 	userEmailExist   = "Пользователь с такой почтой уже существует"
 	userNameExist    = "Пользователь с таким именем уже существует"
+	pageNotFound     = "Страница не найдена"
 )
 
 func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/signin_page/" {
-		http.Error(w, "404: Page is Not Found", http.StatusNotFound)
-		return
+	authorized := h.checkSession(w, r)
+	if authorized {
+		http.Redirect(w, r, "/", http.StatusFound)
 	}
-	if r.Method != http.MethodGet {
-		http.Error(w, "405: Method is not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
+
 	html, err := template.ParseFiles("templates/login.html")
 	if err != nil {
 		http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
 	err = html.Execute(w, nil)
 	if err != nil {
 		http.Error(w, "404: Not Found", 404)
@@ -51,10 +48,7 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404: Page is Not Found", http.StatusNotFound)
 		return
 	}
-	if r.Method != http.MethodGet {
-		http.Error(w, "405: Method is not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
+
 	html, err := template.ParseFiles("templates/registration.html")
 	if err != nil {
 		http.Error(w, "500: Internal Server Error", http.StatusInternalServerError)

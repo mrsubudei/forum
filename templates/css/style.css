@@ -4424,6 +4424,19 @@ span.hidelink {
 	background: url(/templates/img/theme/yabb_gfx.png) no-repeat scroll 0 0 transparent;
 }
 
-/* .post_title {
-	width: 65vw;
-} */
+.error_page {
+	width: 50%;
+	padding: 10px;
+	margin-top: 30px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.error_code {
+	font-size: 50px;
+	margin-bottom: 50px;
+}
+
+.error_message {
+	font-size: 35px;
+}

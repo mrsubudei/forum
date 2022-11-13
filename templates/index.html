@@ -14,8 +14,7 @@
             <div class="frame">
                 <div id="top_section">
                     <div id="time">
-                        <form id="search_form" action="http://forum.kris.kz/index.php?action=search2" method="post"
-                            accept-charset="UTF-8">
+                        <form id="search_form" action="/search_page/" method="GET" accept-charset="UTF-8">
                             <input type="text" name="search" value="" class="input_text" />&nbsp;
                             <input type="submit" name="submit" value="Поиск" class="button_submit" />
                             <input type="hidden" name="advanced" value="0" />
@@ -49,12 +48,14 @@
                                         alt="*" />Поиск</span>
                             </a>
                         </li>
-                        <li id="button_calendar">
-                            <a class="firstlevel" href="/add_category">
+                        {{if .Admin}}
+                        <li id="button_add_category">
+                            <a class="firstlevel" href="/add_category/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/calendar.png"
                                         alt="*" />Добавить тему</span>
                             </a>
                         </li>
+                        {{end}}
                         {{if .Unauthorized}}
                         <li id="button_login">
                             <a class="firstlevel" href="/signin_page/">
@@ -89,7 +90,6 @@
                         <div class="pagelinks floatleft">Страницы: [<strong>1</strong>] <a class="navPages"
                                 href="index.php@board=22.50">2</a> <a class="navPages"
                                 href="index.php@board=22.100">3</a> <span style="font-weight: bold;"
-                                onclick="expandPages(this, 'http://forum.kris.kz/index.php?board=22.%1$d', 150, 300, 50);"
                                 onmouseover="this.style.cursor='pointer';"> ... </span><a class="navPages"
                                 href="index.php@board=22.300">7</a> </div>
 

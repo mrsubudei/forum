@@ -16,8 +16,7 @@
             <div class="frame">
                 <div id="top_section">
                     <div id="time">
-                        <form id="search_form" action="http://forum.kris.kz/index.php?action=search2" method="post"
-                            accept-charset="UTF-8">
+                        <form id="search_form" action="/search_page/" method="GET" accept-charset="UTF-8">
                             <input type="text" name="search" value="" class="input_text" />&nbsp;
                             <input type="submit" name="submit" value="Поиск" class="button_submit" />
                             <input type="hidden" name="advanced" value="0" />
@@ -50,12 +49,14 @@
                                         alt="*" />Поиск</span>
                             </a>
                         </li>
-                        <li id="button_calendar">
-                            <a class="firstlevel" href="/add_category">
+                        {{if .Admin}}
+                        <li id="button_add_category">
+                            <a class="firstlevel" href="/add_category/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/calendar.png"
                                         alt="*" />Добавить тему</span>
                             </a>
                         </li>
+                        {{end}}
                         <li id="button_login">
                             <a class="firstlevel" href="/signin_page/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/login.png"
@@ -77,7 +78,7 @@
                 <div id="main_content_section">
                     <div class="navigate_section">
                         <ul>
-                            <li><img src="http://forum.kris.kz/Themes/classic/images/icons/folder_open.png" alt="+">
+                            <li><img src="/templates/img/icons/folder_open.png" alt="+">
                             </li>
                             <li>
                                 <a href="/"><span>Форум школы Алем</span></a> »
@@ -87,8 +88,6 @@
                             </li>
                         </ul>
                     </div>
-                    <script type="text/javascript" src="http://forum.kris.kz/Themes/default/scripts/sha1.js"></script>
-
                     <form action="/signup/" name="frmLogin" id="frmLogin" method="post">
                         <div class="tborder login">
                             <div class="cat_bar">

@@ -52,7 +52,7 @@ func Run() {
 			log.Printf("error occurred while running http server: %s\n", err.Error())
 		}
 	}()
-	fmt.Println("Server started")
+	fmt.Println("Server started at port 8080")
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 
