@@ -22,10 +22,11 @@
                             <input type="hidden" name="brd[22]" value="22" />
                         </form>
                     </div>
-
+                    {{if .Unauthorized}}
                     <div class="user"><br /><br />Пожалуйста, <a href="/signin_page/">войдите</a> или <a
                             href="signup_page">зарегистрируйтесь</a>.
                     </div>
+                    {{end}}
                 </div>
                 <div id="upper_section" class="middletext">
                     <div class="forumtitle clear">
@@ -54,6 +55,7 @@
                                         alt="*" />Добавить тему</span>
                             </a>
                         </li>
+                        {{if .Unauthorized}}
                         <li id="button_login">
                             <a class="firstlevel" href="/signin_page/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/login.png"
@@ -66,6 +68,15 @@
                                         alt="*" />Регистрация</span>
                             </a>
                         </li>
+                        {{end}}
+                        {{if .Authorized}}
+                        <li id="button_login">
+                            <a class="firstlevel" href="/signout/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/login.png"
+                                        alt="*" />Выйти</span>
+                            </a>
+                        </li>
+                        {{end}}
                     </ul>
                 </div>
             </div>
@@ -99,7 +110,7 @@
                                         Дизлайков</th>
                                 </tr>
                             </thead>
-                            {{range .}}
+                            {{range .Posts}}
                             <tr>
                                 <td class="icon1 windowbg">
                                     <img src="/templates/img/topic/veryhot_post_sticky.gif" alt="">

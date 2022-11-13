@@ -25,6 +25,7 @@ const (
 	UpdateSessionQuery  = "session"
 	UniqueEmailErr      = "UNIQUE constraint failed: users.email"
 	UniqueNameErr       = "UNIQUE constraint failed: users.name"
+	DateAndTimeFormat   = "2006-01-02 15:04:05"
 )
 
 func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
@@ -120,6 +121,22 @@ func (uu *UsersUseCase) UpdateSession(user entity.User) error {
 	err := uu.UpdateUserInfo(user, UpdateSessionQuery)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - UpdateSession - %w", err)
+	}
+
+	return nil
+}
+
+func (uu *UsersUseCase) DeleteSession(user entity.User) error {
+	timeNow := time.Now()
+	formatted := timeNow.Format(DateAndTimeFormat)
+	parsed, err := time.Parse(DateAndTimeFormat, formatted)
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - DeleteSession #1 - %w", err)
+	}
+	user.SessionTTL = parsed
+	err = uu.UpdateUserInfo(user, UpdateSessionQuery)
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - DeleteSession #2 - %w", err)
 	}
 
 	return nil

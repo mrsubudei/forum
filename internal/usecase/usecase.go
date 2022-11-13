@@ -30,6 +30,7 @@ type Users interface {
 	CheckSession(u entity.User) (bool, error)
 	UpdateUserInfo(u entity.User, query string) error
 	UpdateSession(u entity.User) error
+	DeleteSession(user entity.User) error
 	DeleteUser(u entity.User) error
 }
 

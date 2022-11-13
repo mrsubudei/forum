@@ -118,6 +118,21 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 func (ur *UsersRepo) GetId(user entity.User) (int64, error) {
 	var id int64
 	switch {
+	case user.SessionToken != "":
+		stmt, err := ur.DB.Prepare(`
+		SELECT id
+		FROM users
+		WHERE session_token = ?
+		`)
+		if err != nil {
+			return 0, fmt.Errorf("UsersRepo - GetId - case Session - Query: %w", err)
+		}
+		defer stmt.Close()
+
+		err = stmt.QueryRow(user.SessionToken).Scan(&id)
+		if err != nil {
+			return 0, fmt.Errorf("UsersRepo - GetId - case Session - Scan: %w", err)
+		}
 	case user.Name != "":
 		stmt, err := ur.DB.Prepare(`
 		SELECT id

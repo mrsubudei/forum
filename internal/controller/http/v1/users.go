@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"forum/internal/entity"
 	"net/http"
 	"net/mail"
@@ -8,12 +9,13 @@ import (
 	"time"
 )
 
-type signInErr struct {
+type ErrMessage struct {
 	Code    int
 	Message string
 }
 
 var (
+	sessionDomain    = "localhost"
 	userNotExist     = "Такого пользователя не существует"
 	userPassWrong    = "Неверный пароль, попробуйте ещё раз"
 	passwordsNotSame = "Пароли не совпадают"
@@ -85,7 +87,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err := h.usecases.Users.SignIn(user)
 
-	s := signInErr{}
+	s := ErrMessage{}
 	valid := true
 	if err == entity.ErrUserNotFound {
 		s.Message = userNotExist
@@ -120,11 +122,11 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		http.SetCookie(w, &http.Cookie{
-			Name:    "token",
+			Name:    "session_token",
 			Value:   userWithSession.SessionToken,
 			Expires: userWithSession.SessionTTL,
 			Path:    "/",
-			Domain:  "localhost",
+			Domain:  sessionDomain,
 		})
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
@@ -156,7 +158,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		gender = r.Form["gender"][0]
 	}
 
-	s := signInErr{}
+	s := ErrMessage{}
 	valid := true
 
 	if !checkEmail(email) {
@@ -206,6 +208,51 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Redirect(w, r, "/signin_page", http.StatusFound)
 	}
+}
+
+func (h *Handler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
+	foundUser := h.getExistedSession(w, r)
+
+	err := h.usecases.Users.DeleteSession(foundUser)
+	if err != nil {
+		fmt.Println("errorchik")
+	}
+	time.Sleep(time.Second)
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func (h *Handler) checkSession(w http.ResponseWriter, r *http.Request) bool {
+	foundUser := h.getExistedSession(w, r)
+	authorized, err := h.usecases.Users.CheckSession(foundUser)
+	if err != nil {
+		return false
+	}
+	return authorized
+}
+
+func (h *Handler) getExistedSession(w http.ResponseWriter, r *http.Request) entity.User {
+	foundUser := entity.User{}
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			return foundUser
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return foundUser
+	}
+	tokenExisted := cookie.Value
+	user := entity.User{
+		SessionToken: tokenExisted,
+	}
+	id, err := h.usecases.Users.GetIdBy(user)
+	if err != nil {
+		return foundUser
+	}
+	foundUser = entity.User{
+		Id:           id,
+		SessionToken: tokenExisted,
+	}
+	return foundUser
 }
 
 func checkEmail(address string) bool {
