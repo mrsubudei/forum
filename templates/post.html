@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/templates/css/style.css" rel="stylesheet" type="text/css" />
+    <title>Forum</title>
+</head>
+
+<body>
+    <div id="wrapper" style="width: 98%">
+        <div id="header">
+            <div class="frame">
+                <div id="top_section">
+                    <div class="user"><br /><br />Пожалуйста, <a href="/signin_page/">войдите</a> или <a
+                            href="signup_page">зарегистрируйтесь</a>.
+                    </div>
+                </div>
+                <div id="upper_section" class="middletext">
+                    <div class="forumtitle clear">
+                        <h1 class="forumtitle">
+                            <a href="/">Форум школы Алем</a>
+                        </h1>
+                    </div>
+                </div>
+                <div id="main_menu">
+                    <ul class="dropmenu" id="menu_nav">
+                        <li id="button_home">
+                            <a class="active firstlevel" href="/">
+                                <span class="last firstlevel"><img src="/templates/img/buttons/home.png"
+                                        alt="*" />Начало</span>
+                            </a>
+                        </li>
+                        <li id="button_search">
+                            <a class="firstlevel" href="/search_page/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/search.png"
+                                        alt="*" />Поиск</span>
+                            </a>
+                        </li>
+                        {{if .Admin}}
+                        <li id="button_add_category">
+                            <a class="firstlevel" href="/add_category/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/calendar.png"
+                                        alt="*" />Добавить тему</span>
+                            </a>
+                        </li>
+                        {{end}}
+                        <li id="button_login">
+                            <a class="firstlevel" href="/signin_page/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/login.png"
+                                        alt="*" />Вход</span>
+                            </a>
+                        </li>
+                        <li id="button_register">
+                            <a class="firstlevel" href="/signup_page/">
+                                <span class="last firstlevel"><img src="/templates/img/buttons/register.png"
+                                        alt="*" />Регистрация</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="content_section">
+            <div class="frame">
+                <div id="main_content_section">
+                    <div class="navigate_section">
+                        <ul>
+                            <li><img src="/templates/img/icons/folder_open.png" alt="+">
+                            </li>
+                            <li>
+                                <a href="/"><span>Форум школы Алем</span></a> »
+                            </li>
+                            <li class="last">
+                                <a href="/signin_page"><span>Вход</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="forumposts">
+                        <div class="cat_bar">
+                            <h3 class="catbg">
+                                <img src="/templates/img/topic/veryhot_post.gif">
+                                <span id="author">Автор</span>
+                                Пост: {{.Post.Title}}
+                            </h3>
+                        </div>
+                        <p id="whoisviewing" class="smalltext"></p>
+                        <form action="/create_post/" method="POST" name="quickModForm" id="quickModForm"
+                            style="margin: 0;">
+                            <div class="windowbg">
+                                <span class="topslice"><span></span></span>
+                                <div class="post_wrapper">
+                                    <div class="poster">
+                                        <h4>
+                                            <a href="/users/{{.Post.User.Id}}"
+                                                title="Просмотр профиля {{.Post.User.Name}}">{{.Post.User.Name}}</a>
+                                        </h4>
+                                        <ul class="reset smalltext" id="msg_85962_extra_info">
+                                            <li class="postgroup">{{.Post.User.Role}}</li>
+                                            <li class="avatar">
+                                                <!-- <a href="/users/{{.Post.User.Id}}">
+                                                    <img class="avatar"
+                                                        src="avatars/Musicians/Bob_Marley.jpg"
+                                                        alt="">
+                                                </a> -->
+                                            </li>
+                                            <li class="postcount">Постов: {{.Post.User.Posts}}</li>
+                                            <li class="postcount">Комментариев: {{.Post.User.Comments}}</li>
+                                            <li class="postcount">Лайков на посты: {{.Post.User.PostLikes}}</li>
+                                            <li class="postcount">Дизлайков на посты: {{.Post.User.PostDislikes}}</li>
+                                            <li class="postcount">Лайков на комментарии: {{.Post.User.CommentLikes}}
+                                            </li>
+                                            <li class="postcount">Дизлайков на комментарии:
+                                                {{.Post.User.CommentDislikes}}</li>
+                                            <li class="profile">
+                                                <ul>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="postarea">
+                                        <div class="flow_hidden">
+                                            <div class="keyinfo">
+                                                <div class="messageicon">
+                                                    <img src="/templates/img/post/xx.gif" alt="">
+                                                </div>
+                                                <h5>
+                                                    {{.Post.Title}}
+                                                </h5>
+                                                <div class="smalltext">« <strong> :</strong> {{.Post.Date}} »
+                                                </div>
+                                                <div></div>
+                                            </div>
+                                        </div>
+                                        <div class="post">
+                                            <div class="inner">{{.Post.Content}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="moderatorbar">
+                                        <div class="smalltext modified" id="modified_85962">
+                                        </div>
+                                        <div class="smalltext reportlinks">
+                                        </div>
+                                        <div class="signature">{{.Post.User.City}}</div>
+                                    </div>
+                                </div>
+                                <span class="botslice"><span></span></span>
+                            </div>
+                            <hr class="post_separator">
+                            <a></a>
+                            <!-- todo -->
+                            {{.range .Comments}}
+                            <div class="windowbg2">
+                                <span class="topslice"><span></span></span>
+                                <div class="post_wrapper">
+                                    <div class="poster">
+                                        <h4>
+                                            <a href="http://forum.kris.kz/index.php?action=profile;u=18230"
+                                                title="Просмотр профиля Ivan_kz">Ivan_kz</a>
+                                        </h4>
+                                        <ul class="reset smalltext" id="msg_85964_extra_info">
+                                            <li class="postgroup">Мастер класс</li>
+                                            <li class="stars"><img
+                                                    src="http://forum.kris.kz/Themes/classic/images/starmod.gif"
+                                                    alt="*"><img
+                                                    src="http://forum.kris.kz/Themes/classic/images/starmod.gif"
+                                                    alt="*"></li>
+                                            <li class="online"><img
+                                                    src="http://forum.kris.kz/Themes/classic/images/useroff.gif"
+                                                    alt="Оффлайн">&nbsp;Оффлайн</li>
+                                            <li class="avatar">
+                                                <a href="http://forum.kris.kz/index.php?action=profile;u=18230">
+                                                    <img class="avatar"
+                                                        src="http://forum.kris.kz/index.php?action=dlattach;attach=5870;type=avatar"
+                                                        alt="">
+                                                </a>
+                                            </li>
+                                            <li class="postcount">Сообщений: 1051</li>
+                                            <li class="karma">Общая оценка: 4</li>
+                                            <li class="gender">Пол: <img class="gender"
+                                                    src="http://forum.kris.kz/Themes/classic/images/Male.gif"
+                                                    alt="Мужской"></li>
+                                            <li class="blurb">Almaty</li>
+                                            <li class="profile">
+                                                <ul>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="postarea">
+                                        <div class="flow_hidden">
+                                            <div class="keyinfo">
+                                                <div class="messageicon">
+                                                    <img src="http://forum.kris.kz/Themes/classic/images/post/xx.gif"
+                                                        alt="">
+                                                </div>
+                                                <h5 id="subject_85964">
+                                                    <a href="http://forum.kris.kz/index.php?topic=4304.msg85964#msg85964"
+                                                        rel="nofollow">Re: Триколор с Бонума 56</a>
+                                                </h5>
+                                                <div class="smalltext">« <strong>Ответ #1 :</strong> 17 Июнь 2008,
+                                                    15:11:26 »</div>
+                                                <div id="msg_85964_quick_mod"></div>
+                                            </div>
+                                        </div>
+                                        <div class="post">
+                                            <div class="inner" id="msg_85964">Посмотри по этим ссылкам может что
+                                                выбирешь для себя (примерно по твоим вопросам)<br><br><a
+                                                    href="http://forum.kris.kz/index.php/topic,3985.0.html"
+                                                    class="bbc_link" target="_blank" rel="noopener noreferrer">
+                                                    http://forum.kris.kz/index.php/topic,3985.0.html</a><br><a
+                                                    href="http://forum.kris.kz/index.php/topic,408.0.html"
+                                                    class="bbc_link" target="_blank"
+                                                    rel="noopener noreferrer">http://forum.kris.kz/index.php/topic,408.0.html</a><br><a
+                                                    href="http://forum.kris.kz/index.php/topic,2954.0.html"
+                                                    class="bbc_link" target="_blank"
+                                                    rel="noopener noreferrer">http://forum.kris.kz/index.php/topic,2954.0.html</a><br><a
+                                                    href="http://forum.kris.kz/index.php/topic,943.0.html"
+                                                    class="bbc_link" target="_blank"
+                                                    rel="noopener noreferrer">http://forum.kris.kz/index.php/topic,943.0.html</a><br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="moderatorbar">
+                                        <div class="smalltext modified" id="modified_85964">
+                                        </div>
+                                        <div class="smalltext reportlinks">
+                                            <img src="http://forum.kris.kz/Themes/classic/images/ip.gif" alt="">
+                                            Записан
+                                        </div>
+                                        <div class="signature" id="msg_85964_signature">85.2E 90E 96.5E&nbsp;&nbsp;
+                                            Openbox X5 HD PVR</div>
+                                    </div>
+                                </div>
+                                <span class="botslice"><span></span></span>
+                            </div>
+                            <hr class="post_separator">
+                            <a></a>
+                            {{end}}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footer_section">
+            <div class="frame">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
