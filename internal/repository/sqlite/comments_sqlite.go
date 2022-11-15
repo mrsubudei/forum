@@ -49,7 +49,7 @@ func (cr *CommentsRepo) Store(comment entity.Comment) error {
 }
 
 func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
-	var commets []entity.Comment
+	var comments []entity.Comment
 
 	rows, err := cr.DB.Query(`
 	SELECT
@@ -79,9 +79,9 @@ func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
 		comment.TotalLikes = commentLikes.Int64
 		comment.TotalDislikes = commentDislikes.Int64
 		comment.UserName = userName.String
-		commets = append(commets, comment)
+		comments = append(comments, comment)
 	}
-	return commets, nil
+	return comments, nil
 }
 
 func (cr *CommentsRepo) GetById(commentId int64) (entity.Comment, error) {

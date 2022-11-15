@@ -236,6 +236,10 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 		for i := 0; i < len(*posts); i++ {
 			(*posts)[i].Comments = append((*posts)[i].Comments, commentsSlice[i]...)
 			(*posts)[i].TotalComments = int64(len((*posts)[i].Comments))
+			if len(commentsSlice[i]) != 0 {
+				(*posts)[i].LastComment = commentsSlice[i][len(commentsSlice[i])-1]
+				(*posts)[i].LastCommentExist = true
+			}
 		}
 		close(commentsDone)
 	}()

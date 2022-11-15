@@ -89,9 +89,9 @@
                                         Комментариев
                                     </th>
                                     <th scope="col" class="smalltext center" width="7%">
-                                        Лайков</th>
-                                    <th scope="col" class="smalltext center" width="7%">
-                                        Дизлайков</th>
+                                        Лайков/Дизлайков</th>
+                                    <th scope="col" class="smalltext center" width="12%">
+                                        Последний ответ</th>
                                 </tr>
                             </thead>
                             {{range .Posts}}
@@ -120,10 +120,17 @@
                                     <a href="/post-comments/{{.Id}}">{{.TotalComments}}</a>
                                 </td>
                                 <td class="stats windowbg">
-                                    <a href="/post-likes/{{.Id}}">{{.TotalLikes}}</a>
+                                    <a href="/post-likes/{{.Id}}">{{.TotalLikes}}</a> / <a
+                                        href="/post-dislikes/{{.Id}}">{{.TotalDislikes}}</a>
                                 </td>
-                                <td class="stats windowbg">
-                                    <a href="/post-dislikes/{{.Id}}">{{.TotalDislikes}}</a>
+                                <td class="lastpost windowbg2">
+                                    {{if .LastCommentExist}}
+                                    <a href="/post-comments/{{.Id}}#{{.LastComment.Id}}"><img
+                                            src="/templates/img/icons/last_post.gif" alt="Последний ответ"
+                                            title="Последний комментарий"></a>
+                                    {{.LastComment.Date}}<br>
+                                    от <a href="/users/{{.User.Id}}">{{.LastComment.UserName}}</a>
+                                    {{end}}
                                 </td>
                             </tr>
                             {{end}}
