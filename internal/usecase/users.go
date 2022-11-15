@@ -12,11 +12,11 @@ import (
 )
 
 type UsersUseCase struct {
-	repo           repository.Users
-	hasher         hasher.PasswordHasher
-	tokenManager   auth.TokenManager
-	postUseCase    repository.Posts
-	commentUseCase repository.Comments
+	repo         repository.Users
+	hasher       hasher.PasswordHasher
+	tokenManager auth.TokenManager
+	postRepo     repository.Posts
+	commentRepo  repository.Comments
 }
 
 const (
@@ -30,15 +30,15 @@ const (
 )
 
 func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
-	tokenManager auth.TokenManager, postUseCase repository.Posts,
-	commentUseCase repository.Comments) *UsersUseCase {
+	tokenManager auth.TokenManager, postRepo repository.Posts,
+	commentRepo repository.Comments) *UsersUseCase {
 
 	return &UsersUseCase{
-		repo:           repo,
-		hasher:         hasher,
-		tokenManager:   tokenManager,
-		postUseCase:    postUseCase,
-		commentUseCase: commentUseCase,
+		repo:         repo,
+		hasher:       hasher,
+		tokenManager: tokenManager,
+		postRepo:     postRepo,
+		commentRepo:  commentRepo,
 	}
 }
 

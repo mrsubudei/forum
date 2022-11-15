@@ -30,7 +30,7 @@ func (cr *CommentsRepo) Store(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(comment.PostId, comment.UserId, comment.Date, comment.Content)
+	res, err := stmt.Exec(comment.PostId, comment.User.Id, comment.Date, comment.Content)
 	if err != nil {
 		return fmt.Errorf("CommentssRepo - Store - Exec: %w", err)
 	}
@@ -54,7 +54,6 @@ func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
 	rows, err := cr.DB.Query(`
 	SELECT
 		id, post_id, user_id, date, content,
-		(SELECT name from users WHERE users.id = comments.user_id) AS user_name,
 		(SELECT COUNT(*) FROM comment_likes WHERE comment_likes.comment_id = comments.id) AS comment_likes,
 		(SELECT COUNT(*) FROM comment_dislikes WHERE comment_dislikes.comment_id = comments.id) AS comment_dislikes
 	FROM comments
@@ -68,17 +67,15 @@ func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
 		var comment entity.Comment
 		var commentLikes sql.NullInt64
 		var commentDislikes sql.NullInt64
-		var userName sql.NullString
 
-		err = rows.Scan(&comment.Id, &comment.PostId, &comment.UserId, &comment.Date, &comment.Content,
-			&userName, &commentLikes, &commentDislikes)
+		err = rows.Scan(&comment.Id, &comment.PostId, &comment.User.Id, &comment.Date, &comment.Content,
+			&commentLikes, &commentDislikes)
 		if err != nil {
 			return nil, fmt.Errorf("CommentsRepo - Fetch - Scan: %w", err)
 		}
 
 		comment.TotalLikes = commentLikes.Int64
 		comment.TotalDislikes = commentDislikes.Int64
-		comment.UserName = userName.String
 		comments = append(comments, comment)
 	}
 	return comments, nil
@@ -101,7 +98,7 @@ func (cr *CommentsRepo) GetById(commentId int64) (entity.Comment, error) {
 	defer stmt.Close()
 	var commentLikes sql.NullInt64
 	var commentDislikes sql.NullInt64
-	err = stmt.QueryRow(commentId).Scan(&comment.Id, &comment.PostId, &comment.UserId, &comment.Date, &comment.Content, &commentLikes, &commentDislikes)
+	err = stmt.QueryRow(commentId).Scan(&comment.Id, &comment.PostId, &comment.User.Id, &comment.Date, &comment.Content, &commentLikes, &commentDislikes)
 	if err != nil {
 		return comment, fmt.Errorf("CommentsRepo - GetById - Scan: %w", err)
 	}
@@ -192,7 +189,7 @@ func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(comment.Id, comment.UserId, getRegTime(DateFormat))
+	res, err := stmt.Exec(comment.Id, comment.User.Id, getRegTime(DateFormat))
 	if err != nil {
 		tx.Commit()
 		if err != nil {
@@ -226,7 +223,7 @@ func (pr *CommentsRepo) DeleteLike(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(comment.Id, comment.UserId)
+	_, err = stmt.Exec(comment.Id, comment.User.Id)
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteLike - Exec: %w", err)
 	}
@@ -254,7 +251,7 @@ func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(comment.Id, comment.UserId, getRegTime(DateFormat))
+	res, err := stmt.Exec(comment.Id, comment.User.Id, getRegTime(DateFormat))
 	if err != nil {
 		tx.Commit()
 		if err != nil {
@@ -288,7 +285,7 @@ func (pr *CommentsRepo) DeleteDislike(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(comment.Id, comment.UserId)
+	_, err = stmt.Exec(comment.Id, comment.User.Id)
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteDislike - Exec: %w", err)
 	}

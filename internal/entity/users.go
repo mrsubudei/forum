@@ -11,6 +11,7 @@ type User struct {
 	DateOfBirth     string    `json:"date_of_birth,omitempty"`
 	City            string    `json:"city,omitempty"`
 	Gender          string    `json:"sex,omitempty"`
+	Role            string    `json:"role,omitempty"`
 	SessionToken    string    `json:"token,omitempty"`
 	SessionTTL      time.Time `json:"token_expiration,omitempty"`
 	Posts           int64     `json:"posts,omitempty"`

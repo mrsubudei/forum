@@ -11,8 +11,8 @@ import (
 type PostsUseCase struct {
 	repo repository.Posts
 
-	userUseCase    repository.Users
-	commentUseCase repository.Comments
+	userRepo    repository.Users
+	commentRepo repository.Comments
 }
 
 const (
@@ -27,9 +27,9 @@ const (
 
 func NewPostsUseCase(repo repository.Posts, userUseCase repository.Users, commentUseCase repository.Comments) *PostsUseCase {
 	return &PostsUseCase{
-		repo:           repo,
-		userUseCase:    userUseCase,
-		commentUseCase: commentUseCase,
+		repo:        repo,
+		userRepo:    userUseCase,
+		commentRepo: commentUseCase,
 	}
 }
 
@@ -213,9 +213,16 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 		wgComments.Add(1)
 		go func(n int) {
 			defer wgComments.Done()
-			comments, err := pu.commentUseCase.Fetch((*posts)[n].Id)
+			comments, err := pu.commentRepo.Fetch((*posts)[n].Id)
+
 			if err != nil {
-				errChan <- fmt.Errorf("PostsUseCase - fillPostDetails #2 - %w", err)
+				errChan <- fmt.Errorf("PostsUseCase - fillPostDetails #3 - %w", err)
+			}
+			for j := 0; j < len(comments); j++ {
+				comments[j].User, err = pu.userRepo.GetById(comments[j].User.Id)
+				if err != nil {
+					continue
+				}
 			}
 			commentsSlice[n] = comments
 		}(i)
@@ -240,6 +247,7 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 				(*posts)[i].LastComment = commentsSlice[i][len(commentsSlice[i])-1]
 				(*posts)[i].LastCommentExist = true
 			}
+
 		}
 		close(commentsDone)
 	}()

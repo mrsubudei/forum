@@ -19,6 +19,7 @@ func CreateDB(s *sqlite3.Sqlite) error {
 		date_of_birth TEXT,
 		city TEXT,
 		sex TEXT,
+		role TEXT,
 		session_token TEXT,
 		session_ttl TEXT
 		);

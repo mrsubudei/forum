@@ -8,27 +8,6 @@ import (
 	"time"
 )
 
-type ErrMessage struct {
-	Code    int
-	Message string
-}
-
-var (
-	DateFormat          = "2006-01-02"
-	sessionDomain       = "localhost"
-	userNotExist        = "Такого пользователя не существует"
-	userPassWrong       = "Неверный пароль, попробуйте ещё раз"
-	passwordsNotSame    = "Пароли не совпадают"
-	emailFormatWrong    = "Неправильный формат почты"
-	userEmailExist      = "Пользователь с такой почтой уже существует"
-	userNameExist       = "Пользователь с таким именем уже существует"
-	errPageNotFound     = "Страница не найдена"
-	errBadRequest       = "Некорректный запрос"
-	errInternalServer   = "Ошибка сервера"
-	errMethodNotAllowed = "Метод не разрешен"
-	errors              ErrMessage
-)
-
 func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
 	authorized := h.checkSession(w, r)
 	if authorized {

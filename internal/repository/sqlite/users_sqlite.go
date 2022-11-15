@@ -8,7 +8,10 @@ import (
 	"time"
 )
 
-const DateAndTimeFormat = "2006-01-02 15:04:05"
+const (
+	DateAndTimeFormat = "2006-01-02 15:04:05"
+	RoleUser          = "Пользователь"
+)
 
 type UsersRepo struct {
 	*sqlite3.Sqlite
@@ -25,7 +28,7 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	}
 
 	stmt, err := tx.Prepare(`
-	INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex) 
+	INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex, role) 
 		values(?, ?, ?, ?, ?, ?, ?)
 	`)
 	if err != nil {
@@ -34,7 +37,7 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	defer stmt.Close()
 
 	res, err := stmt.Exec(user.Name, user.Email, user.Password, user.RegDate,
-		user.DateOfBirth, user.City, user.Gender)
+		user.DateOfBirth, user.City, user.Gender, RoleUser)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Exec: %w", err)
 	}
@@ -57,7 +60,7 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 
 	rows, err := ur.DB.Query(`
 	SELECT
-		id, name, email, reg_date, date_of_birth, city, sex,
+		id, name, email, reg_date, date_of_birth, city, sex, role,
 		(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
 		(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
 		(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
@@ -81,7 +84,7 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 		var commentDislikes sql.NullInt64
 
 		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.RegDate, &user.DateOfBirth, &user.City,
-			&user.Gender, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
+			&user.Gender, &user.Role, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 		if err != nil {
 			return nil, fmt.Errorf("UsersRepo - Fetch - Scan: %w", err)
 		}
@@ -151,11 +154,53 @@ func (ur *UsersRepo) GetId(user entity.User) (int64, error) {
 	return id, nil
 }
 
+// func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
+// 	var user entity.User
+// 	stmt, err := ur.DB.Prepare(`
+// 	SELECT
+// 		name, email, password, reg_date, date_of_birth, city, sex, role,
+// 		(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
+// 		(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
+// 		(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
+// 		(SELECT post_id FROM post_dislikes WHERE post_dislikes.user_id = users.id) AS post_dislikes,
+// 		(SELECT comment_id FROM comment_likes WHERE comment_likes.user_id = users.id) AS comment_likes,
+// 		(SELECT comment_id FROM comment_dislikes WHERE comment_dislikes.user_id = users.id) AS comment_dislikes
+// 	FROM users
+// 	WHERE id = ?
+// 	`)
+
+// 	if err != nil {
+// 		return user, fmt.Errorf("UsersRepo - GetById - Query: %w", err)
+// 	}
+// 	defer stmt.Close()
+// 	var posts sql.NullInt64
+// 	var comments sql.NullInt64
+// 	var postLikes sql.NullInt64
+// 	var postDislikes sql.NullInt64
+// 	var commentLikes sql.NullInt64
+// 	var commentDislikes sql.NullInt64
+
+// 	err = stmt.QueryRow(id).Scan(&user.Name, &user.Email, &user.Password, &user.RegDate, &user.DateOfBirth, &user.City,
+// 		&user.Gender, &user.Role, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
+// 	if err != nil {
+// 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
+// 	}
+
+// 	user.Posts = posts.Int64
+// 	user.Comments = comments.Int64
+// 	user.PostLikes = postLikes.Int64
+// 	user.PostDislikes = postDislikes.Int64
+// 	user.CommentLikes = commentLikes.Int64
+// 	user.CommentDislikes = commentDislikes.Int64
+
+// 	return user, nil
+// }
+
 func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var user entity.User
 	stmt, err := ur.DB.Prepare(`
 	SELECT
-		name, email, password, reg_date, date_of_birth, city, sex,
+		id, name, email, password, reg_date, date_of_birth, city, sex,
 		(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
 		(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
 		(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
@@ -177,7 +222,7 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var commentLikes sql.NullInt64
 	var commentDislikes sql.NullInt64
 
-	err = stmt.QueryRow(id).Scan(&user.Name, &user.Email, &user.Password, &user.RegDate, &user.DateOfBirth, &user.City,
+	err = stmt.QueryRow(id).Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.RegDate, &user.DateOfBirth, &user.City,
 		&user.Gender, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
@@ -231,7 +276,7 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 	}
 	stmt, err := ur.DB.Prepare(`
 	UPDATE users
-	SET email = ?, date_of_birth = ?, city = ?, sex = ?
+	SET email = ?, date_of_birth = ?, city = ?, sex = ?, role = ?
 	WHERE id = ?
 	`)
 
@@ -240,7 +285,7 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(user.Email, user.DateOfBirth, user.City, user.Gender, user.Id)
+	res, err := stmt.Exec(user.Email, user.DateOfBirth, user.City, user.Gender, user.Role, user.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Exec: %w", err)
 	}

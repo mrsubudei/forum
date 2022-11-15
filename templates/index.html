@@ -129,7 +129,7 @@
                                             src="/templates/img/icons/last_post.gif" alt="Последний ответ"
                                             title="Последний комментарий"></a>
                                     {{.LastComment.Date}}<br>
-                                    от <a href="/users/{{.User.Id}}">{{.LastComment.UserName}}</a>
+                                    от <a href="/users/{{.LastComment.User.Id}}">{{.LastComment.User.Name}}</a>
                                     {{end}}
                                 </td>
                             </tr>

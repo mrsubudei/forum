@@ -10,15 +10,15 @@ import (
 type CommentsUseCase struct {
 	repo repository.Comments
 
-	postUseCase repository.Posts
-	userUseCase repository.Users
+	postRepo repository.Posts
+	userRepo repository.Users
 }
 
-func NewCommentUseCase(repo repository.Comments, postUseCase repository.Posts, userUseCase repository.Users) *CommentsUseCase {
+func NewCommentUseCase(repo repository.Comments, postRepo repository.Posts, userRepo repository.Users) *CommentsUseCase {
 	return &CommentsUseCase{
-		repo:        repo,
-		postUseCase: postUseCase,
-		userUseCase: userUseCase,
+		repo:     repo,
+		postRepo: postRepo,
+		userRepo: userRepo,
 	}
 }
 
@@ -33,8 +33,15 @@ func (cu *CommentsUseCase) WriteComment(comment entity.Comment) error {
 
 func (cu *CommentsUseCase) GetAllComments(postId int64) ([]entity.Comment, error) {
 	comments, err := cu.repo.Fetch(postId)
+	for i := 0; i < len(comments); i++ {
+		user, err := cu.userRepo.GetById(comments[i].User.Id)
+		if err != nil {
+			return nil, fmt.Errorf("CommentsUseCase - GetAllComments #1 - %w", err)
+		}
+		comments[i].User = user
+	}
 	if err != nil {
-		return nil, fmt.Errorf("CommentsUseCase - GetAllComments - %w", err)
+		return nil, fmt.Errorf("CommentsUseCase - GetAllComments #2 - %w", err)
 	}
 	return comments, nil
 }
