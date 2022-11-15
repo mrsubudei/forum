@@ -8,14 +8,11 @@ import (
 	"time"
 )
 
+const DateAndTimeFormat = "2006-01-02 15:04:05"
+
 type UsersRepo struct {
 	*sqlite3.Sqlite
 }
-
-const (
-	DateFormat        = "2006-01-02"
-	DateAndTimeFormat = "2006-01-02 15:04:05"
-)
 
 func NewUsersRepo(sq *sqlite3.Sqlite) *UsersRepo {
 	return &UsersRepo{sq}
@@ -36,11 +33,8 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	}
 	defer stmt.Close()
 
-	regDate := user.RegDate.Format(DateFormat)
-	birthDate := user.DateOfBirth.Format(DateFormat)
-
-	res, err := stmt.Exec(user.Name, user.Email, user.Password, regDate,
-		birthDate, user.City, user.Gender)
+	res, err := stmt.Exec(user.Name, user.Email, user.Password, user.RegDate,
+		user.DateOfBirth, user.City, user.Gender)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Exec: %w", err)
 	}
@@ -85,20 +79,11 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 		var postDislikes sql.NullInt64
 		var commentLikes sql.NullInt64
 		var commentDislikes sql.NullInt64
-		var regDate string
-		var birthDate string
-		err = rows.Scan(&user.Id, &user.Name, &user.Email, &regDate, &birthDate, &user.City,
+
+		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.RegDate, &user.DateOfBirth, &user.City,
 			&user.Gender, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 		if err != nil {
 			return nil, fmt.Errorf("UsersRepo - Fetch - Scan: %w", err)
-		}
-		regDateParsed, err := time.Parse(DateFormat, regDate)
-		if err != nil {
-			return nil, fmt.Errorf("UsersRepo - Fetch - Parse regDate: %w", err)
-		}
-		birthDatePasred, err := time.Parse(DateFormat, regDate)
-		if err != nil {
-			return nil, fmt.Errorf("UsersRepo - Fetch - Parse birthDate: %w", err)
 		}
 
 		user.Posts = posts.Int64
@@ -107,8 +92,6 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 		user.PostDislikes = postDislikes.Int64
 		user.CommentLikes = commentLikes.Int64
 		user.CommentDislikes = commentDislikes.Int64
-		user.RegDate = regDateParsed
-		user.DateOfBirth = birthDatePasred
 		users = append(users, user)
 	}
 
@@ -193,20 +176,11 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var postDislikes sql.NullInt64
 	var commentLikes sql.NullInt64
 	var commentDislikes sql.NullInt64
-	var regDate string
-	var birthDate string
-	err = stmt.QueryRow(id).Scan(&user.Name, &user.Email, &user.Password, &regDate, &birthDate, &user.City,
+
+	err = stmt.QueryRow(id).Scan(&user.Name, &user.Email, &user.Password, &user.RegDate, &user.DateOfBirth, &user.City,
 		&user.Gender, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
-	}
-	regDateParsed, err := time.Parse(DateFormat, regDate)
-	if err != nil {
-		return user, fmt.Errorf("UsersRepo - GetById - Parse regDate: %w", err)
-	}
-	birthDatePasred, err := time.Parse(DateFormat, regDate)
-	if err != nil {
-		return user, fmt.Errorf("UsersRepo - GetById - Parse birthDate: %w", err)
 	}
 
 	user.Posts = posts.Int64
@@ -215,8 +189,6 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	user.PostDislikes = postDislikes.Int64
 	user.CommentLikes = commentLikes.Int64
 	user.CommentDislikes = commentDislikes.Int64
-	user.RegDate = regDateParsed
-	user.DateOfBirth = birthDatePasred
 
 	return user, nil
 }
@@ -267,8 +239,8 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 		return fmt.Errorf("UsersRepo - Update - Prepare: %w", err)
 	}
 	defer stmt.Close()
-	birthDate := user.DateOfBirth.Format(DateFormat)
-	res, err := stmt.Exec(user.Email, birthDate, user.City, user.Gender, user.Id)
+
+	res, err := stmt.Exec(user.Email, user.DateOfBirth, user.City, user.Gender, user.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Exec: %w", err)
 	}

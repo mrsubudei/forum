@@ -23,6 +23,7 @@ func NewCommentUseCase(repo repository.Comments, postUseCase repository.Posts, u
 }
 
 func (cu *CommentsUseCase) WriteComment(comment entity.Comment) error {
+	comment.Date = getRegTime(DateAndTimeFormat)
 	err := cu.repo.Store(comment)
 	if err != nil {
 		return fmt.Errorf("CommentsUseCase - WriteComment - %w", err)

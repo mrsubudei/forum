@@ -2,7 +2,10 @@ package sqlite
 
 import (
 	"forum/pkg/sqlite3"
+	"time"
 )
+
+const DateFormat = "2006-01-02"
 
 func CreateDB(s *sqlite3.Sqlite) error {
 
@@ -155,4 +158,9 @@ func CreateDB(s *sqlite3.Sqlite) error {
 	}
 
 	return nil
+}
+
+func getRegTime(format string) string {
+	timeNow := time.Now()
+	return timeNow.Format(format)
 }

@@ -34,6 +34,7 @@ func NewPostsUseCase(repo repository.Posts, userUseCase repository.Users, commen
 }
 
 func (pu *PostsUseCase) CreatePost(post entity.Post) error {
+	post.Date = getRegTime(DateAndTimeFormat)
 	err := pu.repo.Store(&post)
 	if err != nil {
 		return fmt.Errorf("PostsUseCase - CreatePost #1 - %w", err)

@@ -25,6 +25,7 @@ const (
 	UpdateSessionQuery  = "session"
 	UniqueEmailErr      = "UNIQUE constraint failed: users.email"
 	UniqueNameErr       = "UNIQUE constraint failed: users.name"
+	DateFormat          = "2006-01-02"
 	DateAndTimeFormat   = "2006-01-02 15:04:05"
 )
 
@@ -49,8 +50,7 @@ func (uu *UsersUseCase) SignUp(user entity.User) error {
 	}
 	user.Password = hashed
 
-	timeNow := time.Now()
-	user.RegDate = timeNow
+	user.RegDate = getRegTime(DateAndTimeFormat)
 
 	err = uu.repo.Store(user)
 	if err != nil {
@@ -236,4 +236,9 @@ func (uu *UsersUseCase) DeleteUser(u entity.User) error {
 		return fmt.Errorf("UsersUseCase - DeleteUser - %w", err)
 	}
 	return nil
+}
+
+func getRegTime(format string) string {
+	timeNow := time.Now()
+	return timeNow.Format(format)
 }

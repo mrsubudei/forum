@@ -7,8 +7,8 @@ type User struct {
 	Name            string    `json:"name,omitempty"`
 	Email           string    `json:"email,omitempty"`
 	Password        string    `json:"password,omitempty"`
-	RegDate         time.Time `json:"registration_date,omitempty"`
-	DateOfBirth     time.Time `json:"date_of_birth,omitempty"`
+	RegDate         string    `json:"registration_date,omitempty"`
+	DateOfBirth     string    `json:"date_of_birth,omitempty"`
 	City            string    `json:"city,omitempty"`
 	Gender          string    `json:"sex,omitempty"`
 	SessionToken    string    `json:"token,omitempty"`

@@ -162,7 +162,6 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	var dateOfBirth string
 	var city string
 	var gender string
-	var parsed time.Time
 	var err error
 
 	if len(r.Form["user"]) == 0 || len(r.Form["password"]) == 0 ||
@@ -199,15 +198,6 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		s.Message = passwordsNotSame
 		valid = false
 	}
-	if dateOfBirth != "" {
-		parsed, err = time.Parse(DateFormat, dateOfBirth)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
 
 	user := entity.User{
 		Name:        name,
@@ -215,7 +205,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		Email:       email,
 		City:        city,
 		Gender:      gender,
-		DateOfBirth: parsed,
+		DateOfBirth: dateOfBirth,
 	}
 	err = h.usecases.Users.SignUp(user)
 

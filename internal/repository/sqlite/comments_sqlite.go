@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"forum/internal/entity"
 	"forum/pkg/sqlite3"
-	"time"
 )
 
 type CommentsRepo struct {
@@ -31,9 +30,7 @@ func (cr *CommentsRepo) Store(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	date := comment.Date.Format(DateAndTimeFormat)
-
-	res, err := stmt.Exec(comment.PostId, comment.UserId, date, comment.Content)
+	res, err := stmt.Exec(comment.PostId, comment.UserId, comment.Date, comment.Content)
 	if err != nil {
 		return fmt.Errorf("CommentssRepo - Store - Exec: %w", err)
 	}
@@ -72,22 +69,15 @@ func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
 		var commentLikes sql.NullInt64
 		var commentDislikes sql.NullInt64
 		var userName sql.NullString
-		var date string
 
-		err = rows.Scan(&comment.Id, &comment.PostId, &comment.UserId, &date, &comment.Content,
+		err = rows.Scan(&comment.Id, &comment.PostId, &comment.UserId, &comment.Date, &comment.Content,
 			&userName, &commentLikes, &commentDislikes)
 		if err != nil {
 			return nil, fmt.Errorf("CommentsRepo - Fetch - Scan: %w", err)
 		}
 
-		dateParsed, err := time.Parse(DateAndTimeFormat, date)
-		if err != nil {
-			return nil, fmt.Errorf("CommentsRepo - Fetch - Parse date: %w", err)
-		}
-
 		comment.TotalLikes = commentLikes.Int64
 		comment.TotalDislikes = commentDislikes.Int64
-		comment.Date = dateParsed
 		comment.UserName = userName.String
 		commets = append(commets, comment)
 	}
@@ -111,19 +101,13 @@ func (cr *CommentsRepo) GetById(commentId int64) (entity.Comment, error) {
 	defer stmt.Close()
 	var commentLikes sql.NullInt64
 	var commentDislikes sql.NullInt64
-	var date string
-	err = stmt.QueryRow(commentId).Scan(&comment.Id, &comment.PostId, &comment.UserId, &date, &comment.Content, &commentLikes, &commentDislikes)
+	err = stmt.QueryRow(commentId).Scan(&comment.Id, &comment.PostId, &comment.UserId, &comment.Date, &comment.Content, &commentLikes, &commentDislikes)
 	if err != nil {
 		return comment, fmt.Errorf("CommentsRepo - GetById - Scan: %w", err)
-	}
-	regDateParsed, err := time.Parse(DateAndTimeFormat, date)
-	if err != nil {
-		return comment, fmt.Errorf("CommentsRepo - GetById - Parse regDate: %w", err)
 	}
 
 	comment.TotalLikes = commentLikes.Int64
 	comment.TotalDislikes = commentDislikes.Int64
-	comment.Date = regDateParsed
 
 	return comment, nil
 }
@@ -208,9 +192,7 @@ func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	date := comment.Date.Format(DateAndTimeFormat)
-
-	res, err := stmt.Exec(comment.Id, comment.UserId, date)
+	res, err := stmt.Exec(comment.Id, comment.UserId, getRegTime(DateFormat))
 	if err != nil {
 		tx.Commit()
 		if err != nil {
@@ -272,9 +254,7 @@ func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 	}
 	defer stmt.Close()
 
-	date := comment.Date.Format(DateAndTimeFormat)
-
-	res, err := stmt.Exec(comment.Id, comment.UserId, date)
+	res, err := stmt.Exec(comment.Id, comment.UserId, getRegTime(DateFormat))
 	if err != nil {
 		tx.Commit()
 		if err != nil {
@@ -339,16 +319,10 @@ func (pr *CommentsRepo) FetchReactions(id int64) (entity.Comment, error) {
 
 	for rowsLikes.Next() {
 		var like entity.Reaction
-		var date string
-		err = rowsLikes.Scan(&like.UserId, &date)
+		err = rowsLikes.Scan(&like.UserId, &like.Date)
 		if err != nil {
 			return comment, fmt.Errorf("CommentsRepo - FetchReactions - likes - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateAndTimeFormat, date)
-		if err != nil {
-			return comment, fmt.Errorf("CommentsRepo - FetchReactions - likes - Parse date: %w", err)
-		}
-		like.Date = dateParsed
 		likes = append(likes, like)
 	}
 
@@ -365,16 +339,10 @@ func (pr *CommentsRepo) FetchReactions(id int64) (entity.Comment, error) {
 
 	for rowsDislikes.Next() {
 		var dislike entity.Reaction
-		var date string
-		err = rowsDislikes.Scan(&dislike.UserId, &date)
+		err = rowsDislikes.Scan(&dislike.UserId, &dislike.Date)
 		if err != nil {
 			return comment, fmt.Errorf("CommentsRepo - FetchReactions - dislikes - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateAndTimeFormat, date)
-		if err != nil {
-			return comment, fmt.Errorf("CommentsRepo - FetchReactions - dislikes - Parse date: %w", err)
-		}
-		dislike.Date = dateParsed
 		likes = append(likes, dislike)
 	}
 	comment.Likes = append(comment.Likes, likes...)

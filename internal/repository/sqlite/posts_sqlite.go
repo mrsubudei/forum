@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"forum/internal/entity"
 	"forum/pkg/sqlite3"
-	"time"
 )
 
 type PostsRepo struct {
@@ -30,8 +29,8 @@ func (pr *PostsRepo) Store(post *entity.Post) error {
 		return fmt.Errorf("PostsRepo - Store - Prepare: %w", err)
 	}
 	defer stmt.Close()
-	date := post.Date.Format(DateAndTimeFormat)
-	res, err := stmt.Exec(post.User.Id, date, post.Title, post.Content)
+
+	res, err := stmt.Exec(post.User.Id, post.Date, post.Title, post.Content)
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Store - Exec: %w", err)
 	}
@@ -108,19 +107,16 @@ func (pr *PostsRepo) Fetch() ([]entity.Post, error) {
 		var post entity.Post
 		var postsLikes sql.NullInt64
 		var postDislikes sql.NullInt64
-		var date string
-		err = rows.Scan(&post.Id, &post.User.Id, &date, &post.Title, &post.Content,
+
+		err = rows.Scan(&post.Id, &post.User.Id, &post.Date, &post.Title, &post.Content,
 			&post.User.Name, &postsLikes, &postDislikes)
 		if err != nil {
 			return posts, fmt.Errorf("PostsRepo - Fetch - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateAndTimeFormat, date)
-		if err != nil {
-			return posts, fmt.Errorf("PostsRepo - Fetch - Parse date: %w", err)
-		}
+
 		post.TotalLikes = postsLikes.Int64
 		post.TotalDislikes = postDislikes.Int64
-		post.Date = dateParsed
+
 		posts = append(posts, post)
 	}
 
@@ -145,21 +141,15 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	defer stmt.Close()
 	var postsLikes sql.NullInt64
 	var postDislikes sql.NullInt64
-	var date string
 
-	err = stmt.QueryRow(id, id, id).Scan(&post.User.Id, &date, &post.Title, &post.Content,
+	err = stmt.QueryRow(id, id, id).Scan(&post.User.Id, &post.Date, &post.Title, &post.Content,
 		&post.User.Name, &postsLikes, &postDislikes)
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)
 	}
-	dateParsed, err := time.Parse(DateAndTimeFormat, date)
-	if err != nil {
-		return post, fmt.Errorf("PostsRepo - GetById - Parse regDate: %w", err)
-	}
 
 	post.TotalLikes = postsLikes.Int64
 	post.TotalDislikes = postDislikes.Int64
-	post.Date = dateParsed
 
 	return post, nil
 }
@@ -294,9 +284,7 @@ func (pr *PostsRepo) StoreLike(post entity.Post) error {
 	}
 	defer stmt.Close()
 
-	date := post.Date.Format(DateAndTimeFormat)
-
-	res, err := stmt.Exec(post.Id, post.User.Id, date)
+	res, err := stmt.Exec(post.Id, post.User.Id, getRegTime(DateFormat))
 	if err != nil {
 		tx.Commit()
 		if err != nil {
@@ -358,9 +346,7 @@ func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 	}
 	defer stmt.Close()
 
-	date := post.Date.Format(DateAndTimeFormat)
-
-	res, err := stmt.Exec(post.Id, post.User.Id, date)
+	res, err := stmt.Exec(post.Id, post.User.Id, getRegTime(DateFormat))
 	if err != nil {
 		tx.Commit()
 		if err != nil {
@@ -425,16 +411,10 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 
 	for rowsLikes.Next() {
 		var like entity.Reaction
-		var date string
-		err = rowsLikes.Scan(&like.UserId, &date)
+		err = rowsLikes.Scan(&like.UserId, &like.Date)
 		if err != nil {
 			return post, fmt.Errorf("PostsRepo - FetchReactions - likes - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateAndTimeFormat, date)
-		if err != nil {
-			return post, fmt.Errorf("PostsRepo - FetchReactions - likes - Parse date: %w", err)
-		}
-		like.Date = dateParsed
 		likes = append(likes, like)
 	}
 
@@ -451,16 +431,13 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 
 	for rowsDislikes.Next() {
 		var dislike entity.Reaction
-		var date string
-		err = rowsDislikes.Scan(&dislike.UserId, &date)
+		err = rowsDislikes.Scan(&dislike.UserId, &dislike.Date)
 		if err != nil {
 			return post, fmt.Errorf("PostsRepo - FetchReactions - dislikes - Scan: %w", err)
 		}
-		dateParsed, err := time.Parse(DateAndTimeFormat, date)
 		if err != nil {
 			return post, fmt.Errorf("PostsRepo - FetchReactions - dislikes - Parse date: %w", err)
 		}
-		dislike.Date = dateParsed
 		likes = append(likes, dislike)
 	}
 	post.Likes = append(post.Likes, likes...)
