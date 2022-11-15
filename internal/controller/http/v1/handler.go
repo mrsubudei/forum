@@ -126,7 +126,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	searchRequest := r.Form["search"][0]
+	searchRequest := strings.ToLower(r.Form["search"][0])
 	posts, err := h.usecases.Posts.GetAllPosts()
 	filtered := h.filterPosts(posts, searchRequest)
 	if err != nil {
@@ -182,18 +182,18 @@ func (h *Handler) filterPosts(posts []entity.Post, request string) []entity.Post
 	}
 	for _, post := range posts {
 		found := false
-		if strings.Contains(post.Title, request) {
+		if strings.Contains(strings.ToLower(post.Title), request) {
 			filtered = append(filtered, post)
 			continue
-		} else if strings.Contains(post.Content, request) {
+		} else if strings.Contains(strings.ToLower(post.Content), request) {
 			filtered = append(filtered, post)
 			continue
-		} else if strings.Contains(post.User.Name, request) {
+		} else if strings.Contains(strings.ToLower(post.User.Name), request) {
 			filtered = append(filtered, post)
 			continue
 		}
 		for _, val := range post.Categories {
-			if strings.Contains(val, request) {
+			if strings.Contains(strings.ToLower(val), request) {
 				filtered = append(filtered, post)
 				found = true
 				break
@@ -201,7 +201,7 @@ func (h *Handler) filterPosts(posts []entity.Post, request string) []entity.Post
 		}
 		if !found {
 			for _, val := range post.Comments {
-				if strings.Contains(val.Content, request) {
+				if strings.Contains(strings.ToLower(val.Content), request) {
 					filtered = append(filtered, post)
 					break
 				}
