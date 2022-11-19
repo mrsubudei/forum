@@ -62,6 +62,46 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
+		return
+	}
+
+	authorized := h.checkSession(w, r)
+	if !authorized {
+		errors.Code = http.StatusForbidden
+		errors.Message = errStatusNotAuthorized
+		h.Errors(w, errors)
+		return
+	}
+	foundUser := h.getExistedSession(w, r)
+	content := ContentSingle{}
+	if foundUser.Id == 1 {
+		content.Admin = true
+	}
+	content.Authorized = authorized
+	content.Unauthorized = !authorized
+
+	html, err := template.ParseFiles("templates/create_post.html")
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
+	err = html.Execute(w, content)
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+}
+
 func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 	authorized := h.checkSession(w, r)
 	if !authorized {

@@ -84,6 +84,7 @@ textarea {
 	background: #AFC6DB;
 	border: 1px solid #666;
 	padding: 2px;
+	resize: none;
 }
 
 #personal_messages .windowbg div.postarea select {
@@ -4450,4 +4451,9 @@ span.hidelink {
 .reaction {
 	float: right;
 	margin-right: 0.8em;
+}
+
+.input_post {
+	width: 665px;
+	height: 100px;
 }
