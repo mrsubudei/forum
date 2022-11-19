@@ -18,6 +18,7 @@ type Posts interface {
 	MakeReaction(p entity.Post, command string) error
 	DeleteReaction(post entity.Post, command string) error
 	CreateCategories(categories []string) error
+	GetAllCategories() ([]string, error)
 }
 
 type Users interface {

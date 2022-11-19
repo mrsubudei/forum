@@ -114,6 +114,18 @@ func (pu *PostsUseCase) GetAllByCategory(category string) ([]entity.Post, error)
 	return posts, nil
 }
 
+func (pu *PostsUseCase) GetAllCategories() ([]string, error) {
+	categories, err := pu.repo.GetExistedCategories()
+	if err != nil {
+		return categories, fmt.Errorf("PostsUseCase - GetAllCategories #1 - %w", err)
+	}
+
+	if err != nil {
+		return categories, fmt.Errorf("PostsUseCase - GetAllCategories #2 - %w", err)
+	}
+	return categories, nil
+}
+
 func (pu *PostsUseCase) UpdatePost(post entity.Post) error {
 	err := pu.repo.Update(post)
 	if err != nil {

@@ -103,6 +103,12 @@
                                     <dt>Заголовок:</dt>
                                     <input type="text" name="title" size="90" value="" class="input_text"
                                         required="required">
+                                    <div class="input_post_categories">
+                                        {{range .Post.Categories}}
+                                        <input type="checkbox" id="c{{.}}" name="categories" value="{{.}}">
+                                        <label for="c{{.}}">{{.}}</label>
+                                        {{end}}
+                                    </div>
                                     <dt>Содержание:</dt>
                                     <textarea name="content" class="input_post" required="required"></textarea>
                                 </dl>

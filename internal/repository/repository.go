@@ -21,6 +21,7 @@ type Posts interface {
 	GetRelatedCategories(post entity.Post) ([]string, error)
 	FetchReactions(id int64) (entity.Post, error)
 	StoreCategories(categories []string) error
+	GetExistedCategories() ([]string, error)
 }
 
 type Users interface {

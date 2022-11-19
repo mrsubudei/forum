@@ -506,3 +506,27 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 
 	return nil
 }
+
+func (pr *PostsRepo) GetExistedCategories() ([]string, error) {
+
+	categories := []string{}
+	rows, err := pr.DB.Query(`
+	SELECT topic
+	FROM reference_topic
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("PostsRepo - GetExistedCategories - Query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var category string
+		err = rows.Scan(&category)
+		if err != nil {
+			return nil, fmt.Errorf("PostsRepo - GetExistedCategories - Scan: %w", err)
+		}
+		categories = append(categories, category)
+	}
+
+	return categories, nil
+}

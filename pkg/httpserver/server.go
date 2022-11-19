@@ -42,6 +42,7 @@ func (s *Server) Run() error {
 	http.HandleFunc("/search/", s.handler.SearchHandler)
 	http.HandleFunc("/posts/", s.handler.PostPageHandler)
 	http.HandleFunc("/create_post_page/", s.handler.CreatePostPageHandler)
+	http.HandleFunc("/create_post/", s.handler.CreatePostHandler)
 	http.HandleFunc("/put_post_like/", s.handler.PostPutLikeHandler)
 	http.HandleFunc("/put_post_dislike/", s.handler.PostPutDislikeHandler)
 	http.HandleFunc("/put_comment_like/", s.handler.CommentPutLikeHandler)

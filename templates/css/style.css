@@ -4457,3 +4457,9 @@ span.hidelink {
 	width: 665px;
 	height: 100px;
 }
+
+.input_post_categories {
+	width: 665px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}

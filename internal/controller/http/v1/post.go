@@ -85,6 +85,15 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
 
+	categories, err := h.usecases.Posts.GetAllCategories()
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+	content.Post.Categories = categories
+
 	html, err := template.ParseFiles("templates/create_post.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
@@ -100,6 +109,54 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 		h.Errors(w, errors)
 		return
 	}
+}
+
+func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
+		return
+	}
+
+	authorized := h.checkSession(w, r)
+	if !authorized {
+		errors.Code = http.StatusForbidden
+		errors.Message = errStatusNotAuthorized
+		h.Errors(w, errors)
+		return
+	}
+
+	foundUser := h.getExistedSession(w, r)
+
+	r.ParseForm()
+	if len(r.Form["title"]) == 0 || len(r.Form["categories"]) == 0 ||
+		len(r.Form["content"]) == 0 {
+		errors.Code = http.StatusBadRequest
+		errors.Message = errBadRequest
+		h.Errors(w, errors)
+		return
+	}
+
+	postTitle := r.Form["title"][0]
+	postContent := r.Form["content"][0]
+	categories := r.Form["categories"]
+
+	newPost := entity.Post{}
+	newPost.Title = postTitle
+	newPost.Content = postContent
+	newPost.Categories = categories
+	newPost.User = foundUser
+
+	err := h.usecases.Posts.CreatePost(newPost)
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
