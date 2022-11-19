@@ -35,19 +35,22 @@ type ErrMessage struct {
 }
 
 var (
-	DateFormat          = "2006-01-02"
-	sessionDomain       = "localhost"
-	userNotExist        = "Такого пользователя не существует"
-	userPassWrong       = "Неверный пароль, попробуйте ещё раз"
-	passwordsNotSame    = "Пароли не совпадают"
-	emailFormatWrong    = "Неправильный формат почты"
-	userEmailExist      = "Пользователь с такой почтой уже существует"
-	userNameExist       = "Пользователь с таким именем уже существует"
-	errPageNotFound     = "Страница не найдена"
-	errBadRequest       = "Некорректный запрос"
-	errInternalServer   = "Ошибка сервера"
-	errMethodNotAllowed = "Метод не разрешен"
-	errors              ErrMessage
+	DateFormat             = "2006-01-02"
+	sessionDomain          = "localhost"
+	userNotExist           = "Такого пользователя не существует"
+	userPassWrong          = "Неверный пароль, попробуйте ещё раз"
+	passwordsNotSame       = "Пароли не совпадают"
+	emailFormatWrong       = "Неправильный формат почты"
+	userEmailExist         = "Пользователь с такой почтой уже существует"
+	userNameExist          = "Пользователь с таким именем уже существует"
+	errPageNotFound        = "Страница не найдена"
+	errBadRequest          = "Некорректный запрос"
+	errInternalServer      = "Ошибка сервера"
+	errMethodNotAllowed    = "Метод не разрешен"
+	errStatusNotAuthorized = "Вы не авторизованы"
+	commandPutLike         = "like"
+	commandPutDislike      = "dislike"
+	errors                 ErrMessage
 )
 
 func NewHandler(services *usecase.UseCases) *Handler {

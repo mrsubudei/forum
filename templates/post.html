@@ -13,9 +13,11 @@
         <div id="header">
             <div class="frame">
                 <div id="top_section">
+                    {{if .Unauthorized}}
                     <div class="user"><br /><br />Пожалуйста, <a href="/signin_page/">войдите</a> или <a
                             href="signup_page">зарегистрируйтесь</a>.
                     </div>
+                    {{end}}
                 </div>
                 <div id="upper_section" class="middletext">
                     <div class="forumtitle clear">
@@ -46,6 +48,7 @@
                             </a>
                         </li>
                         {{end}}
+                        {{if .Unauthorized}}
                         <li id="button_login">
                             <a class="firstlevel" href="/signin_page/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/login.png"
@@ -58,6 +61,15 @@
                                         alt="*" />Регистрация</span>
                             </a>
                         </li>
+                        {{end}}
+                        {{if .Authorized}}
+                        <li id="button_login">
+                            <a class="firstlevel" href="/signout/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/login.png"
+                                        alt="*" />Выйти</span>
+                            </a>
+                        </li>
+                        {{end}}
                     </ul>
                 </div>
             </div>
@@ -73,7 +85,7 @@
                                 <a href="/"><span>Форум школы Алем</span></a> »
                             </li>
                             <li class="last">
-                                <a href="/signin_page"><span>Вход</span></a>
+                                <a href="/posts/{{.Post.Id}}"><span>{{.Post.Title}}</span></a>
                             </li>
                         </ul>
                     </div>
@@ -107,12 +119,6 @@
                                             </li>
                                             <li class="postcount">Постов: {{.Post.User.Posts}}</li>
                                             <li class="postcount">Комментариев: {{.Post.User.Comments}}</li>
-                                            <li class="postcount">Лайков на посты: {{.Post.User.PostLikes}}</li>
-                                            <li class="postcount">Дизлайков на посты: {{.Post.User.PostDislikes}}</li>
-                                            <li class="postcount">Лайков на комментарии: {{.Post.User.CommentLikes}}
-                                            </li>
-                                            <li class="postcount">Дизлайков на комментарии:
-                                                {{.Post.User.CommentDislikes}}</li>
                                             <li class="profile">
                                                 <ul>
                                                 </ul>
@@ -128,9 +134,24 @@
                                                 <h5>
                                                     {{.Post.Title}}
                                                 </h5>
-                                                <div class="smalltext">« <strong> :</strong> {{.Post.Date}} »
+                                                <div class="smalltext"><strong></strong> {{.Post.Date}}
                                                 </div>
                                                 <div></div>
+                                            </div>
+                                            <div class="reactions">
+                                                {{if .Authorized}}
+                                                <div class="reaction"> <a href="/put_post_like/{{.Post.Id}}"><img
+                                                            src="/templates/img/post/like.png"></a>
+                                                    {{.Post.TotalLikes}} <a href="/put_post_dislike/{{.Post.Id}}"><img
+                                                            src="/templates/img/post/dislike.png"></a>{{.Post.TotalDislikes}}
+                                                </div>
+                                                {{end}}
+                                                {{if .Unauthorized}}
+                                                <div class="reaction"><img src="/templates/img/post/like.png">
+                                                    {{.Post.TotalLikes}} <img
+                                                        src="/templates/img/post/dislike.png">{{.Post.TotalDislikes}}
+                                                </div>
+                                                {{end}}
                                             </div>
                                         </div>
                                         <div class="post">
@@ -142,13 +163,13 @@
                                         </div>
                                         <div class="smalltext reportlinks">
                                         </div>
-                                        <div class="signature">{{.Post.User.City}}</div>
                                     </div>
                                 </div>
                                 <span class="botslice"><span></span></span>
                             </div>
                             <hr class="post_separator">
                             <a></a>
+                            {{if .Authorized}}
                             {{range .Post.Comments}}
                             <div class="windowbg2">
                                 <span class="topslice"><span></span></span>
@@ -161,20 +182,9 @@
                                         <ul class="reset smalltext">
                                             <li class="postgroup">{{.User.Role}}</li>
                                             <li class="avatar">
-                                                <!-- <a href="{{.UserId}}">
-                                                    <img class="avatar"
-                                                        src="..."
-                                                        alt="">
-                                                </a> -->
                                             </li>
                                             <li class="postcount">Постов: {{.User.Posts}}</li>
                                             <li class="postcount">Комментариев: {{.User.Comments}}</li>
-                                            <li class="postcount">Лайков на посты: {{.User.PostLikes}}</li>
-                                            <li class="postcount">Дизлайков на посты: {{.User.PostDislikes}}</li>
-                                            <li class="postcount">Лайков на комментарии: {{.User.CommentLikes}}
-                                            </li>
-                                            <li class="postcount">Дизлайков на комментарии:
-                                                {{.User.CommentDislikes}}</li>
                                             <li class="profile">
                                                 <ul>
                                                 </ul>
@@ -189,8 +199,17 @@
                                                 </div>
                                                 <h5 id="{{.Id}}">
                                                 </h5>
-                                                <div class="smalltext">« <strong>:</strong> {{.Date}} »</div>
+                                                <div class="smalltext number"><strong></strong>
+                                                    {{.Date}}
+                                                </div>
                                                 <div></div>
+                                            </div>
+                                            <div class="reactions">
+                                                <div class="reaction"> <a href="/put_comment_like/{{.Id}}"><img
+                                                            src="/templates/img/post/comment-like.png"></a>
+                                                    {{.TotalLikes}} <a href="/put_comment_dislike/{{.Id}}"><img
+                                                            src="/templates/img/post/comment-dislike.png"></a>{{.TotalDislikes}}
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="post">
@@ -204,12 +223,72 @@
                                         </div>
                                         <div class="smalltext reportlinks">
                                         </div>
-                                        <!-- <div class="signature">{{.User.Signature}}</div> -->
                                     </div>
                                 </div>
                                 <span class="botslice"><span></span></span>
                             </div>
                             <hr class="post_separator">
+                            {{end}}
+                            {{end}}
+                            {{if .Unauthorized}}
+                            {{range .Post.Comments}}
+                            <div class="windowbg2">
+                                <span class="topslice"><span></span></span>
+                                <div class="post_wrapper">
+                                    <div class="poster">
+                                        <h4>
+                                            <a href="/users/{{.User.Id}}"
+                                                title="Просмотр профиля {{.User.Name}}">{{.User.Name}}</a>
+                                        </h4>
+                                        <ul class="reset smalltext">
+                                            <li class="postgroup">{{.User.Role}}</li>
+                                            <li class="avatar">
+                                            </li>
+                                            <li class="postcount">Постов: {{.User.Posts}}</li>
+                                            <li class="postcount">Комментариев: {{.User.Comments}}</li>
+                                            <li class="profile">
+                                                <ul>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="postarea">
+                                        <div class="flow_hidden">
+                                            <div class="keyinfo">
+                                                <div class="messageicon">
+                                                    <img src="/templates/img/post/xx.gif" alt="">
+                                                </div>
+                                                <h5 id="{{.Id}}">
+                                                </h5>
+                                                <div class="smalltext number"><strong></strong>
+                                                    {{.Date}}
+                                                </div>
+                                                <div></div>
+                                            </div>
+                                            <div class="reactions">
+                                                <div class="reaction"><img src="/templates/img/post/comment-like.png">
+                                                    {{.TotalLikes}} <img
+                                                        src="/templates/img/post/comment-dislike.png">{{.TotalDislikes}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="post">
+                                            <div class="inner">
+                                                {{.Content}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="moderatorbar">
+                                        <div class="smalltext modified">
+                                        </div>
+                                        <div class="smalltext reportlinks">
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="botslice"><span></span></span>
+                            </div>
+                            <hr class="post_separator">
+                            {{end}}
                             {{end}}
                         </form>
                     </div>

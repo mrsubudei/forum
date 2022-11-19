@@ -34,6 +34,7 @@ table {
 body {
 	/*	background: #E9EEF2 url(/templates/img/theme/backdrop.png) repeat;
  */
+	counter-reset: my-sec-counter;
 	font: 78%/130% "Verdana", "Arial", "Helvetica", sans-serif;
 	margin: 0 auto;
 	padding: 15px 0;
@@ -4433,4 +4434,20 @@ span.hidelink {
 
 .error_message {
 	font-size: 35px;
+}
+
+.number::before {
+	/* Increment "my-sec-counter" by 1 */
+	counter-increment: my-sec-counter;
+	content: "Ответ" counter(my-sec-counter) "# ";
+}
+
+.reactions {
+	float: right;
+	width: 50%;
+}
+
+.reaction {
+	float: right;
+	margin-right: 0.8em;
 }

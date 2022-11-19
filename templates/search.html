@@ -13,9 +13,11 @@
         <div id="header">
             <div class="frame">
                 <div id="top_section">
+                    {{if .Unauthorized}}
                     <div class="user"><br /><br />Пожалуйста, <a href="/signin_page/">войдите</a> или <a
                             href="signup_page">зарегистрируйтесь</a>.
                     </div>
+                    {{end}}
                 </div>
                 <div id="upper_section" class="middletext">
                     <div class="forumtitle clear">
@@ -46,6 +48,7 @@
                             </a>
                         </li>
                         {{end}}
+                        {{if .Unauthorized}}
                         <li id="button_login">
                             <a class="firstlevel" href="/signin_page/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/login.png"
@@ -58,6 +61,15 @@
                                         alt="*" />Регистрация</span>
                             </a>
                         </li>
+                        {{end}}
+                        {{if .Authorized}}
+                        <li id="button_login">
+                            <a class="firstlevel" href="/signout/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/login.png"
+                                        alt="*" />Выйти</span>
+                            </a>
+                        </li>
+                        {{end}}
                     </ul>
                 </div>
             </div>
@@ -73,7 +85,7 @@
                                 <a href="/"><span>Форум школы Алем</span></a> »
                             </li>
                             <li class="last">
-                                <a href="/signin_page"><span>Вход</span></a>
+                                <a href="/search_page/"><span>Поиск</span></a>
                             </li>
                         </ul>
                     </div>
