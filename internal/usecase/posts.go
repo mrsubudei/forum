@@ -98,6 +98,7 @@ func (pu *PostsUseCase) GetAllByCategory(category string) ([]entity.Post, error)
 	var posts []entity.Post
 	ids, err := pu.repo.GetIdsByCategory(category)
 	if err != nil {
+		fmt.Println(err)
 		return posts, fmt.Errorf("PostsUseCase - GetAllByCategory #1 - %w", err)
 	}
 	if len(ids) == 0 {
@@ -207,7 +208,7 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 	categoryDone := make(chan interface{})
 	commentsDone := make(chan interface{})
 
-	//collecting categories data
+	// collecting categories data
 	for i := 0; i < len(*posts); i++ {
 		wgCategory.Add(1)
 		go func(n int) {
@@ -220,13 +221,12 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 		}(i)
 	}
 
-	//collecting comments data
+	// collecting comments data
 	for i := 0; i < len(*posts); i++ {
 		wgComments.Add(1)
 		go func(n int) {
 			defer wgComments.Done()
 			comments, err := pu.commentRepo.Fetch((*posts)[n].Id)
-
 			if err != nil {
 				errChan <- fmt.Errorf("PostsUseCase - fillPostDetails #3 - %w", err)
 			}
@@ -240,7 +240,7 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 		}(i)
 	}
 
-	//filling categories data
+	// filling categories data
 	go func() {
 		wgCategory.Wait()
 		for i := 0; i < len(*posts); i++ {
@@ -249,7 +249,7 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 		close(categoryDone)
 	}()
 
-	//filling comments data
+	// filling comments data
 	go func() {
 		wgComments.Wait()
 		for i := 0; i < len(*posts); i++ {

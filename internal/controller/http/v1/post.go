@@ -19,8 +19,8 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/posts/"+path[len(path)-1] || err != nil || id == 0 || id < 0 {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Code = http.StatusNotFound
+		errors.Message = errPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -162,6 +162,14 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 			h.Errors(w, errors)
 			return
 		}
+		categories, err := h.usecases.Posts.GetAllCategories()
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+		content.Post.Categories = categories
 		err = html.Execute(w, content)
 		if err != nil {
 			errors.Code = http.StatusInternalServerError

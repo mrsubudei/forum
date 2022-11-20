@@ -145,6 +145,63 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
+		return
+	}
+
+	path := strings.Split(r.URL.Path, "/")
+	category := path[len(path)-1]
+	if r.URL.Path != "/categories/"+category {
+		errors.Code = http.StatusNotFound
+		errors.Message = errPageNotFound
+		h.Errors(w, errors)
+		return
+	}
+
+	authorized := h.checkSession(w, r)
+	foundUser := h.getExistedSession(w, r)
+	content := Content{}
+	if foundUser.Id == 1 {
+		content.Admin = true
+	}
+	content.Authorized = authorized
+	content.Unauthorized = !authorized
+
+	posts, err := h.usecases.Posts.GetAllByCategory(category)
+	if err != nil {
+		if strings.Contains(err.Error(), entity.ErrPostNotFound.Error()) {
+			errors.Code = http.StatusBadRequest
+			errors.Message = errBadRequest
+			h.Errors(w, errors)
+			return
+		}
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+	content.Posts = posts
+	html, err := template.ParseFiles("templates/index.html")
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
+	err = html.Execute(w, content)
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+}
+
 func (h *Handler) filterPosts(posts []entity.Post, request string) []entity.Post {
 	var filtered []entity.Post
 	if len(posts) == 0 {
