@@ -4454,7 +4454,7 @@ span.hidelink {
 }
 
 .input_post {
-	width: 665px;
+	width: 725px;
 	height: 100px;
 }
 
@@ -4462,4 +4462,8 @@ span.hidelink {
 	width: 665px;
 	margin-top: 10px;
 	margin-bottom: 10px;
+}
+
+.input_post_title {
+	width: 725px;
 }

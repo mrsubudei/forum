@@ -8,8 +8,26 @@ import (
 )
 
 func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
+		return
+	}
+
 	authorized := h.checkSession(w, r)
 	foundUser := h.getExistedSession(w, r)
+
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
+
 	content := Content{}
 
 	if foundUser.Id == 1 {
@@ -24,12 +42,7 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, errors)
 		return
 	}
-	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
-		h.Errors(w, errors)
-		return
-	}
+
 	html, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
@@ -59,6 +72,17 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 	authorized := h.checkSession(w, r)
 	foundUser := h.getExistedSession(w, r)
+
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
+
 	content := Content{}
 
 	if foundUser.Id == 1 {
@@ -118,6 +142,15 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	authorized := h.checkSession(w, r)
 	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
 	content := Content{
 		Posts: filtered,
 	}
@@ -164,6 +197,15 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 
 	authorized := h.checkSession(w, r)
 	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
 	content := Content{}
 	if foundUser.Id == 1 {
 		content.Admin = true

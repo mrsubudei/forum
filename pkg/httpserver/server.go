@@ -46,6 +46,8 @@ func (s *Server) Run() error {
 	http.HandleFunc("/create_post/", s.handler.CreatePostHandler)
 	http.HandleFunc("/put_post_like/", s.handler.PostPutLikeHandler)
 	http.HandleFunc("/put_post_dislike/", s.handler.PostPutDislikeHandler)
+	http.HandleFunc("/create_comment_page/", s.handler.CreateCommentPageHandler)
+	http.HandleFunc("/create_comment/", s.handler.CreateCommentHandler)
 	http.HandleFunc("/put_comment_like/", s.handler.CommentPutLikeHandler)
 	http.HandleFunc("/put_comment_dislike/", s.handler.CommentPutDislikeHandler)
 	http.Handle("/templates/css/", http.StripPrefix("/templates/css/", http.FileServer(http.Dir("templates/css"))))

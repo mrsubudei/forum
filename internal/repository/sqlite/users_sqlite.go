@@ -69,7 +69,6 @@ func (ur *UsersRepo) Fetch() ([]entity.User, error) {
 		(SELECT comment_id FROM comment_dislikes WHERE comment_dislikes.user_id = users.id) AS comment_dislikes
 	FROM users
 	`)
-
 	if err != nil {
 		return nil, fmt.Errorf("UsersRepo - Fetch - Query: %w", err)
 	}
@@ -154,48 +153,6 @@ func (ur *UsersRepo) GetId(user entity.User) (int64, error) {
 	return id, nil
 }
 
-// func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
-// 	var user entity.User
-// 	stmt, err := ur.DB.Prepare(`
-// 	SELECT
-// 		name, email, password, reg_date, date_of_birth, city, sex, role,
-// 		(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
-// 		(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
-// 		(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
-// 		(SELECT post_id FROM post_dislikes WHERE post_dislikes.user_id = users.id) AS post_dislikes,
-// 		(SELECT comment_id FROM comment_likes WHERE comment_likes.user_id = users.id) AS comment_likes,
-// 		(SELECT comment_id FROM comment_dislikes WHERE comment_dislikes.user_id = users.id) AS comment_dislikes
-// 	FROM users
-// 	WHERE id = ?
-// 	`)
-
-// 	if err != nil {
-// 		return user, fmt.Errorf("UsersRepo - GetById - Query: %w", err)
-// 	}
-// 	defer stmt.Close()
-// 	var posts sql.NullInt64
-// 	var comments sql.NullInt64
-// 	var postLikes sql.NullInt64
-// 	var postDislikes sql.NullInt64
-// 	var commentLikes sql.NullInt64
-// 	var commentDislikes sql.NullInt64
-
-// 	err = stmt.QueryRow(id).Scan(&user.Name, &user.Email, &user.Password, &user.RegDate, &user.DateOfBirth, &user.City,
-// 		&user.Gender, &user.Role, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
-// 	if err != nil {
-// 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
-// 	}
-
-// 	user.Posts = posts.Int64
-// 	user.Comments = comments.Int64
-// 	user.PostLikes = postLikes.Int64
-// 	user.PostDislikes = postDislikes.Int64
-// 	user.CommentLikes = commentLikes.Int64
-// 	user.CommentDislikes = commentDislikes.Int64
-
-// 	return user, nil
-// }
-
 func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var user entity.User
 	stmt, err := ur.DB.Prepare(`
@@ -210,7 +167,6 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	FROM users
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Query: %w", err)
 	}
@@ -246,7 +202,6 @@ func (ur *UsersRepo) GetSession(n int64) (entity.User, error) {
 	FROM users
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetSession - Query: %w", err)
 	}
@@ -279,7 +234,6 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 	SET email = ?, date_of_birth = ?, city = ?, sex = ?, role = ?
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Prepare: %w", err)
 	}
@@ -313,7 +267,6 @@ func (ur *UsersRepo) UpdatePassword(user entity.User) error {
 	SET password = ?
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdatePassword - Prepare: %w", err)
 	}
@@ -347,7 +300,6 @@ func (ur *UsersRepo) NewSession(user entity.User) error {
 	SET session_token = ?, session_ttl = ?
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return fmt.Errorf("UsersRepo - NewSession - Prepare: %w", err)
 	}
@@ -381,7 +333,6 @@ func (ur *UsersRepo) UpdateSession(user entity.User) error {
 	SET session_ttl = ?
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdateSession - Prepare: %w", err)
 	}
@@ -414,7 +365,6 @@ func (ur *UsersRepo) Delete(user entity.User) error {
 	DELETE FROM users
 	WHERE id = ?
 	`)
-
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Delete - Prepare: %w", err)
 	}

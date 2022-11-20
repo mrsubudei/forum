@@ -35,7 +35,7 @@ type ErrMessage struct {
 }
 
 var (
-	DateFormat             = "2006-01-02"
+	// DateFormat             = "2006-01-02"
 	sessionDomain          = "localhost"
 	userNotExist           = "Такого пользователя не существует"
 	userPassWrong          = "Неверный пароль, попробуйте ещё раз"

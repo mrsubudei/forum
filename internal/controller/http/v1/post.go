@@ -18,7 +18,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
-	if r.URL.Path != "/posts/"+path[len(path)-1] || err != nil || id == 0 || id < 0 {
+	if r.URL.Path != "/posts/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
 		errors.Message = errPageNotFound
 		h.Errors(w, errors)
@@ -27,6 +27,15 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	authorized := h.checkSession(w, r)
 	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
 	content := ContentSingle{}
 
 	if foundUser.Id == 1 {
@@ -78,6 +87,15 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
 	content := ContentSingle{}
 	if foundUser.Id == 1 {
 		content.Admin = true
@@ -128,6 +146,15 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
 
 	r.ParseForm()
 	if len(r.Form["title"]) == 0 || len(r.Form["content"]) == 0 {
@@ -198,10 +225,19 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
-	if r.URL.Path != "/put_post_like/"+path[len(path)-1] || err != nil || id == 0 || id < 0 {
+	if r.URL.Path != "/put_post_like/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusInternalServerError
 		errors.Message = errInternalServer
 		h.Errors(w, errors)
@@ -241,10 +277,19 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
-	if r.URL.Path != "/put_post_dislike/"+path[len(path)-1] || err != nil || id == 0 || id < 0 {
+	if r.URL.Path != "/put_post_dislike/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusInternalServerError
 		errors.Message = errInternalServer
 		h.Errors(w, errors)
