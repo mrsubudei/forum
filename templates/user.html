@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/templates/css/style.css" rel="stylesheet" type="text/css" />
+    <title>Forum</title>
+</head>
+
+<body>
+    <div id="wrapper" style="width: 98%">
+        <div id="header">
+            <div class="frame">
+                <div id="top_section">
+                    {{if .Unauthorized}}
+                    <div class="user"><br /><br />Пожалуйста, <a href="/signin_page/">войдите</a> или <a
+                            href="signup_page">зарегистрируйтесь</a>.
+                    </div>
+                    {{end}}
+                </div>
+                <div id="upper_section" class="middletext">
+                    <div class="forumtitle clear">
+                        <h1 class="forumtitle">
+                            <a href="/">Форум школы Алем</a>
+                        </h1>
+                    </div>
+                </div>
+                <div id="main_menu">
+                    <ul class="dropmenu" id="menu_nav">
+                        <li id="button_home">
+                            <a class="active firstlevel" href="/">
+                                <span class="last firstlevel"><img src="/templates/img/buttons/home.png"
+                                        alt="*" />Начало</span>
+                            </a>
+                        </li>
+                        <li id="button_search">
+                            <a class="firstlevel" href="/search_page/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/search.png"
+                                        alt="*" />Поиск</span>
+                            </a>
+                        </li>
+                        {{if .Admin}}
+                        <li id="button_add_category">
+                            <a class="firstlevel" href="/add_category/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/calendar.png"
+                                        alt="*" />Добавить тему</span>
+                            </a>
+                        </li>
+                        {{end}}
+                        {{if .Unauthorized}}
+                        <li id="button_login">
+                            <a class="firstlevel" href="/signin_page/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/login.png"
+                                        alt="*" />Вход</span>
+                            </a>
+                        </li>
+                        <li id="button_register">
+                            <a class="firstlevel" href="/signup_page/">
+                                <span class="last firstlevel"><img src="/templates/img/buttons/register.png"
+                                        alt="*" />Регистрация</span>
+                            </a>
+                        </li>
+                        {{end}}
+                        {{if .Authorized}}
+                        <li id="button_login">
+                            <a class="firstlevel" href="/create_comment_page/{{.Post.Id}}">
+                                <span class="firstlevel"><img src="/templates/img/icons/last_post.gif">Написать
+                                    комментарий</span>
+                            </a>
+                        </li>
+                        <li id="button_login">
+                            <a class="firstlevel" href="/signout/">
+                                <span class="firstlevel"><img src="/templates/img/buttons/login.png"
+                                        alt="*" />Выйти</span>
+                            </a>
+                        </li>
+                        {{end}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="content_section">
+            <div class="frame">
+                <div id="main_content_section">
+                    <div class="navigate_section">
+                        <ul>
+                            <li><img src="/templates/img/icons/folder_open.png" alt="+">
+                            </li>
+                            <li>
+                                <a href="/"><span>Форум школы Алем</span></a> »
+                            </li>
+                            <li class="last">
+                                <a href="/all_users/"><span>Пользователи</span></a> »
+                            </li>
+                            <li class="last">
+                                <a href="/users/{{.User.Id}}"><span>{{.User.Name}}</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="user_page">
+                        <h4>
+                            <a href="/users/{{.User.Id}}" title="Просмотр профиля {{.User.Name}}">{{.User.Name}}</a>
+                        </h4>
+                        <ul class="reset smalltext">
+                            <li class="postgroup">Почта: {{.User.Role}}</li>
+                            <li class="postgroup">{{.User.Role}}</li>
+                            <li class="avatar">
+                                <!-- <a href="/users/2">
+                                    <img class="avatar"
+                                        src="avatars/Musicians/Bob_Marley.jpg"
+                                        alt="">
+                                </a> -->
+                            </li>
+                            <li class="postcount">Город: {{.User.City}}</li>
+                            <li class="postcount">Дата рождения: {{.User.DateOfBirth}}</li>
+                            <li class="postcount">Город: {{.User.City}}</li>
+                            <li class="postcount">Пол: </li>
+                            <li class="postcount">Дата регистрации: {{.User.RegDate}}</li>
+                            <li class="postcount">Постов: {{.User.Posts}}</li>
+                            <li class="postcount">Комментариев: {{.User.Comments}}</li>
+                            <li class="postcount">Лайков к постам: {{.User.PostLikes}}</li>
+                            <li class="postcount">Дизлайков к постам: {{.User.PostDislikes}}</li>
+                            <li class="postcount">Лайков к комментариям: {{.User.CommentLikes}}</li>
+                            <li class="postcount">Дизлайков к комментариям: {{.User.CommentDislikes}}</li>
+                            <li class="postcount"><br></li>
+                            <li class="postcount">Подпись:</li>
+                            <li class="profile">
+                                <ul>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footer_section">
+            <div class="frame">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

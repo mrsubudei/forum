@@ -158,12 +158,12 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	stmt, err := ur.DB.Prepare(`
 	SELECT
 		id, name, email, password, reg_date, date_of_birth, city, sex,
-		(SELECT id FROM posts WHERE posts.user_id = users.id) AS posts,
-		(SELECT id FROM comments WHERE comments.user_id = users.id) AS comments,
-		(SELECT post_id FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
-		(SELECT post_id FROM post_dislikes WHERE post_dislikes.user_id = users.id) AS post_dislikes,
-		(SELECT comment_id FROM comment_likes WHERE comment_likes.user_id = users.id) AS comment_likes,
-		(SELECT comment_id FROM comment_dislikes WHERE comment_dislikes.user_id = users.id) AS comment_dislikes
+		(SELECT COUNT(*) FROM posts WHERE posts.user_id = users.id) AS posts,
+		(SELECT COUNT(*) FROM comments WHERE comments.user_id = users.id) AS comments,
+		(SELECT COUNT(*) FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
+		(SELECT COUNT(*) FROM post_dislikes WHERE post_dislikes.user_id = users.id) AS post_dislikes,
+		(SELECT COUNT(*) FROM comment_likes WHERE comment_likes.user_id = users.id) AS comment_likes,
+		(SELECT COUNT(*) FROM comment_dislikes WHERE comment_dislikes.user_id = users.id) AS comment_dislikes
 	FROM users
 	WHERE id = ?
 	`)
@@ -190,6 +190,10 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	user.PostDislikes = postDislikes.Int64
 	user.CommentLikes = commentLikes.Int64
 	user.CommentDislikes = commentDislikes.Int64
+
+	if user.DateOfBirth == "0001-01-01" {
+		user.DateOfBirth = ""
+	}
 
 	return user, nil
 }

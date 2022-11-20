@@ -4467,3 +4467,7 @@ span.hidelink {
 .input_post_title {
 	width: 725px;
 }
+
+.user_page {
+	float: none;
+}

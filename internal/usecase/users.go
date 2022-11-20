@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"forum/internal/entity"
 	"forum/internal/repository"
-	"strings"
-	"time"
-
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
+	"strings"
+	"time"
 )
 
 type UsersUseCase struct {
@@ -43,7 +42,6 @@ func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
 }
 
 func (uu *UsersUseCase) SignUp(user entity.User) error {
-
 	hashed, err := uu.hasher.Hash(user.Password)
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignUp #1 - %w", err)
@@ -104,7 +102,6 @@ func (uu *UsersUseCase) SignIn(user entity.User) error {
 
 func (uu *UsersUseCase) GetIdBy(user entity.User) (int64, error) {
 	id, err := uu.repo.GetId(user)
-
 	if err != nil {
 		return 0, fmt.Errorf("UsersUseCase - GetIdBy - %w", err)
 	}
@@ -164,12 +161,12 @@ func (uu *UsersUseCase) CheckSession(user entity.User) (bool, error) {
 		return false, fmt.Errorf("UsersUseCase - CheckSession #1 - %w", err)
 	}
 
-	//check token
+	// check token
 	if existUserInfo.SessionToken != user.SessionToken {
 		return false, nil
 	}
 
-	//check token life time
+	// check token life time
 	expired, err := uu.tokenManager.CheckTTLExpired(existUserInfo.SessionTTL)
 	if err != nil {
 		if strings.Contains(err.Error(), NoRowsResultErr) {

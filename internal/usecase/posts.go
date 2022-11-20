@@ -63,17 +63,22 @@ func (pu *PostsUseCase) GetAllPosts() ([]entity.Post, error) {
 
 func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 	post, err := pu.repo.GetById(id)
+	user, err := pu.userRepo.GetById(post.User.Id)
+	post.User = user
+	if err != nil {
+		return post, fmt.Errorf("PostsUseCase - GetById #1 - %w", err)
+	}
 	post.Id = id
 	if err != nil {
 		if strings.Contains(err.Error(), NoRowsResultErr) {
 			return post, entity.ErrPostNotFound
 		}
-		return post, fmt.Errorf("PostsUseCase - GetById #1 - %w", err)
+		return post, fmt.Errorf("PostsUseCase - GetById #2 - %w", err)
 	}
 	posts := []entity.Post{post}
 	err = pu.fillPostDetails(&posts)
 	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetById #2 - %w", err)
+		return post, fmt.Errorf("PostsUseCase - GetById #3 - %w", err)
 	}
 	return posts[0], nil
 }

@@ -38,6 +38,7 @@ func (s *Server) Run() error {
 	http.HandleFunc("/signin/", s.handler.SignInHandler)
 	http.HandleFunc("/signup/", s.handler.SignUpHandler)
 	http.HandleFunc("/signout/", s.handler.SignOutHandler)
+	http.HandleFunc("/users/", s.handler.UserPageHandler)
 	http.HandleFunc("/search_page/", s.handler.SearchPageHandler)
 	http.HandleFunc("/search/", s.handler.SearchHandler)
 	http.HandleFunc("/categories/", s.handler.SearchByCategoryHandler)
