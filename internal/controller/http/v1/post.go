@@ -130,17 +130,23 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	foundUser := h.getExistedSession(w, r)
 
 	r.ParseForm()
-	if len(r.Form["title"]) == 0 || len(r.Form["categories"]) == 0 ||
-		len(r.Form["content"]) == 0 {
+	if len(r.Form["title"]) == 0 || len(r.Form["content"]) == 0 {
 		errors.Code = http.StatusBadRequest
 		errors.Message = errBadRequest
 		h.Errors(w, errors)
 		return
 	}
 
+	content := ContentSingle{}
+	valid := true
+
 	postTitle := r.Form["title"][0]
 	postContent := r.Form["content"][0]
 	categories := r.Form["categories"]
+	if len(categories) == 0 {
+		content.ErrorMsg.Message = postCategoryRequired
+		valid = false
+	}
 
 	newPost := entity.Post{}
 	newPost.Title = postTitle
@@ -148,15 +154,31 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	newPost.Categories = categories
 	newPost.User = foundUser
 
-	err := h.usecases.Posts.CreatePost(newPost)
-	if err != nil {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
-		h.Errors(w, errors)
-		return
+	if !valid {
+		html, err := template.ParseFiles("templates/create_post.html")
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+		err = html.Execute(w, content)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	} else {
+		err := h.usecases.Posts.CreatePost(newPost)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusFound)
 	}
-
-	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {

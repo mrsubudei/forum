@@ -43,6 +43,7 @@ var (
 	emailFormatWrong       = "Неправильный формат почты"
 	userEmailExist         = "Пользователь с такой почтой уже существует"
 	userNameExist          = "Пользователь с таким именем уже существует"
+	postCategoryRequired   = "Выберите хотя бы одну тему"
 	errPageNotFound        = "Страница не найдена"
 	errBadRequest          = "Некорректный запрос"
 	errInternalServer      = "Ошибка сервера"

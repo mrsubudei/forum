@@ -100,9 +100,11 @@
                             <span class="upperframe"><span></span></span>
                             <div class="roundframe"><br class="clear">
                                 <dl>
+                                    <p class="error">{{.ErrorMsg.Message}}</p>
                                     <dt>Заголовок:</dt>
                                     <input type="text" name="title" size="90" value="" class="input_text"
                                         required="required">
+                                    <dt>Тема:</dt>
                                     <div class="input_post_categories">
                                         {{range .Post.Categories}}
                                         <input type="checkbox" id="c{{.}}" name="categories" value="{{.}}">

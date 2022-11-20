@@ -166,15 +166,15 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		gender = r.Form["gender"][0]
 	}
 
-	s := ErrMessage{}
+	errorMessage := ErrMessage{}
 	valid := true
 
 	if !checkEmail(email) {
-		s.Message = emailFormatWrong
+		errorMessage.Message = emailFormatWrong
 		valid = false
 	}
 	if password != confirmPassword {
-		s.Message = passwordsNotSame
+		errorMessage.Message = passwordsNotSame
 		valid = false
 	}
 
@@ -189,10 +189,10 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err = h.usecases.Users.SignUp(user)
 
 	if err == entity.ErrUserEmailAlreadyExists {
-		s.Message = userEmailExist
+		errorMessage.Message = userEmailExist
 		valid = false
 	} else if err == entity.ErrUserNameAlreadyExists {
-		s.Message = userNameExist
+		errorMessage.Message = userNameExist
 		valid = false
 	}
 	if !valid {
@@ -203,7 +203,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 			h.Errors(w, errors)
 			return
 		}
-		err = html.Execute(w, s)
+		err = html.Execute(w, errorMessage)
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
 			errors.Message = errInternalServer
