@@ -59,6 +59,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, errors)
 		return
 	}
+	post.ContentWeb = strings.Split(post.Content, "\\n")
 
 	content.Post = post
 
@@ -111,7 +112,6 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	content.Post.Categories = categories
-
 	html, err := template.ParseFiles("templates/create_post.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
@@ -169,7 +169,9 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	postTitle := r.Form["title"][0]
 	postContent := r.Form["content"][0]
+
 	categories := r.Form["categories"]
+
 	if len(categories) == 0 {
 		content.ErrorMsg.Message = postCategoryRequired
 		valid = false
@@ -177,7 +179,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	newPost := entity.Post{}
 	newPost.Title = postTitle
-	newPost.Content = postContent
+	newPost.Content = strings.ReplaceAll(postContent, "\r\n", "\\n")
 	newPost.Categories = categories
 	newPost.User = foundUser
 

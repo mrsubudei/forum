@@ -38,14 +38,6 @@
                                         alt="*" />Поиск</span>
                             </a>
                         </li>
-                        {{if .Admin}}
-                        <li id="button_add_category">
-                            <a class="firstlevel" href="/add_category/">
-                                <span class="firstlevel"><img src="/templates/img/buttons/calendar.png"
-                                        alt="*" />Добавить тему</span>
-                            </a>
-                        </li>
-                        {{end}}
                         <li id="button_login">
                             <a class="firstlevel" href="/signin_page/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/login.png"
@@ -87,7 +79,7 @@
                             </div>
                             <span class="upperframe"><span></span></span>
                             <div class="roundframe"><br class="clear">
-                                <p class="error">{{.Message}}</p>
+                                <p class="error">{{.ErrorMsg.Message}}</p>
                                 <dl>
                                     <dt>Имя/Почта:</dt>
                                     <dd><input type="text" name="user" size="20" value="" class="input_text"

@@ -6,6 +6,7 @@ type Comment struct {
 	User          User       `json:"user,omitempty"`
 	Date          string     `json:"comment_date,omitempty"`
 	Content       string     `json:"comment_content,omitempty"`
+	ContentWeb    []string   `json:"content_web,omitempty"`
 	Likes         []Reaction `json:"likes,omitempty"`
 	TotalLikes    int64      `json:"total_likes,omitempty"`
 	Dislikes      []Reaction `json:"dislikes,omitempty"`

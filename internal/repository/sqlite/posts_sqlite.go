@@ -511,8 +511,8 @@ func (pr *PostsRepo) GetExistedCategories() ([]string, error) {
 
 	categories := []string{}
 	rows, err := pr.DB.Query(`
-	SELECT topic
-	FROM reference_topic
+	SELECT name
+	FROM topics
 	`)
 	if err != nil {
 		return nil, fmt.Errorf("PostsRepo - GetExistedCategories - Query: %w", err)

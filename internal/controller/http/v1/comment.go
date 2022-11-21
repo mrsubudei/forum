@@ -112,7 +112,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	commentContent := r.Form["content"][0]
 	newComment := entity.Comment{}
-	newComment.Content = commentContent
+	newComment.Content = strings.ReplaceAll(commentContent, "\r\n", "\\n")
 	newComment.User = foundUser
 	newComment.PostId = int64(id)
 

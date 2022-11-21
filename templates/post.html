@@ -161,7 +161,13 @@
                                             </div>
                                         </div>
                                         <div class="post">
-                                            <div class="inner">{{.Post.Content}}</div>
+
+                                            <div class="inner">
+                                                {{range .Post.ContentWeb}}
+                                                {{.}} <br>
+                                                {{end}}
+                                            </div>
+
                                         </div>
                                     </div>
                                     <div class="moderatorbar">
@@ -220,7 +226,9 @@
                                         </div>
                                         <div class="post">
                                             <div class="inner">
-                                                {{.Content}}
+                                                {{range .ContentWeb}}
+                                                {{.}} <br>
+                                                {{end}}
                                             </div>
                                         </div>
                                     </div>
@@ -280,7 +288,9 @@
                                         </div>
                                         <div class="post">
                                             <div class="inner">
-                                                {{.Content}}
+                                                {{range .ContentWeb}}
+                                                {{.}} <br>
+                                                {{end}}
                                             </div>
                                         </div>
                                     </div>

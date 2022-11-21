@@ -6,6 +6,7 @@ type Post struct {
 	Date             string     `json:"date,omitempty"`
 	Title            string     `json:"title,omitempty"`
 	Content          string     `json:"content,omitempty"`
+	ContentWeb       []string   `json:"content_web,omitempty"`
 	Categories       []string   `json:"categories,omitempty"`
 	Comments         []Comment  `json:"comments,omitempty"`
 	LastComment      Comment    `json:"last_comment,omitempty"`

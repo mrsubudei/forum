@@ -119,6 +119,7 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		errors.Code = http.StatusMethodNotAllowed
 		errors.Message = errMethodNotAllowed
@@ -145,15 +146,17 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		user.Name = data
 	}
+
+	valid := true
+	content := Content{}
+
 	err := h.usecases.Users.SignIn(user)
 
-	s := ErrMessage{}
-	valid := true
 	if err == entity.ErrUserNotFound {
-		s.Message = userNotExist
+		content.ErrorMsg.Message = userNotExist
 		valid = false
 	} else if err == entity.ErrUserPasswordIncorrect {
-		s.Message = userPassWrong
+		content.ErrorMsg.Message = userPassWrong
 		valid = false
 	}
 
@@ -165,7 +168,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 			h.Errors(w, errors)
 			return
 		}
-		err = html.Execute(w, s)
+		err = html.Execute(w, content)
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
 			errors.Message = errInternalServer

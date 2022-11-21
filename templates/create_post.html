@@ -102,13 +102,12 @@
                                 <dl>
                                     <p class="error">{{.ErrorMsg.Message}}</p>
                                     <dt>Заголовок:</dt>
-                                        <input type="text" name="title" class="input_post_title"
-                                        required="required">
+                                    <input type="text" name="title" class="input_post_title" required="required">
                                     <dt>Тема:</dt>
                                     <div class="input_post_categories">
                                         {{range .Post.Categories}}
-                                        <input type="checkbox" id="c{{.}}" name="categories" value="{{.}}">
-                                        <label for="c{{.}}">{{.}}</label>
+                                        <input type="checkbox" id="{{.}}" name="categories" value="{{.}}">
+                                        <label for="{{.}}">{{.}}</label>
                                         {{end}}
                                     </div>
                                     <dt>Содержание:</dt>

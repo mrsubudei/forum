@@ -63,22 +63,25 @@ func (pu *PostsUseCase) GetAllPosts() ([]entity.Post, error) {
 
 func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 	post, err := pu.repo.GetById(id)
+	if err != nil {
+		return post, fmt.Errorf("PostsUseCase - GetById #1 - %w", err)
+	}
 	user, err := pu.userRepo.GetById(post.User.Id)
 	post.User = user
 	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetById #1 - %w", err)
+		return post, fmt.Errorf("PostsUseCase - GetById #2 - %w", err)
 	}
 	post.Id = id
 	if err != nil {
 		if strings.Contains(err.Error(), NoRowsResultErr) {
 			return post, entity.ErrPostNotFound
 		}
-		return post, fmt.Errorf("PostsUseCase - GetById #2 - %w", err)
+		return post, fmt.Errorf("PostsUseCase - GetById #3 - %w", err)
 	}
 	posts := []entity.Post{post}
 	err = pu.fillPostDetails(&posts)
 	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetById #3 - %w", err)
+		return post, fmt.Errorf("PostsUseCase - GetById #4 - %w", err)
 	}
 	return posts[0], nil
 }
@@ -123,11 +126,7 @@ func (pu *PostsUseCase) GetAllByCategory(category string) ([]entity.Post, error)
 func (pu *PostsUseCase) GetAllCategories() ([]string, error) {
 	categories, err := pu.repo.GetExistedCategories()
 	if err != nil {
-		return categories, fmt.Errorf("PostsUseCase - GetAllCategories #1 - %w", err)
-	}
-
-	if err != nil {
-		return categories, fmt.Errorf("PostsUseCase - GetAllCategories #2 - %w", err)
+		return categories, fmt.Errorf("PostsUseCase - GetAllCategories - %w", err)
 	}
 	return categories, nil
 }
@@ -236,6 +235,7 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 				errChan <- fmt.Errorf("PostsUseCase - fillPostDetails #3 - %w", err)
 			}
 			for j := 0; j < len(comments); j++ {
+				comments[j].ContentWeb = strings.Split(comments[j].Content, "\\n")
 				comments[j].User, err = pu.userRepo.GetById(comments[j].User.Id)
 				if err != nil {
 					continue

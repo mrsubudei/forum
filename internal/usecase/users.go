@@ -66,12 +66,13 @@ func (uu *UsersUseCase) SignUp(user entity.User) error {
 
 func (uu *UsersUseCase) SignIn(user entity.User) error {
 	id, err := uu.repo.GetId(user)
-	if err != nil {
-		return fmt.Errorf("UsersUseCase - SignIn #1 - %w", err)
-	}
 
 	if id == 0 {
 		return entity.ErrUserNotFound
+	}
+
+	if err != nil {
+		return fmt.Errorf("UsersUseCase - SignIn #1 - %w", err)
 	}
 
 	existUserInfo, err := uu.GetById(id)
