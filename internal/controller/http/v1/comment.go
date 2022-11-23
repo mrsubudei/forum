@@ -48,6 +48,7 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 	}
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
+	content.User.Id = foundUser.Id
 	content.Post.Id = int64(id)
 
 	html, err := template.ParseFiles("templates/create_comment.html")

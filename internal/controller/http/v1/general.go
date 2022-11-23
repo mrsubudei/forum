@@ -91,6 +91,7 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
+	content.User.Id = foundUser.Id
 
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
@@ -215,6 +216,7 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 	}
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
+	content.User.Id = foundUser.Id
 
 	html, err := template.ParseFiles("templates/create_category.html")
 	if err != nil {
@@ -315,6 +317,7 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 	}
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
+	content.User.Id = foundUser.Id
 
 	posts, err := h.usecases.Posts.GetAllByCategory(category)
 	if err != nil {

@@ -37,6 +37,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
+	content.User.Id = foundUser.Id
 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
@@ -66,6 +67,66 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	content.User = user
 
 	html, err := template.ParseFiles("templates/user.html")
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+	err = html.Execute(w, content)
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+}
+
+func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
+		return
+	}
+
+	if r.URL.Path != "/all_users_page/" {
+		errors.Code = http.StatusNotFound
+		errors.Message = errPageNotFound
+		h.Errors(w, errors)
+		return
+	}
+
+	authorized := h.checkSession(w, r)
+	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
+	content := Content{}
+
+	if foundUser.Id == 1 {
+		content.Admin = true
+	}
+	content.Authorized = authorized
+	content.Unauthorized = !authorized
+	content.User.Id = foundUser.Id
+
+	users, err := h.usecases.Users.GetAllUsers()
+	content.Users = users
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
+	html, err := template.ParseFiles("templates/all_users.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
 		errors.Message = errInternalServer
@@ -133,6 +194,23 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	}
+
+	path := strings.Split(r.URL.Path, "/")
+	id, err := strconv.Atoi(path[len(path)-1])
+	if r.URL.Path != "/edit_profile_page/"+path[len(path)-1] || err != nil || id <= 0 {
+		errors.Code = http.StatusNotFound
+		errors.Message = errPageNotFound
+		h.Errors(w, errors)
+		return
+	}
+
+	if foundUser.Id != 1 && foundUser.Id != int64(id) {
+		errors.Code = http.StatusBadRequest
+		errors.Message = errLowAccessLevel
+		h.Errors(w, errors)
+		return
+	}
+
 	content := ContentSingle{}
 
 	if foundUser.Id == 1 {
@@ -187,6 +265,19 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
 
+	r.ParseForm()
+
+	if len(r.Form["id"]) != 0 && r.Form["id"][0] != "" {
+		id, err := strconv.Atoi(r.Form["id"][0])
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+		foundUser.Id = int64(id)
+	}
+
 	existUser, err := h.usecases.Users.GetById(foundUser.Id)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
@@ -194,8 +285,6 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, errors)
 		return
 	}
-
-	r.ParseForm()
 
 	if len(r.Form["date_of_birth"]) != 0 && r.Form["date_of_birth"][0] != "" {
 		existUser.DateOfBirth = r.Form["date_of_birth"][0]
@@ -216,7 +305,6 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	err = h.usecases.Users.UpdateUserInfo(existUser, updateQueryInfo)
 
 	if err != nil {
-		fmt.Println(err)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = errInternalServer
 		h.Errors(w, errors)
@@ -224,7 +312,6 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/users/"+strconv.Itoa(int(foundUser.Id)), http.StatusFound)
-
 }
 
 func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {

@@ -41,6 +41,7 @@ func (s *Server) Run() error {
 	http.HandleFunc("/edit_profile_page/", s.handler.EditProfilePageHandler)
 	http.HandleFunc("/edit_profile/", s.handler.EditProfileHandler)
 	http.HandleFunc("/users/", s.handler.UserPageHandler)
+	http.HandleFunc("/all_users_page/", s.handler.AllUsersPageHandler)
 	http.HandleFunc("/search_page/", s.handler.SearchPageHandler)
 	http.HandleFunc("/search/", s.handler.SearchHandler)
 	http.HandleFunc("/create_category_page/", s.handler.CreateCategoryPageHandler)

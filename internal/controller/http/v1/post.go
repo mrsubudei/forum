@@ -43,6 +43,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
+	content.User.Id = foundUser.Id
 
 	html, err := template.ParseFiles("templates/post.html")
 	if err != nil {
@@ -103,6 +104,7 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
+	content.User.Id = foundUser.Id
 
 	categories, err := h.usecases.Posts.GetAllCategories()
 	if err != nil {

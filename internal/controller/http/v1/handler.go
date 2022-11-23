@@ -49,7 +49,7 @@ var (
 	errInternalServer      = "Ошибка сервера"
 	errMethodNotAllowed    = "Метод не разрешен"
 	errStatusNotAuthorized = "Вы не авторизованы"
-	errLowAccessLevel      = "У Вас низкий уровень доступа для этого действия"
+	errLowAccessLevel      = "Низкий уровень доступа"
 	commandPutLike         = "like"
 	commandPutDislike      = "dislike"
 	updateQueryInfo        = "info"

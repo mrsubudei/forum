@@ -4438,9 +4438,13 @@ span.hidelink {
 }
 
 .number::before {
-	/* Increment "my-sec-counter" by 1 */
 	counter-increment: my-sec-counter;
 	content: "Ответ" counter(my-sec-counter) "# ";
+}
+
+.user_number::before {
+	counter-increment: my-sec-counter;
+	content: "" counter(my-sec-counter) ". ";
 }
 
 .reactions {

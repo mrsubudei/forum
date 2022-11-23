@@ -7,8 +7,10 @@
     <link href="/templates/css/style.css" rel="stylesheet" type="text/css" />
     <title>Forum</title>
 </head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <body>
+
     <div id="wrapper" style="width: 98%">
         <div id="header">
             <div class="frame">
@@ -34,12 +36,6 @@
                                         alt="*" />Начало</span>
                             </a>
                         </li>
-                        <li id="button_search">
-                            <a class="firstlevel" href="/search_page/">
-                                <span class="firstlevel"><img src="/templates/img/buttons/search.png"
-                                        alt="*" />Поиск</span>
-                            </a>
-                        </li>
                         {{if .Admin}}
                         <li id="button_add_category">
                             <a class="firstlevel" href="/create_category_page/">
@@ -63,6 +59,12 @@
                         </li>
                         {{end}}
                         {{if .Authorized}}
+                        <li id="button_login">
+                            <a class="firstlevel" href="/create_post_page/">
+                                <span class="firstlevel"><img src="/templates/img/icons/last_post.gif" />Написать
+                                    пост</span>
+                            </a>
+                        </li>
                         <li id="button_login">
                             <a class="firstlevel" href="/users/{{.User.Id}}">
                                 <span class="firstlevel"><img src="/templates/img/icons/login_sm.gif" />Профиль</span>
@@ -90,28 +92,30 @@
                                 <a href="/"><span>Форум школы Алем</span></a> »
                             </li>
                             <li class="last">
-                                <a href="/search_page/"><span>Поиск</span></a>
+                                <a href="/all_users_page/"><span>Пользователи</span></a>
                             </li>
                         </ul>
                     </div>
-                    <form action="/search/" method="POST" id="searchform">
-                        <div class="cat_bar">
-                            <h3 class="catbg">
-                                <span class="ie6_header floatleft"><img src="/temlates/img/buttons/search.png" alt=""
-                                        class="icon">Параметры поиска</span>
-                            </h3>
-                        </div>
-                        <fieldset id="simple_search">
-                            <div class="roundframe">
-                                <div id="search_term_input">
-                                    <strong>Искать:</strong>
-                                    <input type="text" name="search" value="" maxlength="100" size="40"
-                                        class="input_text" required="required">
-                                    &nbsp;<input type="submit" value="Поиск" class="button_submit">
-                                </div>
-                                <p class="smalltext"><em>Например: </em> «Доктор Хаус» — сериал</p>
+                    <form action="/edit_profile/{{.User.Id}}" name="frmLogin" id="frmLogin" method="post">
+                        <div class="tborder login">
+                            <div class="cat_bar">
+                                <h3 class="catbg">
+                                    <span class="ie6_header floatleft"><img src="/templates/img/icons/login_sm.gif"
+                                            alt="" class="icon"> Все пользователи</span>
+                                </h3>
                             </div>
-                        </fieldset>
+                            <span class="upperframe"><span></span></span>
+                            <div class="roundframe"><br class="clear">
+                                <dl>
+                                    {{range .Users}}
+                                    <div class="user_number">
+                                        <a href="/users/{{.Id}}">{{.Name}}</a>
+                                    </div>
+                                    {{end}}
+                                </dl>
+                            </div>
+                            <span class="lowerframe"><span></span></span>
+                        </div>
                     </form>
                 </div>
             </div>
