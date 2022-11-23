@@ -31,8 +31,8 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	}
 
 	stmt, err := tx.Prepare(`
-	INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex, role) 
-		values(?, ?, ?, ?, ?, ?, ?, ?)
+	INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex, role, sign) 
+		values(?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Prepare: %w", err)
@@ -40,7 +40,7 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	defer stmt.Close()
 
 	res, err := stmt.Exec(user.Name, user.Email, user.Password, user.RegDate,
-		user.DateOfBirth, user.City, user.Gender, RoleUser)
+		user.DateOfBirth, user.City, user.Gender, RoleUser, " ")
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Exec: %w", err)
 	}

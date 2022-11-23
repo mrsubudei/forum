@@ -121,6 +121,14 @@
                                         </h4>
                                         <ul class="reset smalltext">
                                             <li class="postgroup">{{.Post.User.Role}}</li>
+                                            {{if .Post.User.Male}}
+                                            <li class="postcount">Пол: <img src="/templates/img/Male.gif"
+                                                    title="Мужской"></li>
+                                            {{end}}
+                                            {{if .Post.User.Female}}
+                                            <li class="postcount">Пол: <img src="/templates/img/Female.gif"
+                                                    title="Женский"></li>
+                                            {{end}}
                                             <li class="avatar">
                                                 <!-- <a href="/users/{{.Post.User.Id}}">
                                                     <img class="avatar"
@@ -176,10 +184,7 @@
                                         </div>
                                     </div>
                                     <div class="moderatorbar">
-                                        <div class="smalltext modified" id="modified_85962">
-                                        </div>
-                                        <div class="smalltext reportlinks">
-                                        </div>
+                                        <div class="signature"><em>{{.Post.User.Sign}}</em></div>
                                     </div>
                                 </div>
                                 <span class="botslice"><span></span></span>
@@ -198,6 +203,14 @@
                                         </h4>
                                         <ul class="reset smalltext">
                                             <li class="postgroup">{{.User.Role}}</li>
+                                            {{if .User.Male}}
+                                            <li class="postcount">Пол: <img src="/templates/img/Male.gif"
+                                                    title="Мужской"></li>
+                                            {{end}}
+                                            {{if .User.Female}}
+                                            <li class="postcount">Пол: <img src="/templates/img/Female.gif"
+                                                    title="Женский"></li>
+                                            {{end}}
                                             <li class="avatar">
                                             </li>
                                             <li class="postcount">Постов: {{.User.Posts}}</li>
@@ -238,10 +251,7 @@
                                         </div>
                                     </div>
                                     <div class="moderatorbar">
-                                        <div class="smalltext modified">
-                                        </div>
-                                        <div class="smalltext reportlinks">
-                                        </div>
+                                        <div class="signature"><em>{{.User.Sign}}</em></div>
                                     </div>
                                 </div>
                                 <span class="botslice"><span></span></span>
@@ -261,6 +271,14 @@
                                         </h4>
                                         <ul class="reset smalltext">
                                             <li class="postgroup">{{.User.Role}}</li>
+                                            {{if .User.Male}}
+                                            <li class="postcount">Пол: <img src="/templates/img/Male.gif"
+                                                    title="Мужской"></li>
+                                            {{end}}
+                                            {{if .User.Female}}
+                                            <li class="postcount">Пол: <img src="/templates/img/Female.gif"
+                                                    title="Женский"></li>
+                                            {{end}}
                                             <li class="avatar">
                                             </li>
                                             <li class="postcount">Постов: {{.User.Posts}}</li>
@@ -300,10 +318,7 @@
                                         </div>
                                     </div>
                                     <div class="moderatorbar">
-                                        <div class="smalltext modified">
-                                        </div>
-                                        <div class="smalltext reportlinks">
-                                        </div>
+                                        <div class="signature"><em>{{.User.Sign}}</em></div>
                                     </div>
                                 </div>
                                 <span class="botslice"><span></span></span>

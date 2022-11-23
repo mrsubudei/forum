@@ -53,9 +53,6 @@ var (
 	commandPutLike         = "like"
 	commandPutDislike      = "dislike"
 	updateQueryInfo        = "info"
-	postsQueryAuthor       = "author"
-	postsQueryLiked        = "liked"
-	postsQueryDisliked     = "disliked"
 	errors                 ErrMessage
 )
 

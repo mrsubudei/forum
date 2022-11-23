@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"forum/internal/entity"
 	"net/http"
 	"net/mail"
@@ -230,7 +229,6 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 
 	err = html.Execute(w, content)
 	if err != nil {
-		fmt.Println(err)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = errInternalServer
 		h.Errors(w, errors)
@@ -551,6 +549,12 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	authorized := h.checkSession(w, r)
+	if !authorized {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errLowAccessLevel
+		h.Errors(w, errors)
+		return
+	}
 	foundUser := h.getExistedSession(w, r)
 	if authorized {
 		err := h.usecases.Users.UpdateSession(foundUser)

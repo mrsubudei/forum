@@ -60,6 +60,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, errors)
 		return
 	}
+
 	post.ContentWeb = strings.Split(post.Content, "\\n")
 
 	content.Post = post

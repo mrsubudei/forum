@@ -90,7 +90,7 @@
                                 <a href="/"><span>Форум школы Алем</span></a> »
                             </li>
                             <li class="last">
-                                <a href="/all_users/"><span>Пользователи</span></a> »
+                                <a href="/all_users_page/"><span>Пользователи</span></a> »
                             </li>
                             <li class="last">
                                 <a href="/users/{{.User.Id}}"><span>{{.User.Name}}</span></a>
@@ -129,13 +129,28 @@
                             <li class="postcount">Пол: <img src="/templates/img/Female.gif" title="Женский"></li>
                             {{end}}
                             <li class="postcount">Дата регистрации: {{.User.RegDate}}</li>
+                            {{if .Authorized}}
                             <li class="postcount">Постов: <a href="/find_posts/author/{{.User.Id}}">{{.User.Posts}}</a>
                             </li>
+                            {{end}}
+                            {{if .Unauthorized}}
+                            <li class="postcount">Постов: {{.User.Posts}}</li>
+                            {{end}}
                             <li class="postcount">Комментариев: {{.User.Comments}}</li>
+                            {{if .Authorized}}
                             <li class="postcount">Лайков к постам: <a
                                     href="/find_posts/liked/{{.User.Id}}">{{.User.PostLikes}}</a></li>
+                            {{end}}
+                            {{if .Unauthorized}}
+                            <li class="postcount">Лайков к постам: {{.User.PostLikes}}</li>
+                            {{end}}
+                            {{if .Authorized}}
                             <li class="postcount">Дизлайков к постам: <a
                                     href="/find_posts/disliked/{{.User.Id}}">{{.User.PostDislikes}}</a></li>
+                            {{end}}
+                            {{if .Unauthorized}}
+                            <li class="postcount">Дизлайков к постам: {{.User.PostDislikes}}</li>
+                            {{end}}
                             <li class="postcount">Лайков к комментариям: {{.User.CommentLikes}}</li>
                             <li class="postcount">Дизлайков к комментариям: {{.User.CommentDislikes}}</li>
                             <li class="postcount">Подпись: {{.User.Sign}}</li>

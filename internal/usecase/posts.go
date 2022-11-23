@@ -112,7 +112,13 @@ func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 		return post, fmt.Errorf("PostsUseCase - GetById #1 - %w", err)
 	}
 	user, err := pu.userRepo.GetById(post.User.Id)
+	if user.Gender == UserGenderMale {
+		user.Male = true
+	} else if user.Gender == UserGenderFemale {
+		user.Female = true
+	}
 	post.User = user
+
 	if err != nil {
 		return post, fmt.Errorf("PostsUseCase - GetById #2 - %w", err)
 	}
@@ -282,6 +288,11 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 			for j := 0; j < len(comments); j++ {
 				comments[j].ContentWeb = strings.Split(comments[j].Content, "\\n")
 				comments[j].User, err = pu.userRepo.GetById(comments[j].User.Id)
+				if comments[j].User.Gender == UserGenderMale {
+					comments[j].User.Male = true
+				} else if comments[j].User.Gender == UserGenderFemale {
+					comments[j].User.Female = true
+				}
 				if err != nil {
 					continue
 				}
