@@ -15,6 +15,7 @@ type Content struct {
 	Authorized   bool
 	Unauthorized bool
 	Admin        bool
+	User         entity.User
 	Posts        []entity.Post
 	Users        []entity.User
 	ErrorMsg     ErrMessage
@@ -48,8 +49,10 @@ var (
 	errInternalServer      = "Ошибка сервера"
 	errMethodNotAllowed    = "Метод не разрешен"
 	errStatusNotAuthorized = "Вы не авторизованы"
+	errLowAccessLevel      = "У Вас низкий уровень доступа для этого действия"
 	commandPutLike         = "like"
 	commandPutDislike      = "dislike"
+	updateQueryInfo        = "info"
 	errors                 ErrMessage
 )
 

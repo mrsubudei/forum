@@ -29,7 +29,7 @@ func (ur *UsersRepo) Store(user entity.User) error {
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex, role) 
-		values(?, ?, ?, ?, ?, ?, ?)
+		values(?, ?, ?, ?, ?, ?, ?, ?)
 	`)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Prepare: %w", err)
@@ -157,7 +157,7 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var user entity.User
 	stmt, err := ur.DB.Prepare(`
 	SELECT
-		id, name, email, password, reg_date, date_of_birth, city, sex,
+		id, name, email, password, reg_date, date_of_birth, city, sex, role, sign,
 		(SELECT COUNT(*) FROM posts WHERE posts.user_id = users.id) AS posts,
 		(SELECT COUNT(*) FROM comments WHERE comments.user_id = users.id) AS comments,
 		(SELECT COUNT(*) FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
@@ -177,9 +177,10 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var postDislikes sql.NullInt64
 	var commentLikes sql.NullInt64
 	var commentDislikes sql.NullInt64
+	var sign sql.NullString
 
 	err = stmt.QueryRow(id).Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.RegDate, &user.DateOfBirth, &user.City,
-		&user.Gender, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
+		&user.Gender, &user.Role, &sign, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
 	}
@@ -190,6 +191,7 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	user.PostDislikes = postDislikes.Int64
 	user.CommentLikes = commentLikes.Int64
 	user.CommentDislikes = commentDislikes.Int64
+	user.Sign = sign.String
 
 	if user.DateOfBirth == "0001-01-01" {
 		user.DateOfBirth = ""
@@ -235,7 +237,7 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 	}
 	stmt, err := ur.DB.Prepare(`
 	UPDATE users
-	SET email = ?, date_of_birth = ?, city = ?, sex = ?, role = ?
+	SET date_of_birth = ?, city = ?, sex = ?, sign = ?, role = ?
 	WHERE id = ?
 	`)
 	if err != nil {
@@ -243,7 +245,7 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(user.Email, user.DateOfBirth, user.City, user.Gender, user.Role, user.Id)
+	res, err := stmt.Exec(user.DateOfBirth, user.City, user.Gender, user.Sign, user.Role, user.Id)
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Exec: %w", err)
 	}

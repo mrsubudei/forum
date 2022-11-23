@@ -51,12 +51,14 @@ func (pu *PostsUseCase) GetAllPosts() ([]entity.Post, error) {
 	if err != nil {
 		return posts, fmt.Errorf("PostsUseCase - GetAllPosts #1 - %w", err)
 	}
-	if len(posts) == 0 {
-		return posts, entity.ErrPostNotFound
-	}
-	err = pu.fillPostDetails(&posts)
-	if err != nil {
-		return posts, fmt.Errorf("PostsUseCase - GetAllPosts #2 - %w", err)
+	// if len(posts) == 0 {
+	// 	return posts, entity.ErrPostNotFound
+	// }
+	if len(posts) != 0 {
+		err = pu.fillPostDetails(&posts)
+		if err != nil {
+			return posts, fmt.Errorf("PostsUseCase - GetAllPosts #2 - %w", err)
+		}
 	}
 	return posts, nil
 }

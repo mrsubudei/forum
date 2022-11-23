@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"forum/internal/entity"
 	"net/http"
 	"net/mail"
@@ -59,7 +60,9 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, errors)
 		return
 	}
-
+	if foundUser.Id == int64(id) && authorized {
+		user.Owner = true
+	}
 	content.User = user
 
 	html, err := template.ParseFiles("templates/user.html")
@@ -116,6 +119,112 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, errors)
 		return
 	}
+}
+
+func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request) {
+	authorized := h.checkSession(w, r)
+	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
+	content := ContentSingle{}
+
+	if foundUser.Id == 1 {
+		content.Admin = true
+	}
+	content.User.Id = foundUser.Id
+	content.Authorized = authorized
+	content.Unauthorized = !authorized
+
+	html, err := template.ParseFiles("templates/edit_profile.html")
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
+	err = html.Execute(w, content)
+	if err != nil {
+		fmt.Println(err)
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+}
+
+func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
+		return
+	}
+	authorized := h.checkSession(w, r)
+	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
+	content := ContentSingle{}
+
+	if foundUser.Id == 1 {
+		content.Admin = true
+	}
+	content.User.Id = foundUser.Id
+	content.Authorized = authorized
+	content.Unauthorized = !authorized
+
+	existUser, err := h.usecases.Users.GetById(foundUser.Id)
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
+	r.ParseForm()
+
+	if len(r.Form["date_of_birth"]) != 0 && r.Form["date_of_birth"][0] != "" {
+		existUser.DateOfBirth = r.Form["date_of_birth"][0]
+	}
+	if len(r.Form["city"]) != 0 && r.Form["city"][0] != "" {
+		existUser.City = r.Form["city"][0]
+	}
+	if len(r.Form["gender"]) != 0 && r.Form["gender"][0] != "" {
+		existUser.Gender = r.Form["gender"][0]
+	}
+	if len(r.Form["sign"]) != 0 && r.Form["sign"][0] != "" {
+		existUser.Sign = r.Form["sign"][0]
+	}
+	if len(r.Form["role"]) != 0 && r.Form["role"][0] != "" {
+		existUser.Role = r.Form["role"][0]
+	}
+
+	err = h.usecases.Users.UpdateUserInfo(existUser, updateQueryInfo)
+
+	if err != nil {
+		fmt.Println(err)
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
+	http.Redirect(w, r, "/users/"+strconv.Itoa(int(foundUser.Id)), http.StatusFound)
+
 }
 
 func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
@@ -260,14 +369,20 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		DateOfBirth: dateOfBirth,
 	}
 	err = h.usecases.Users.SignUp(user)
-
-	if err == entity.ErrUserEmailAlreadyExists {
-		errorMessage.Message = userEmailExist
-		valid = false
-	} else if err == entity.ErrUserNameAlreadyExists {
-		errorMessage.Message = userNameExist
-		valid = false
+	if err != nil {
+		if err == entity.ErrUserEmailAlreadyExists {
+			errorMessage.Message = userEmailExist
+			valid = false
+		} else if err == entity.ErrUserNameAlreadyExists {
+			errorMessage.Message = userNameExist
+			valid = false
+		}
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
 	}
+
 	if !valid {
 		html, err := template.ParseFiles("templates/registration.html")
 		if err != nil {

@@ -42,7 +42,7 @@
                         </li>
                         {{if .Admin}}
                         <li id="button_add_category">
-                            <a class="firstlevel" href="/add_category/">
+                            <a class="firstlevel" href="/create_category_page/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/calendar.png"
                                         alt="*" />Добавить тему</span>
                             </a>
@@ -99,11 +99,18 @@
                         </ul>
                     </div>
                     <div class="user_page">
+                        <a class="firstlevel" href="/edit_profile_page/{{.User.Id}}">
+                            <span class="firstlevel"><img src="/templates/img/icons/info.gif"> Редактировать
+                                профиль</span>
+                        </a> <br>
+                        <br>
                         <h4>
                             <a href="/users/{{.User.Id}}" title="Просмотр профиля {{.User.Name}}">{{.User.Name}}</a>
                         </h4>
                         <ul class="reset smalltext">
-                            <li class="postgroup">Почта: {{.User.Role}}</li>
+                            {{if .User.Owner}}
+                            <li class="postgroup">Почта: {{.User.Email}}</li>
+                            {{end}}
                             <li class="postgroup">{{.User.Role}}</li>
                             <li class="avatar">
                                 <!-- <a href="/users/2">
@@ -114,8 +121,12 @@
                             </li>
                             <li class="postcount">Город: {{.User.City}}</li>
                             <li class="postcount">Дата рождения: {{.User.DateOfBirth}}</li>
-                            <li class="postcount">Город: {{.User.City}}</li>
-                            <li class="postcount">Пол: </li>
+                            {{if .User.Male}}
+                            <li class="postcount">Пол: <img src="/templates/img/Male.gif" title="Мужской"></li>
+                            {{end}}
+                            {{if .User.Female}}
+                            <li class="postcount">Пол: <img src="/templates/img/Female.gif" title="Женский"></li>
+                            {{end}}
                             <li class="postcount">Дата регистрации: {{.User.RegDate}}</li>
                             <li class="postcount">Постов: {{.User.Posts}}</li>
                             <li class="postcount">Комментариев: {{.User.Comments}}</li>
@@ -123,8 +134,7 @@
                             <li class="postcount">Дизлайков к постам: {{.User.PostDislikes}}</li>
                             <li class="postcount">Лайков к комментариям: {{.User.CommentLikes}}</li>
                             <li class="postcount">Дизлайков к комментариям: {{.User.CommentDislikes}}</li>
-                            <li class="postcount"><br></li>
-                            <li class="postcount">Подпись:</li>
+                            <li class="postcount">Подпись: {{.User.Sign}}</li>
                             <li class="profile">
                                 <ul>
                                 </ul>

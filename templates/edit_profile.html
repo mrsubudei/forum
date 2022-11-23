@@ -7,8 +7,10 @@
     <link href="/templates/css/style.css" rel="stylesheet" type="text/css" />
     <title>Forum</title>
 </head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <body>
+
     <div id="wrapper" style="width: 98%">
         <div id="header">
             <div class="frame">
@@ -32,12 +34,6 @@
                             <a class="active firstlevel" href="/">
                                 <span class="last firstlevel"><img src="/templates/img/buttons/home.png"
                                         alt="*" />Начало</span>
-                            </a>
-                        </li>
-                        <li id="button_search">
-                            <a class="firstlevel" href="/search_page/">
-                                <span class="firstlevel"><img src="/templates/img/buttons/search.png"
-                                        alt="*" />Поиск</span>
                             </a>
                         </li>
                         {{if .Admin}}
@@ -64,6 +60,17 @@
                         {{end}}
                         {{if .Authorized}}
                         <li id="button_login">
+                            <a class="firstlevel" href="/create_post_page/">
+                                <span class="firstlevel"><img src="/templates/img/icons/last_post.gif" />Написать
+                                    пост</span>
+                            </a>
+                        </li>
+                        <li id="button_login">
+                            <a class="firstlevel" href="/users/{{.User.Id}}">
+                                <span class="firstlevel"><img src="/templates/img/icons/login_sm.gif" />Профиль</span>
+                            </a>
+                        </li>
+                        <li id="button_login">
                             <a class="firstlevel" href="/signout/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/login.png"
                                         alt="*" />Выйти</span>
@@ -85,35 +92,41 @@
                                 <a href="/"><span>Форум школы Алем</span></a> »
                             </li>
                             <li class="last">
-                                <a href="/create_post_page/"><span>Написать пост</span></a>
+                                <a href="/edit_profile_page/{{.User.Id}}"><span>Редактировать профайл</span></a>
                             </li>
                         </ul>
                     </div>
-                    <form action="/create_post/" name="frmLogin" id="frmLogin" method="POST">
-                        <div>
+                    <form action="/edit_profile/" name="frmLogin" id="frmLogin" method="post">
+                        <div class="tborder login">
                             <div class="cat_bar">
                                 <h3 class="catbg">
-                                    <span class="ie6_header floatleft"><img src="/templates/img/topic/normal_post.gif"
-                                            alt="" class="icon">Новый пост</span>
+                                    <span class="ie6_header floatleft"><img src="/templates/img/icons/login_sm.gif"
+                                            alt="" class="icon"> Редактировать профайл</span>
                                 </h3>
                             </div>
                             <span class="upperframe"><span></span></span>
                             <div class="roundframe"><br class="clear">
                                 <dl>
-                                    <p class="error">{{.ErrorMsg.Message}}</p>
-                                    <dt>Заголовок:</dt>
-                                    <input type="text" name="title" class="input_post_title" required="required">
-                                    <dt>Тема:</dt>
-                                    <div class="input_post_categories">
-                                        {{range .Post.Categories}}
-                                        <input type="checkbox" id="{{.}}" name="categories" value="{{.}}">
-                                        <label for="{{.}}">{{.}}</label>
-                                        {{end}}
-                                    </div>
-                                    <dt>Содержание:</dt>
-                                    <textarea name="content" class="input_post" required="required"></textarea>
+                                    <dt>Город:</dt>
+                                    <dd><input type="text" name="city" size="20" class="input_text">
+                                    </dd>
+                                    <dt>Дата рождения:</dt>
+                                    <dd><input name="date_of_birth" type="date" size="20" class="input_text">
+                                    </dd>
+                                    <dt>Пол:</dt>
+                                    <dd><input type="radio" name="gender" value="Male"> М
+                                        <input type="radio" name="gender" value="Female"> Ж
+                                    </dd>
+                                    <dt>Подпись:</dt>
+                                    <dd><input name="sign" type="text" size="20" class="input_text">
+                                    </dd>
+                                    {{if .Admin}}
+                                    <dt>Роль:</dt>
+                                    <dd><input name="role" type="text" size="20" class="input_text">
+                                    </dd>
+                                    {{end}}
                                 </dl>
-                                <p><input type="submit" value="Создать" class="button_submit"></p>
+                                <p><input type="submit" value="Отправить" class="button_submit"></p>
                             </div>
                             <span class="lowerframe"><span></span></span>
                         </div>

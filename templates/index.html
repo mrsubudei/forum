@@ -42,7 +42,7 @@
                         </li>
                         {{if .Admin}}
                         <li id="button_add_category">
-                            <a class="firstlevel" href="/add_category/">
+                            <a class="firstlevel" href="/create_category_page/">
                                 <span class="firstlevel"><img src="/templates/img/buttons/calendar.png"
                                         alt="*" />Добавить тему</span>
                             </a>
@@ -67,6 +67,11 @@
                             <a class="firstlevel" href="/create_post_page/">
                                 <span class="firstlevel"><img src="/templates/img/icons/last_post.gif" />Написать
                                     пост</span>
+                            </a>
+                        </li>
+                        <li id="button_login">
+                            <a class="firstlevel" href="/users/{{.User.Id}}">
+                                <span class="firstlevel"><img src="/templates/img/icons/login_sm.gif" />Профиль</span>
                             </a>
                         </li>
                         <li id="button_login">
@@ -142,7 +147,6 @@
                             {{end}}
                         </table>
                     </div>
-                    <script type="text/javascript" src="Themes/default/scripts/topic.js"></script>
                 </div>
             </div>
         </div>

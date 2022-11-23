@@ -26,6 +26,8 @@ const (
 	UniqueNameErr       = "UNIQUE constraint failed: users.name"
 	DateFormat          = "2006-01-02"
 	DateAndTimeFormat   = "2006-01-02 15:04:05"
+	UserGenderMale      = "Male"
+	UserGenderFemale    = "Female"
 )
 
 func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
@@ -48,7 +50,7 @@ func (uu *UsersUseCase) SignUp(user entity.User) error {
 	}
 	user.Password = hashed
 
-	user.RegDate = getRegTime(DateAndTimeFormat)
+	user.RegDate = getRegTime(DateFormat)
 
 	err = uu.repo.Store(user)
 	if err != nil {
@@ -181,6 +183,13 @@ func (uu *UsersUseCase) CheckSession(user entity.User) (bool, error) {
 
 func (uu *UsersUseCase) GetAllUsers() ([]entity.User, error) {
 	users, err := uu.repo.Fetch()
+	for i := 0; i < len(users); i++ {
+		if users[i].Gender == UserGenderMale {
+			users[i].Male = true
+		} else if users[i].Gender == UserGenderFemale {
+			users[i].Female = true
+		}
+	}
 	if err != nil {
 		return nil, fmt.Errorf("UsersUseCase - GetAllUsers - %w", err)
 	}
@@ -198,6 +207,11 @@ func (uu *UsersUseCase) GetById(id int64) (entity.User, error) {
 		return user, fmt.Errorf("UsersUseCase - GetById - %w", err)
 	}
 	user.Id = id
+	if user.Gender == UserGenderMale {
+		user.Male = true
+	} else if user.Gender == UserGenderFemale {
+		user.Female = true
+	}
 	return user, nil
 }
 

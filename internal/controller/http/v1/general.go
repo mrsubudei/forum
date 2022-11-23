@@ -33,6 +33,7 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	if foundUser.Id == 1 {
 		content.Admin = true
 	}
+	content.User.Id = foundUser.Id
 	content.Authorized = authorized
 	content.Unauthorized = !authorized
 
@@ -176,6 +177,108 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, errors)
 		return
 	}
+}
+
+func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
+		return
+	}
+
+	authorized := h.checkSession(w, r)
+	if !authorized {
+		errors.Code = http.StatusForbidden
+		errors.Message = errStatusNotAuthorized
+		h.Errors(w, errors)
+		return
+	}
+	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
+	content := ContentSingle{}
+	if foundUser.Id == 1 {
+		content.Admin = true
+	} else {
+		errors.Code = http.StatusBadRequest
+		errors.Message = errLowAccessLevel
+		h.Errors(w, errors)
+		return
+	}
+	content.Authorized = authorized
+	content.Unauthorized = !authorized
+
+	html, err := template.ParseFiles("templates/create_category.html")
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
+	err = html.Execute(w, content)
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+}
+
+func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		errors.Code = http.StatusMethodNotAllowed
+		errors.Message = errMethodNotAllowed
+		h.Errors(w, errors)
+		return
+	}
+
+	authorized := h.checkSession(w, r)
+	if !authorized {
+		errors.Code = http.StatusForbidden
+		errors.Message = errStatusNotAuthorized
+		h.Errors(w, errors)
+		return
+	}
+
+	foundUser := h.getExistedSession(w, r)
+	if authorized {
+		err := h.usecases.Users.UpdateSession(foundUser)
+		if err != nil {
+			errors.Code = http.StatusInternalServerError
+			errors.Message = errInternalServer
+			h.Errors(w, errors)
+			return
+		}
+	}
+
+	r.ParseForm()
+	if len(r.Form["category"]) == 0 {
+		errors.Code = http.StatusBadRequest
+		errors.Message = errBadRequest
+		h.Errors(w, errors)
+		return
+	}
+
+	data := r.Form["category"][0]
+	categories := strings.Split(data, "\r\n")
+
+	err := h.usecases.Posts.CreateCategories(categories)
+	if err != nil {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = errInternalServer
+		h.Errors(w, errors)
+		return
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request) {
