@@ -10,6 +10,7 @@ import (
 type Posts interface {
 	CreatePost(p entity.Post) error
 	GetAllPosts() ([]entity.Post, error)
+	GetPostsByQuery(user entity.User, query string) ([]entity.Post, error)
 	GetById(id int64) (entity.Post, error)
 	GetOneByCategory(category string) (entity.Post, error)
 	GetAllByCategory(category string) ([]entity.Post, error)

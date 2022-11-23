@@ -50,6 +50,7 @@ func (s *Server) Run() error {
 	http.HandleFunc("/posts/", s.handler.PostPageHandler)
 	http.HandleFunc("/create_post_page/", s.handler.CreatePostPageHandler)
 	http.HandleFunc("/create_post/", s.handler.CreatePostHandler)
+	http.HandleFunc("/find_posts/", s.handler.FindPostsHandler)
 	http.HandleFunc("/put_post_like/", s.handler.PostPutLikeHandler)
 	http.HandleFunc("/put_post_dislike/", s.handler.PostPutDislikeHandler)
 	http.HandleFunc("/create_comment_page/", s.handler.CreateCommentPageHandler)

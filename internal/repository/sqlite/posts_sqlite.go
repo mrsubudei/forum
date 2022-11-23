@@ -123,6 +123,82 @@ func (pr *PostsRepo) Fetch() ([]entity.Post, error) {
 	return posts, nil
 }
 
+func (pr *PostsRepo) FetchByAuthor(user entity.User) ([]entity.Post, error) {
+	var posts []entity.Post
+
+	rows, err := pr.DB.Query(`
+	SELECT
+		id, user_id, date, title, content,
+		(SELECT name FROM users WHERE users.id = posts.user_id) AS user_name,
+		(SELECT COUNT(*) FROM post_likes WHERE post_likes.post_id = posts.id) AS post_likes,
+		(SELECT COUNT(*) FROM post_dislikes WHERE post_dislikes.post_id = posts.id) AS post_dislikes
+	FROM posts
+	WHERE user_id = ?
+	`, user.Id)
+
+	if err != nil {
+		return nil, fmt.Errorf("PostsRepo - FetchByQuery - Query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post entity.Post
+		var postsLikes sql.NullInt64
+		var postDislikes sql.NullInt64
+
+		err = rows.Scan(&post.Id, &post.User.Id, &post.Date, &post.Title, &post.Content,
+			&post.User.Name, &postsLikes, &postDislikes)
+		if err != nil {
+			return posts, fmt.Errorf("PostsRepo - FetchByQuery - Scan: %w", err)
+		}
+
+		post.TotalLikes = postsLikes.Int64
+		post.TotalDislikes = postDislikes.Int64
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+func (pr *PostsRepo) FetchIdsByReaction(user entity.User, reaction string) ([]int64, error) {
+	var postIds []int64
+	var rows *sql.Rows
+	var err error
+
+	switch reaction {
+	case queryLike:
+		rows, err = pr.DB.Query(`
+		SELECT post_id
+		FROM post_likes
+		WHERE user_id = ?
+	`, user.Id)
+	case queryDislike:
+		rows, err = pr.DB.Query(`
+		SELECT post_id
+		FROM post_dislikes
+		WHERE user_id = ?
+	`, user.Id)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("PostsRepo - FetchIdsByReaction - Query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var postId sql.NullInt64
+
+		err = rows.Scan(&postId)
+		if err != nil {
+			return postIds, fmt.Errorf("PostsRepo - FetchIdsByReaction - Scan: %w", err)
+		}
+		postIds = append(postIds, postId.Int64)
+	}
+
+	return postIds, nil
+}
+
 func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	var post entity.Post
 

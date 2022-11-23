@@ -11,6 +11,9 @@ import (
 const (
 	DateAndTimeFormat = "2006-01-02 15:04:05"
 	RoleUser          = "Пользователь"
+	queryAuthor       = "author"
+	queryLike         = "liked"
+	queryDislike      = "disliked"
 )
 
 type UsersRepo struct {

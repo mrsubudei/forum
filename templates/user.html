@@ -129,10 +129,13 @@
                             <li class="postcount">Пол: <img src="/templates/img/Female.gif" title="Женский"></li>
                             {{end}}
                             <li class="postcount">Дата регистрации: {{.User.RegDate}}</li>
-                            <li class="postcount">Постов: {{.User.Posts}}</li>
+                            <li class="postcount">Постов: <a href="/find_posts/author/{{.User.Id}}">{{.User.Posts}}</a>
+                            </li>
                             <li class="postcount">Комментариев: {{.User.Comments}}</li>
-                            <li class="postcount">Лайков к постам: {{.User.PostLikes}}</li>
-                            <li class="postcount">Дизлайков к постам: {{.User.PostDislikes}}</li>
+                            <li class="postcount">Лайков к постам: <a
+                                    href="/find_posts/liked/{{.User.Id}}">{{.User.PostLikes}}</a></li>
+                            <li class="postcount">Дизлайков к постам: <a
+                                    href="/find_posts/disliked/{{.User.Id}}">{{.User.PostDislikes}}</a></li>
                             <li class="postcount">Лайков к комментариям: {{.User.CommentLikes}}</li>
                             <li class="postcount">Дизлайков к комментариям: {{.User.CommentDislikes}}</li>
                             <li class="postcount">Подпись: {{.User.Sign}}</li>

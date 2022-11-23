@@ -147,18 +147,6 @@ func CreateDB(s *sqlite3.Sqlite) error {
 		return err
 	}
 
-	moderators := `
-	CREATE TABLE IF NOT EXISTS moderators (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_id INTEGER,
-		FOREIGN KEY (user_id) REFERENCES users(id)
-		);
-	`
-	_, err = s.DB.Exec(moderators)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 

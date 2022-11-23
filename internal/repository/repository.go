@@ -9,8 +9,10 @@ import (
 type Posts interface {
 	Store(post *entity.Post) error
 	Fetch() ([]entity.Post, error)
+	FetchByAuthor(user entity.User) ([]entity.Post, error)
 	GetById(id int64) (entity.Post, error)
 	GetIdsByCategory(category string) ([]int64, error)
+	FetchIdsByReaction(user entity.User, reaction string) ([]int64, error)
 	Update(post entity.Post) error
 	Delete(post entity.Post) error
 	StoreLike(post entity.Post) error

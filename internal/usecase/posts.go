@@ -17,6 +17,7 @@ type PostsUseCase struct {
 
 const (
 	PostCommentedQuery = "commented"
+	PostAuthorQuery    = "author"
 	PostLikedQuery     = "liked"
 	PostDislikedQuery  = "disliked"
 	ReactionLike       = "like"
@@ -51,13 +52,55 @@ func (pu *PostsUseCase) GetAllPosts() ([]entity.Post, error) {
 	if err != nil {
 		return posts, fmt.Errorf("PostsUseCase - GetAllPosts #1 - %w", err)
 	}
-	// if len(posts) == 0 {
-	// 	return posts, entity.ErrPostNotFound
-	// }
+
 	if len(posts) != 0 {
 		err = pu.fillPostDetails(&posts)
 		if err != nil {
 			return posts, fmt.Errorf("PostsUseCase - GetAllPosts #2 - %w", err)
+		}
+	}
+	return posts, nil
+}
+
+func (pu *PostsUseCase) GetPostsByQuery(user entity.User, query string) ([]entity.Post, error) {
+	var posts []entity.Post
+	var err error
+	switch query {
+	case PostAuthorQuery:
+		posts, err = pu.repo.FetchByAuthor(user)
+		if err != nil {
+			return posts, fmt.Errorf("PostsUseCase - GetPostsByQuery #1 - %w", err)
+		}
+	case PostLikedQuery:
+		ids, err := pu.repo.FetchIdsByReaction(user, PostLikedQuery)
+		if err != nil {
+			return posts, fmt.Errorf("PostsUseCase - GetPostsByQuery #2 - %w", err)
+		}
+		for i := 0; i < len(ids); i++ {
+			post, err := pu.repo.GetById(ids[i])
+			if err != nil {
+				return posts, fmt.Errorf("PostsUseCase - GetPostsByQuery #3 - %w", err)
+			}
+			posts = append(posts, post)
+		}
+	case PostDislikedQuery:
+		ids, err := pu.repo.FetchIdsByReaction(user, PostDislikedQuery)
+		if err != nil {
+			return posts, fmt.Errorf("PostsUseCase - GetPostsByQuery #4 - %w", err)
+		}
+		for i := 0; i < len(ids); i++ {
+			post, err := pu.repo.GetById(ids[i])
+			if err != nil {
+				return posts, fmt.Errorf("PostsUseCase - GetPostsByQuery #5 - %w", err)
+			}
+			posts = append(posts, post)
+		}
+	}
+
+	if len(posts) != 0 {
+		err = pu.fillPostDetails(&posts)
+		if err != nil {
+			return posts, fmt.Errorf("PostsUseCase - GetPostsByQuery #3 - %w", err)
 		}
 	}
 	return posts, nil
