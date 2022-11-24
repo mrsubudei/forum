@@ -50,6 +50,7 @@ var (
 	errMethodNotAllowed    = "Метод не разрешен"
 	errStatusNotAuthorized = "Вы не авторизованы"
 	errLowAccessLevel      = "Низкий уровень доступа"
+	queryPost              = "post"
 	commandPutLike         = "like"
 	commandPutDislike      = "dislike"
 	updateQueryInfo        = "info"

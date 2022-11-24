@@ -160,9 +160,9 @@
                                             <div class="reactions">
                                                 {{if .Authorized}}
                                                 <div class="reaction"> <a href="/put_post_like/{{.Post.Id}}"><img
-                                                            src="/templates/img/post/like.png"></a>
-                                                    {{.Post.TotalLikes}} <a href="/put_post_dislike/{{.Post.Id}}"><img
-                                                            src="/templates/img/post/dislike.png"></a>{{.Post.TotalDislikes}}
+                                                            src="/templates/img/post/like.png"></a> <a href="/find_reacted_users/post/liked/{{.Post.Id}}">{{.Post.TotalLikes}}</a>
+                                                     <a href="/put_post_dislike/{{.Post.Id}}"><img
+                                                            src="/templates/img/post/dislike.png"></a> <a href="/find_reacted_users/post/disliked/{{.Post.Id}}">{{.Post.TotalDislikes}}</a>
                                                 </div>
                                                 {{end}}
                                                 {{if .Unauthorized}}
@@ -236,9 +236,9 @@
                                             </div>
                                             <div class="reactions">
                                                 <div class="reaction"> <a href="/put_comment_like/{{.Id}}"><img
-                                                            src="/templates/img/post/comment-like.png"></a>
-                                                    {{.TotalLikes}} <a href="/put_comment_dislike/{{.Id}}"><img
-                                                            src="/templates/img/post/comment-dislike.png"></a>{{.TotalDislikes}}
+                                                            src="/templates/img/post/comment-like.png"></a> <a href="/find_reacted_users/comment/liked/{{.Id}}">{{.TotalLikes}}</a>
+                                                     <a href="/put_comment_dislike/{{.Id}}"><img
+                                                            src="/templates/img/post/comment-dislike.png"></a> <a href="/find_reacted_users/comment/disliked/{{.Id}}">{{.TotalDislikes}}</a> 
                                                 </div>
                                             </div>
                                         </div>

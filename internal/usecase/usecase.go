@@ -20,6 +20,7 @@ type Posts interface {
 	DeleteReaction(post entity.Post, command string) error
 	CreateCategories(categories []string) error
 	GetAllCategories() ([]string, error)
+	GetReactions(id int64) (entity.Post, error)
 }
 
 type Users interface {

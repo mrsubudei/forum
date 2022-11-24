@@ -137,8 +137,8 @@
                                     <a href="/posts/{{.Id}}">{{.TotalComments}}</a>
                                 </td>
                                 <td class="stats windowbg">
-                                    <a href="/post-likes/{{.Id}}">{{.TotalLikes}}</a> / <a
-                                        href="/post-dislikes/{{.Id}}">{{.TotalDislikes}}</a>
+                                    <a href="/find_reacted_users/post/liked/{{.Id}}">{{.TotalLikes}}</a> / <a
+                                        href="/find_reacted_users/post/disliked/{{.Id}}">{{.TotalDislikes}}</a>
                                 </td>
                                 <td class="lastpost windowbg2">
                                     {{if .LastCommentExist}}
