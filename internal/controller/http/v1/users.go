@@ -313,7 +313,6 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method != http.MethodPost {
 		errors.Code = http.StatusMethodNotAllowed
 		errors.Message = errMethodNotAllowed
@@ -538,77 +537,4 @@ func (h *Handler) getExistedSession(w http.ResponseWriter, r *http.Request) enti
 func checkEmail(address string) bool {
 	_, err := mail.ParseAddress(address)
 	return err == nil
-}
-
-func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
-		h.Errors(w, errors)
-		return
-	}
-
-	authorized := h.checkSession(w, r)
-	if !authorized {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errLowAccessLevel
-		h.Errors(w, errors)
-		return
-	}
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
-	content := Content{}
-	if foundUser.Id == 1 {
-		content.Admin = true
-	}
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
-	content.User.Id = foundUser.Id
-
-	path := strings.Split(r.URL.Path, "/")
-	query := path[len(path)-2]
-
-	userId, err := strconv.Atoi(path[len(path)-1])
-
-	if r.URL.Path != "/find_posts/"+query+"/"+path[len(path)-1] || err != nil || userId <= 0 {
-		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
-		h.Errors(w, errors)
-		return
-	}
-
-	user := entity.User{Id: int64(userId)}
-
-	posts, err := h.usecases.Posts.GetPostsByQuery(user, query)
-	if err != nil {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
-		h.Errors(w, errors)
-		return
-	}
-	content.Posts = posts
-
-	html, err := template.ParseFiles("templates/index.html")
-	if err != nil {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, content)
-	if err != nil {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
-		h.Errors(w, errors)
-		return
-	}
 }

@@ -95,6 +95,18 @@ func (pu *PostsUseCase) GetPostsByQuery(user entity.User, query string) ([]entit
 			}
 			posts = append(posts, post)
 		}
+	case PostCommentedQuery:
+		ids, err := pu.commentRepo.GetPostIds(user)
+		if err != nil {
+			return posts, fmt.Errorf("PostsUseCase - GetPostsByQuery #5 - %w", err)
+		}
+		for i := 0; i < len(ids); i++ {
+			post, err := pu.repo.GetById(ids[i])
+			if err != nil {
+				return posts, fmt.Errorf("PostsUseCase - GetPostsByQuery #6 - %w", err)
+			}
+			posts = append(posts, post)
+		}
 	}
 
 	if len(posts) != 0 {

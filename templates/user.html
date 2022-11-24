@@ -136,7 +136,8 @@
                             {{if .Unauthorized}}
                             <li class="postcount">Постов: {{.User.Posts}}</li>
                             {{end}}
-                            <li class="postcount">Комментариев: {{.User.Comments}}</li>
+                            <li class="postcount">Комментариев: <a
+                                href="/find_posts/commented/{{.User.Id}}">{{.User.Comments}}</a></li>
                             {{if .Authorized}}
                             <li class="postcount">Лайков к постам: <a
                                     href="/find_posts/liked/{{.User.Id}}">{{.User.PostLikes}}</a></li>
