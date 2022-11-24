@@ -30,35 +30,32 @@
                     <ul class="dropmenu" id="menu_nav">
                         <li id="button_home">
                             <a class="active firstlevel" href="/">
-                                <span class="last firstlevel"><img src="/templates/img/buttons/home.png"
-                                        alt="*" />Начало</span>
+                                <span class="last firstlevel"><img src="/templates/img/buttons/home.png" />Начало</span>
                             </a>
                         </li>
                         <li id="button_search">
                             <a class="firstlevel" href="/search_page/">
-                                <span class="firstlevel"><img src="/templates/img/buttons/search.png"
-                                        alt="*" />Поиск</span>
+                                <span class="firstlevel"><img src="/templates/img/buttons/search.png" />Поиск</span>
                             </a>
                         </li>
                         {{if .Admin}}
                         <li id="button_add_category">
                             <a class="firstlevel" href="/create_category_page/">
-                                <span class="firstlevel"><img src="/templates/img/buttons/calendar.png"
-                                        alt="*" />Добавить тему</span>
+                                <span class="firstlevel"><img src="/templates/img/buttons/calendar.png" />Добавить
+                                    тему</span>
                             </a>
                         </li>
                         {{end}}
                         {{if .Unauthorized}}
                         <li id="button_login">
                             <a class="firstlevel" href="/signin_page/">
-                                <span class="firstlevel"><img src="/templates/img/buttons/login.png"
-                                        alt="*" />Вход</span>
+                                <span class="firstlevel"><img src="/templates/img/buttons/login.png" />Вход</span>
                             </a>
                         </li>
                         <li id="button_register">
                             <a class="firstlevel" href="/signup_page/">
-                                <span class="last firstlevel"><img src="/templates/img/buttons/register.png"
-                                        alt="*" />Регистрация</span>
+                                <span class="last firstlevel"><img
+                                        src="/templates/img/buttons/register.png" />Регистрация</span>
                             </a>
                         </li>
                         {{end}}
@@ -76,8 +73,7 @@
                         </li>
                         <li id="button_login">
                             <a class="firstlevel" href="/signout/">
-                                <span class="firstlevel"><img src="/templates/img/buttons/login.png"
-                                        alt="*" />Выйти</span>
+                                <span class="firstlevel"><img src="/templates/img/buttons/login.png" />Выйти</span>
                             </a>
                         </li>
                         {{end}}
@@ -90,7 +86,7 @@
                 <div id="main_content_section">
                     <div class="navigate_section">
                         <ul>
-                            <li><img src="/templates/img/icons/folder_open.png" alt="+">
+                            <li><img src="/templates/img/icons/folder_open.png">
                             </li>
                             <li>
                                 <a href="/"><span>Форум школы Алем</span></a> »
@@ -148,7 +144,7 @@
                                         <div class="flow_hidden">
                                             <div class="keyinfo">
                                                 <div class="messageicon">
-                                                    <img src="/templates/img/post/xx.gif" alt="">
+                                                    <img src="/templates/img/post/xx.gif">
                                                 </div>
                                                 <h5>
                                                     {{.Post.Title}}
@@ -160,9 +156,11 @@
                                             <div class="reactions">
                                                 {{if .Authorized}}
                                                 <div class="reaction"> <a href="/put_post_like/{{.Post.Id}}"><img
-                                                            src="/templates/img/post/like.png"></a> <a href="/find_reacted_users/post/liked/{{.Post.Id}}">{{.Post.TotalLikes}}</a>
-                                                     <a href="/put_post_dislike/{{.Post.Id}}"><img
-                                                            src="/templates/img/post/dislike.png"></a> <a href="/find_reacted_users/post/disliked/{{.Post.Id}}">{{.Post.TotalDislikes}}</a>
+                                                            src="/templates/img/post/like.png"></a> <a
+                                                        href="/find_reacted_users/post/liked/{{.Post.Id}}">{{.Post.TotalLikes}}</a>
+                                                    <a href="/put_post_dislike/{{.Post.Id}}"><img
+                                                            src="/templates/img/post/dislike.png"></a> <a
+                                                        href="/find_reacted_users/post/disliked/{{.Post.Id}}">{{.Post.TotalDislikes}}</a>
                                                 </div>
                                                 {{end}}
                                                 {{if .Unauthorized}}
@@ -174,7 +172,6 @@
                                             </div>
                                         </div>
                                         <div class="post">
-
                                             <div class="inner">
                                                 {{range .Post.ContentWeb}}
                                                 {{.}} <br>
@@ -225,7 +222,7 @@
                                         <div class="flow_hidden">
                                             <div class="keyinfo">
                                                 <div class="messageicon">
-                                                    <img src="/templates/img/post/xx.gif" alt="">
+                                                    <img src="/templates/img/post/xx.gif">
                                                 </div>
                                                 <h5 id="{{.Id}}">
                                                 </h5>
@@ -236,9 +233,11 @@
                                             </div>
                                             <div class="reactions">
                                                 <div class="reaction"> <a href="/put_comment_like/{{.Id}}"><img
-                                                            src="/templates/img/post/comment-like.png"></a> <a href="/find_reacted_users/comment/liked/{{.Id}}">{{.TotalLikes}}</a>
-                                                     <a href="/put_comment_dislike/{{.Id}}"><img
-                                                            src="/templates/img/post/comment-dislike.png"></a> <a href="/find_reacted_users/comment/disliked/{{.Id}}">{{.TotalDislikes}}</a> 
+                                                            src="/templates/img/post/comment-like.png"></a> <a
+                                                        href="/find_reacted_users/comment/liked/{{.Id}}">{{.TotalLikes}}</a>
+                                                    <a href="/put_comment_dislike/{{.Id}}"><img
+                                                            src="/templates/img/post/comment-dislike.png"></a> <a
+                                                        href="/find_reacted_users/comment/disliked/{{.Id}}">{{.TotalDislikes}}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -293,7 +292,7 @@
                                         <div class="flow_hidden">
                                             <div class="keyinfo">
                                                 <div class="messageicon">
-                                                    <img src="/templates/img/post/xx.gif" alt="">
+                                                    <img src="/templates/img/post/xx.gif">
                                                 </div>
                                                 <h5 id="{{.Id}}">
                                                 </h5>

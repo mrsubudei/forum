@@ -1,7 +1,3 @@
-/* Styles for the general looks for the Curve theme.
-------------------------------------------------------- */
-
-/* Normal, standard links. */
 a:link,
 a:visited {
 	color: #005177;
@@ -14,7 +10,6 @@ a:hover {
 	cursor: pointer;
 }
 
-/* Links that open in a new window. */
 a.new_win:link,
 a.new_win:visited {
 	color: #346;
@@ -25,27 +20,21 @@ a.new_win:hover {
 	text-decoration: underline;
 }
 
-/* Tables should show empty cells. */
 table {
 	empty-cells: show;
 }
 
-/* Set a fontsize that will look the same in all browsers. */
 body {
-	/*	background: #E9EEF2 url(/templates/img/theme/backdrop.png) repeat;
- */
 	counter-reset: my-sec-counter;
 	font: 78%/130% "Verdana", "Arial", "Helvetica", sans-serif;
 	margin: 0 auto;
 	padding: 15px 0;
 }
 
-/* Help popups require a different styling of the body element. */
 body#help_popup {
 	padding: 1em;
 }
 
-/* use dark grey for the text, leaving #000 for headers etc */
 body,
 td,
 th,
@@ -53,27 +42,16 @@ tr {
 	color: #444;
 }
 
-/* This division wraps the entire forum when a forum width is set. */
 div#wrapper {
 	margin: 0 auto;
 	min-width: 780px;
 	max-width: 2300px;
 }
 
-/* lets give all forms zero padding/margins */
 form {
 	padding: 0;
 	margin: 0;
 }
-
-/* We can style the different types of input buttons to be uniform throughout different browsers and their color themes.
-	.button_submit - covers input[type=submit], input[type=button], button[type=submit] and button[type=button] in all browsers
-	.button_reset  - covers input[type=reset] and button[type=reset] throughout all browsers
-	.input_check   - covers input[type=checkbox] throughout all browsers
-	.input_radio   - covers input[type=radio] throughout all browsers
-	.input_text    - covers input[type=text] throughout all browsers
-	.input_file    - covers input[type=file] throughout all browsers
-*/
 
 input,
 button,
@@ -91,22 +69,18 @@ textarea {
 	background: #fff;
 }
 
-/* Select elements look horrible with the extra padding, so leave them unpadded. */
 select {
 	padding: 0;
 }
 
-/* Add some padding to the options instead. */
 select option {
 	padding: 1px;
 }
 
-/* The font size of textareas should be just a little bit larger. */
 textarea {
 	font: 100%/130% verdana, Helvetica, sans-serif;
 }
 
-/* Buttons should be styled a bit differently, in order to make them look more button'ish. */
 .button_submit,
 .button_reset {
 	background: #AFC6DB url(/templates/img/theme/submit_bg.png) no-repeat;
@@ -135,7 +109,6 @@ select:focus {
 	border: 1px solid #454545;
 }
 
-/* All input elements that are checkboxes or radio buttons shouldn't have a border around them. */
 input.input_check,
 input.input_radio {
 	border: none;
@@ -146,12 +119,10 @@ h3.catbg input.input_check {
 	margin: 9px 7px 0 7px;
 }
 
-/* Give disabled text input elements a different background color. */
 input[disabled].input_text {
 	background-color: #eee;
 }
 
-/* Standard horizontal rule.. ([hr], etc.) */
 hr,
 .hrcolor {
 	height: 1px;
@@ -160,7 +131,6 @@ hr,
 	background-color: #000;
 }
 
-/* By default set the color on these tags as #000. */
 h1,
 h2,
 h3,
@@ -173,7 +143,6 @@ h6 {
 	padding: 0;
 }
 
-/* Fieldsets are used to group elements. */
 fieldset {
 	border: 1px solid #000;
 	padding: 1em;
@@ -185,12 +154,10 @@ fieldset legend {
 	color: #444;
 }
 
-/* No image should have a border when linked. */
 a img {
 	border: 0;
 }
 
-/* Define strong as bold, and em as italics */
 strong {
 	font-weight: bold;
 }
@@ -199,13 +166,9 @@ em {
 	font-style: italic;
 }
 
-/* Alternative for u tag */
 .underline {
 	text-decoration: underline;
 }
-
-/* Common classes to easy styling.
-------------------------------------------------------- */
 
 .floatright {
 	float: right;
@@ -221,11 +184,6 @@ em {
 
 .flow_hidden {
 	overflow: hidden;
-}
-
-.flow_hidden .windowbg,
-.flow_hidden .windowbg2 {
-	/*margin-top: 2px;*/
 }
 
 .clear {
@@ -248,7 +206,6 @@ em {
 	border-bottom: 1px solid #6E94B7;
 }
 
-/* Default font sizes: small (8pt), normal (10pt), and large (14pt). */
 .smalltext,
 tr.smalltext th {
 	font-size: 0.85em;
@@ -273,8 +230,6 @@ tr.smalltext th {
 .centertext {
 	margin: 0 auto;
 	text-align: center;
-	/*border-right: 1px solid #6E94B7;
-	border-left: 1px solid #6E94B7;*/
 }
 
 .righttext {
@@ -293,7 +248,6 @@ tr.smalltext th {
 	line-height: 2em;
 }
 
-/* some common padding styles */
 .padding {
 	padding: 0.3em 0.7em;
 }
@@ -303,7 +257,6 @@ tr.smalltext th {
 	padding-bottom: 0.5em;
 }
 
-/* a quick reset list class. */
 ul.reset,
 ul.reset li {
 	padding: 0;
@@ -312,10 +265,6 @@ ul.reset li {
 	color: #000;
 }
 
-/* Some BBC related styles.
-------------------------------------------------------- */
-
-/* A quote, perhaps from another post. */
 blockquote.bbc_standard_quote,
 blockquote.bbc_alternate_quote {
 	font-size: x-small;
@@ -328,7 +277,6 @@ blockquote.bbc_alternate_quote {
 	overflow: auto;
 }
 
-/* Alterate blockquote stylings */
 blockquote.bbc_standard_quote {
 	background-color: #dee7ef;
 }
@@ -337,7 +285,6 @@ blockquote.bbc_alternate_quote {
 	background-color: #daeafc;
 }
 
-/* A code block - maybe PHP ;). */
 code.bbc_code {
 	display: block;
 	font-family: "dejavu sans mono", "monaco", "lucida console", "courier new", monospace;
@@ -349,11 +296,9 @@ code.bbc_code {
 	padding: 3px 1em;
 	overflow: auto;
 	white-space: pre;
-	/* Show a scrollbar after about 24 lines. */
 	max-height: 24em;
 }
 
-/* The "Quote:" and "Code:" header parts... */
 .codeheader,
 .quoteheader {
 	color: #666;
@@ -362,12 +307,10 @@ code.bbc_code {
 	padding: 0 0.3em;
 }
 
-/* For links to change the code stuff... */
 .codeoperation {
 	font-weight: normal;
 }
 
-/* Styling for BBC tags */
 .bbc_link:link,
 .bbc_link:visited {
 	color: #778899;
@@ -408,31 +351,24 @@ code.bbc_code {
 	font-family: "dejavu sans mono", "monaco", "lucida console", "courier new", monospace;
 }
 
-/* Generally, those [?] icons.  This makes your cursor a help icon. */
 .help {
 	cursor: help;
 }
 
-/* /me uses this a lot. (emote, try typing /me in a post.) */
 .meaction {
 	color: red;
 }
 
-/* Highlighted text - such as search results. */
 .highlight {
 	font-weight: bold;
 	color: #ff7200 !important;
 	font-size: 1.1em;
 }
 
-/* A more discreet highlight color, for selected membergroups etc. */
 .highlight2 {
 	background-color: #D1E1EF;
 	color: #000 !important;
 }
-
-/* Generic, mostly color-related, classes.
-------------------------------------------------------- */
 
 .titlebg,
 .titlebg2,
@@ -444,7 +380,6 @@ tr.titlebg2 td {
 	font-size: 1.1em;
 	font-weight: bold;
 	background: url(/templates/img/theme/main_block.png) no-repeat -10px -120px;
-	/* 120! */
 }
 
 .catbg,
@@ -463,14 +398,10 @@ tr.catbg2 th {
 .catbg3,
 tr.catbg3 td,
 tr.catbg3 th,
-tr.catbg3 th.first_th
-
-/*, tr.catbg td, tr.catbg2 td, tr.catbg th, tr.catbg2 th*/
-	{
+tr.catbg3 th.first_th {
 	background: #6e94b7 url(/templates/img/theme/header.png) repeat-x !important;
 }
 
-/* adjust the table versions of headers */
 tr.titlebg th,
 tr.titlebg2 th,
 td.titlebg,
@@ -494,12 +425,6 @@ tr.titlebg2 td a {
 	color: #000;
 }
 
-tr.catbg td a,
-tr.catbg2 td a,
-.catbg a {
-	/*color: #fff;*/
-}
-
 tr.catbg th.smalltext {
 	font-size: 0.9em;
 }
@@ -511,7 +436,6 @@ thead tr.titlebg th a:visited {
 	font-size: 0.95em;
 }
 
-/* Alternating backgrounds for posts, and several other sections of the forum. */
 .windowbg,
 #preview_body {
 	color: #000;
@@ -528,12 +452,10 @@ thead tr.titlebg th a:visited {
 	background-color: #cacdd3;
 }
 
-/* the page navigation area */
 .pagesection,
 .pagesection_top,
 .pagesection_bottom {
 	background: #bfd0e2 url(/templates/img/theme/main_block.png) no-repeat 0 -380px;
-	/* ok */
 	font-size: 0.9em;
 	padding: 3px 8px 3px 9px;
 	overflow: hidden;
@@ -569,7 +491,6 @@ div.pagesection div.floatright input {
 	padding-top: 0.6em;
 }
 
-/* Colors for background of posts requiring approval */
 .approvebg {
 	color: #000;
 	background-color: #ffeaea;
@@ -580,7 +501,6 @@ div.pagesection div.floatright input {
 	background-color: #fff2f2;
 }
 
-/* Color for background of *topics* requiring approval */
 .approvetbg {
 	color: #000;
 	background-color: #e4a17c;
@@ -591,14 +511,10 @@ div.pagesection div.floatright input {
 	background-color: #f3bd9f;
 }
 
-/* Sticky topics get a different background */
 .stickybg {
 	background: #d8e1e7;
 }
 
-.stickybg2 {}
-
-/* Locked posts get a different shade, too! */
 .lockedbg {
 	background: #d4dce2;
 	font-style: italic;
@@ -609,7 +525,6 @@ div.pagesection div.floatright input {
 	font-style: italic;
 }
 
-/* Posts and personal messages displayed throughout the forum. */
 .post,
 .personalmessage {
 	overflow: auto;
@@ -617,7 +532,6 @@ div.pagesection div.floatright input {
 	padding: 0.1em 0;
 }
 
-/* All the signatures used in the forum.  If your forum users use Mozilla, Opera, or Safari, you might add max-height here ;). */
 .signature,
 .attachments {
 	width: 98%;
@@ -638,17 +552,14 @@ div.pagesection div.floatright input {
 	font-size: 0.85em;
 }
 
-/* Sometimes there will be an error when you post */
 .error {
 	color: red;
 }
 
-/* Messages that somehow need to attract the attention. */
 .alert {
 	color: red;
 }
 
-/* Calendar colors for birthdays, events and holidays */
 .birthday {
 	color: #920ac4;
 }
@@ -661,7 +572,6 @@ div.pagesection div.floatright input {
 	color: #000080;
 }
 
-/* Colors for warnings */
 .warn_mute {
 	color: red;
 }

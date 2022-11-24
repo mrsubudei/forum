@@ -175,7 +175,8 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 		h.Errors(w, errors)
 		return
 	}
-	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
+
+	http.Redirect(w, r, r.Header.Get("Referer")+"#"+strconv.Itoa(int(comment.Id)), http.StatusFound)
 }
 
 func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Request) {
@@ -226,5 +227,5 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 		h.Errors(w, errors)
 		return
 	}
-	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
+	http.Redirect(w, r, r.Header.Get("Referer")+"#"+strconv.Itoa(int(comment.Id)), http.StatusFound)
 }
