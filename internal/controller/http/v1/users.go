@@ -534,7 +534,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 			return
 		}
 	}
-	content := ContentSingle{}
+	content := Content{}
 	if foundUser.Id == 1 {
 		content.Admin = true
 	}
@@ -555,21 +555,52 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	post := entity.Post{}
+	users := []entity.User{}
 
 	switch query {
 	case queryPost:
-		p, err := h.usecases.Posts.GetReactions(int64(id))
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
+		if reaction == queryLiked {
+			users, err = h.usecases.Posts.GetReactions(int64(id), queryLiked)
+			if err != nil {
+				errors.Code = http.StatusInternalServerError
+				errors.Message = errInternalServer
+				h.Errors(w, errors)
+				return
+			}
+			content.Message = reactionMessageLike
+		} else if reaction == queryDisliked {
+			users, err = h.usecases.Posts.GetReactions(int64(id), queryDisliked)
+			if err != nil {
+				errors.Code = http.StatusInternalServerError
+				errors.Message = errInternalServer
+				h.Errors(w, errors)
+				return
+			}
+			content.Message = reactionMessageDislike
 		}
-		post = p
+	case queryComment:
+		if reaction == queryLiked {
+			users, err = h.usecases.Comments.GetReactions(int64(id), queryLiked)
+			if err != nil {
+				errors.Code = http.StatusInternalServerError
+				errors.Message = errInternalServer
+				h.Errors(w, errors)
+				return
+			}
+			content.Message = reactionMessageLike
+		} else if reaction == queryDisliked {
+			users, err = h.usecases.Comments.GetReactions(int64(id), queryDisliked)
+			if err != nil {
+				errors.Code = http.StatusInternalServerError
+				errors.Message = errInternalServer
+				h.Errors(w, errors)
+				return
+			}
+			content.Message = reactionMessageDislike
+		}
 	}
 
-	content.Post = post
+	content.Users = users
 
 	html, err := template.ParseFiles("templates/reacted_users.html")
 	if err != nil {

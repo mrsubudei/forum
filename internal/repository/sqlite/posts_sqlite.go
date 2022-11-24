@@ -511,7 +511,7 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 		if err != nil {
 			return post, fmt.Errorf("PostsRepo - FetchReactions - dislikes - Scan: %w", err)
 		}
-		likes = append(likes, dislike)
+		dislikes = append(dislikes, dislike)
 	}
 	post.Likes = append(post.Likes, likes...)
 	post.Dislikes = append(post.Dislikes, dislikes...)

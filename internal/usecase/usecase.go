@@ -20,7 +20,7 @@ type Posts interface {
 	DeleteReaction(post entity.Post, command string) error
 	CreateCategories(categories []string) error
 	GetAllCategories() ([]string, error)
-	GetReactions(id int64) (entity.Post, error)
+	GetReactions(id int64, query string) ([]entity.User, error)
 }
 
 type Users interface {
@@ -44,6 +44,7 @@ type Comments interface {
 	DeleteComment(c entity.Comment) error
 	MakeReaction(c entity.Comment, command string) error
 	DeleteReaction(c entity.Comment, command string) error
+	GetReactions(id int64, query string) ([]entity.User, error)
 }
 
 type UseCases struct {

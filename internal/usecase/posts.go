@@ -359,13 +359,32 @@ func (pu *PostsUseCase) fillPostDetails(posts *[]entity.Post) error {
 	return nil
 }
 
-func (pu *PostsUseCase) GetReactions(id int64) (entity.Post, error) {
+func (pu *PostsUseCase) GetReactions(id int64, query string) ([]entity.User, error) {
+	var users []entity.User
 	post, err := pu.repo.FetchReactions(id)
 	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetReactions #1 - %w", err)
+		return users, fmt.Errorf("PostsUseCase - GetReactions #1 - %w", err)
+	}
+	switch query {
+	case PostLikedQuery:
+		for i := 0; i < len(post.Likes); i++ {
+			user, err := pu.userRepo.GetById(post.Likes[i].UserId)
+			if err != nil {
+				return users, fmt.Errorf("PostsUseCase - GetReactions #2 - %w", err)
+			}
+			users = append(users, user)
+		}
+	case PostDislikedQuery:
+		for i := 0; i < len(post.Dislikes); i++ {
+			user, err := pu.userRepo.GetById(post.Dislikes[i].UserId)
+			if err != nil {
+				return users, fmt.Errorf("PostsUseCase - GetReactions #3 - %w", err)
+			}
+			users = append(users, user)
+		}
 	}
 
-	return post, nil
+	return users, nil
 }
 
 func (pu *PostsUseCase) CreateCategories(categories []string) error {

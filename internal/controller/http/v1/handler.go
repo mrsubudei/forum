@@ -18,6 +18,7 @@ type Content struct {
 	User         entity.User
 	Posts        []entity.Post
 	Users        []entity.User
+	Message      string
 	ErrorMsg     ErrMessage
 }
 
@@ -51,9 +52,14 @@ var (
 	errStatusNotAuthorized = "Вы не авторизованы"
 	errLowAccessLevel      = "Низкий уровень доступа"
 	queryPost              = "post"
+	queryComment           = "comment"
+	queryLiked             = "liked"
+	queryDisliked          = "disliked"
 	commandPutLike         = "like"
 	commandPutDislike      = "dislike"
 	updateQueryInfo        = "info"
+	reactionMessageLike    = "\"лайк\""
+	reactionMessageDislike = "\"дизлайк\""
 	errors                 ErrMessage
 )
 

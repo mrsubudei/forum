@@ -116,11 +116,31 @@ func (cu *CommentsUseCase) DeleteReaction(comment entity.Comment, command string
 	return nil
 }
 
-func (cu *CommentsUseCase) GetReactions(id int64) (entity.Comment, error) {
+func (cu *CommentsUseCase) GetReactions(id int64, query string) ([]entity.User, error) {
+	var users []entity.User
 	comment, err := cu.repo.FetchReactions(id)
 	if err != nil {
-		return comment, fmt.Errorf("CommentUseCase - GetReactions - %w", err)
+		return users, fmt.Errorf("PostsUseCase - GetReactions #1 - %w", err)
 	}
 
-	return comment, nil
+	switch query {
+	case PostLikedQuery:
+		for i := 0; i < len(comment.Likes); i++ {
+			user, err := cu.userRepo.GetById(comment.Likes[i].UserId)
+			if err != nil {
+				return users, fmt.Errorf("PostsUseCase - GetReactions #2 - %w", err)
+			}
+			users = append(users, user)
+		}
+	case PostDislikedQuery:
+		for i := 0; i < len(comment.Dislikes); i++ {
+			user, err := cu.userRepo.GetById(comment.Dislikes[i].UserId)
+			if err != nil {
+				return users, fmt.Errorf("PostsUseCase - GetReactions #3 - %w", err)
+			}
+			users = append(users, user)
+		}
+	}
+
+	return users, nil
 }

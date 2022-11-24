@@ -363,7 +363,7 @@ func (pr *CommentsRepo) FetchReactions(id int64) (entity.Comment, error) {
 		if err != nil {
 			return comment, fmt.Errorf("CommentsRepo - FetchReactions - dislikes - Scan: %w", err)
 		}
-		likes = append(likes, dislike)
+		dislikes = append(dislikes, dislike)
 	}
 	comment.Likes = append(comment.Likes, likes...)
 	comment.Dislikes = append(comment.Dislikes, dislikes...)
