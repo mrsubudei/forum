@@ -24,5 +24,4 @@ func (h *Handler) Errors(w http.ResponseWriter, errors ErrMessage) {
 	}
 
 	html.Execute(w, errors)
-
 }

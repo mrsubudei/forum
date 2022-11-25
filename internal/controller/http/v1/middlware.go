@@ -2,6 +2,8 @@ package v1
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -16,6 +18,7 @@ func (h *Handler) CheckAuth(next http.Handler) http.Handler {
 		}
 		isAuthorized, err := h.usecases.Users.CheckSession(foundUser)
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - CheckAuth - CheckSession: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
@@ -29,6 +32,7 @@ func (h *Handler) CheckAuth(next http.Handler) http.Handler {
 		}
 		err = h.usecases.Users.UpdateSession(foundUser)
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - CheckAuth - UpdateSession: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
@@ -55,6 +59,7 @@ func (h *Handler) AssignStatus(next http.Handler) http.Handler {
 		foundUser := h.GetExistedSession(w, r)
 		isAuthorized, err := h.usecases.Users.CheckSession(foundUser)
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - AssignStatus - CheckSession: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
@@ -63,6 +68,7 @@ func (h *Handler) AssignStatus(next http.Handler) http.Handler {
 		if isAuthorized {
 			err = h.usecases.Users.UpdateSession(foundUser)
 			if err != nil {
+				log.Println(fmt.Errorf("v1 - AssignStatus - UpdateSession: %w", err))
 				errors.Code = http.StatusInternalServerError
 				errors.Message = ErrInternalServer
 				h.Errors(w, errors)

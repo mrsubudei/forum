@@ -23,6 +23,7 @@ type Key string
 
 const (
 	SessionDomain          = "localhost"
+	ErrNoRowsInResult      = "no rows in result set"
 	UserNotExist           = "Такого пользователя не существует"
 	UserPassWrong          = "Неверный пароль, попробуйте ещё раз"
 	PasswordsNotSame       = "Пароли не совпадают"

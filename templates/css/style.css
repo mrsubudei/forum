@@ -947,10 +947,6 @@ table.table_list a.collapse {
 	color: #fff;
 }
 
-.table_grid th.first_th {
-	/*background: #bfd0e2 url(/templates/img/theme/main_block.png) no-repeat 0 -160px;*/
-}
-
 .table_grid th.last_th {
 	/*background: #bfd0e2 url(/templates/img/theme/main_block.png) no-repeat 100% -160px;*/
 	color: #fff;
@@ -1212,9 +1208,6 @@ span.lowerframe span {
 }
 
 /* the background's first level only */
-.dropmenu li a.firstlevel {
-	/*margin-right: 8px;*/
-}
 
 .dropmenu li a.firstlevel span.firstlevel {
 	background: url(/templates/img/theme/menu_gfx.png) 0 -120px no-repeat;
@@ -1539,10 +1532,6 @@ img#smflogo {
 }
 
 /* the upper_section, float the two each way */
-#upper_section {
-	/*padding: 5px;
-	margin-bottom: 1.5em;*/
-}
 
 #upper_section ul li.greeting {
 	font-size: 1.3em;
@@ -1841,10 +1830,6 @@ p.moderators {
 	padding: 0;
 }
 
-#upshrinkHeaderIC {
-	/*margin-top: 4px;*/
-}
-
 dl#ic_recentposts {
 	margin: 0 0 0.5em 0;
 	padding: 0.5em;
@@ -1918,12 +1903,6 @@ img.new_posts {
 div.table_frame .table_list {
 	border-collapse: collapse;
 	margin: 2px 0;
-}
-
-.table_frame .table_list td.icon,
-.table_frame .table_list td.info,
-.table_frame .table_list td.stats {
-	/*border-right: 2px solid red;*/
 }
 
 #messageindex {
@@ -2099,11 +2078,6 @@ div#pollmoderation {
 	clear: both;
 }
 
-/* author and topic informaton */
-#forumposts .cat_bar {
-	/*margin: 0 0 2px 0;*/
-}
-
 /* author and topic information */
 #forumposts h3 span#author {
 	margin: 0 7.7em 0 0;
@@ -2112,10 +2086,6 @@ div#pollmoderation {
 #forumposts h3 img {
 	float: left;
 	margin: 1px 0.5em 0 0;
-}
-
-#forumposts h3.catbg {
-	/*margin-bottom: 3px;*/
 }
 
 p#whoisviewing {
@@ -2285,42 +2255,6 @@ ul.quickbuttons li a span img {
 	margin-right: 1px;
 }
 
-ul.quickbuttons li.quote_button {
-	/*background: url(/templates/img/theme/quickbuttons.png) no-repeat 0 0;*/
-}
-
-ul.quickbuttons li.remove_button {
-	/*background: url(/templates/img/theme/quickbuttons.png) no-repeat 0 -30px;*/
-}
-
-ul.quickbuttons li.modify_button {
-	/*background: url(/templates/img/theme/quickbuttons.png) no-repeat 0 -60px;*/
-}
-
-ul.quickbuttons li.approve_button {
-	/*background: url(/templates/img/theme/quickbuttons.png) no-repeat 0 -90px;*/
-}
-
-ul.quickbuttons li.restore_button {
-	/*background: url(/templates/img/theme/quickbuttons.png) no-repeat 0 -120px;*/
-}
-
-ul.quickbuttons li.split_button {
-	/*background: url(/templates/img/theme/quickbuttons.png) no-repeat 0 -150px;*/
-}
-
-ul.quickbuttons li.reply_button {
-	/*background: url(/templates/img/theme/quickbuttons.png) no-repeat 0 -180px;*/
-}
-
-ul.quickbuttons li.reply_all_button {
-	/*background: url(/templates/img/theme/quickbuttons.png) no-repeat 0 -180px;*/
-}
-
-ul.quickbuttons li.notify_button {
-	/*background: url(/templates/img/theme/quickbuttons.png) no-repeat 0 -210px;*/
-}
-
 ul.quickbuttons li.inline_mod_check {
 	margin: 0 0 0 5px;
 	background: none;
@@ -2402,10 +2336,6 @@ ul.quickbuttons li.inline_mod_check {
 ---------------------------------------------------- */
 
 /* The quick-reply area. Horizontal alignments go a bit wonky in IE6 and IE7 but is it really worth worrying about? */
-
-#quickreplybox {
-	/*padding-bottom: 1px;*/
-}
 
 #quickreplybox div.cat_bar {
 	border: 1px solid #6E94B7;

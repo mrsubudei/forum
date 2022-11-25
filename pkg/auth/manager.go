@@ -21,8 +21,8 @@ const (
 	TimeFormat         = "2006-01-02 15:04:05"
 )
 
-func NewManager() (*Manager, error) {
-	return &Manager{}, nil
+func NewManager() *Manager {
+	return &Manager{}
 }
 
 func (m *Manager) NewToken() (string, error) {

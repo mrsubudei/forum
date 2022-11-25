@@ -1,7 +1,9 @@
 package v1
 
 import (
+	"fmt"
 	"forum/internal/entity"
+	"log"
 	"net/http"
 	"strings"
 	"text/template"
@@ -26,6 +28,8 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(key).(Content)
 	if !ok {
+		log.Printf("v1 - IndexHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -33,6 +37,7 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	html, err := template.ParseFiles("templates/index.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - IndexHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -40,6 +45,7 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	posts, err := h.usecases.Posts.GetAllPosts()
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - IndexHandler - GetAllPosts: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -68,6 +74,8 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - SearchPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -76,6 +84,7 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	html, err := template.ParseFiles("templates/search.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SearchPageHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -84,6 +93,7 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = html.Execute(w, content)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SearchPageHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -108,16 +118,19 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	searchRequest := strings.ToLower(r.Form["search"][0])
 	posts, err := h.usecases.Posts.GetAllPosts()
-	filtered := h.filterPosts(posts, searchRequest)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SearchHandler - GetAllPosts: %w", err))
 		errors.Code = http.StatusBadRequest
 		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
 
+	filtered := h.filterPosts(posts, searchRequest)
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - SearchHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -128,6 +141,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	html, err := template.ParseFiles("templates/index.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SearchHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -136,6 +150,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = html.Execute(w, content)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SearchHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -153,6 +168,8 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - CreateCategoryPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -168,6 +185,7 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 
 	html, err := template.ParseFiles("templates/create_category.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - CreateCategoryPageHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -176,6 +194,7 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 
 	err = html.Execute(w, content)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - CreateCategoryPageHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -204,6 +223,7 @@ func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) 
 
 	err := h.usecases.Posts.CreateCategories(categories)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - CreateCategoryHandler - CreateCategories: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -231,6 +251,8 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - SearchByCategoryHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -239,6 +261,7 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 
 	posts, err := h.usecases.Posts.GetAllByCategory(category)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SearchByCategoryHandler - GetAllByCategory: %w", err))
 		if strings.Contains(err.Error(), entity.ErrPostNotFound.Error()) {
 			errors.Code = http.StatusBadRequest
 			errors.Message = ErrBadRequest
@@ -253,6 +276,7 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 	content.Posts = posts
 	html, err := template.ParseFiles("templates/index.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SearchByCategoryHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -261,6 +285,7 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 
 	err = html.Execute(w, content)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SearchByCategoryHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)

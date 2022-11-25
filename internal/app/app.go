@@ -19,43 +19,59 @@ import (
 )
 
 func Run() {
+	fmt.Println("Starting server..")
+
+	// Logger
+	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0664)
+	if err != nil {
+		log.Println(fmt.Errorf("app - Run - os.OpenFile: %w", err))
+		return
+	}
+	log.SetOutput(file)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+
+	// Sqlite
 	sq, err := sqlite3.New()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(fmt.Errorf("app - Run - sqlite3.New: %w", err))
+		return
 	}
 	defer sq.Close()
+
+	// Repository
 	repositories := repository.NewRepositories(sq)
 	err = sqlite.CreateDB(sq)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(fmt.Errorf("app - Run - NewRepositories: %w", err))
+		return
 	}
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Dependencies
 	hasher := hasher.NewBcryptHasher()
-	tokenManager, err := auth.NewManager()
-	if err != nil {
-		log.Fatal(err)
-	}
+	tokenManager := auth.NewManager()
+
+	// Usecases
 	useCases := usecase.NewUseCases(usecase.Dependencies{
 		Repos:        repositories,
 		Hasher:       hasher,
 		TokenManager: tokenManager,
 	})
+
+	// Http
 	handler := v1.NewHandler(useCases)
 	server := httpserver.NewServer(handler)
-	fmt.Println("starting server..")
 
 	go func() {
 		if err := server.Run(); !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("error occurred while running http server: %s\n", err.Error())
 		}
 	}()
-	fmt.Println("Server started at port 8080")
+	d := "8087"
+	fmt.Printf("Server started at port %s\n", d)
+
+	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-
 	<-quit
 	err = server.Shutdown()
 	if err != nil {

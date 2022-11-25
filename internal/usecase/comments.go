@@ -33,15 +33,16 @@ func (cu *CommentsUseCase) WriteComment(comment entity.Comment) error {
 
 func (cu *CommentsUseCase) GetAllComments(postId int64) ([]entity.Comment, error) {
 	comments, err := cu.repo.Fetch(postId)
+	if err != nil {
+		return nil, fmt.Errorf("CommentsUseCase - GetAllComments #1 - %w", err)
+	}
+
 	for i := 0; i < len(comments); i++ {
 		user, err := cu.userRepo.GetById(comments[i].User.Id)
 		if err != nil {
-			return nil, fmt.Errorf("CommentsUseCase - GetAllComments #1 - %w", err)
+			return nil, fmt.Errorf("CommentsUseCase - GetAllComments #2 - %w", err)
 		}
 		comments[i].User = user
-	}
-	if err != nil {
-		return nil, fmt.Errorf("CommentsUseCase - GetAllComments #2 - %w", err)
 	}
 	return comments, nil
 }

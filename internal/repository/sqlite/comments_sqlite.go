@@ -18,7 +18,7 @@ func NewCommentsRepo(sq *sqlite3.Sqlite) *CommentsRepo {
 func (cr *CommentsRepo) Store(comment entity.Comment) error {
 	tx, err := cr.DB.Begin()
 	if err != nil {
-		return fmt.Errorf("CommentssRepo - Store - Begin: %w", err)
+		return fmt.Errorf("CommentsRepo - Store - Begin: %w", err)
 	}
 
 	stmt, err := tx.Prepare(`
@@ -26,23 +26,23 @@ func (cr *CommentsRepo) Store(comment entity.Comment) error {
 		values(?, ?, ?, ?)
 	`)
 	if err != nil {
-		return fmt.Errorf("CommentssRepo - Store - Prepare: %w", err)
+		return fmt.Errorf("CommentsRepo - Store - Prepare: %w", err)
 	}
 	defer stmt.Close()
 
 	res, err := stmt.Exec(comment.PostId, comment.User.Id, comment.Date, comment.Content)
 	if err != nil {
-		return fmt.Errorf("CommentssRepo - Store - Exec: %w", err)
+		return fmt.Errorf("CommentsRepo - Store - Exec: %w", err)
 	}
 
 	affected, err := res.RowsAffected()
 	if affected != 1 || err != nil {
-		return fmt.Errorf("CommentssRepo - Store - RowsAffected: %w", err)
+		return fmt.Errorf("CommentsRepo - Store - RowsAffected: %w", err)
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return fmt.Errorf("CommentssRepo - Store - Commit: %w", err)
+		return fmt.Errorf("CommentsRepo - Store - Commit: %w", err)
 	}
 
 	return nil

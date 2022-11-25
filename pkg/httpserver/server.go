@@ -17,7 +17,7 @@ const (
 
 type Server struct {
 	httpServer *http.Server
-	handler    *v1.Handler
+	h          *v1.Handler
 }
 
 func NewServer(handler *v1.Handler) *Server {
@@ -27,37 +27,37 @@ func NewServer(handler *v1.Handler) *Server {
 			ReadTimeout:  DefaultReadTimeout,
 			WriteTimeout: DefaultWriteTimeout,
 		},
-		handler: handler,
+		h: handler,
 	}
 }
 
 func (s *Server) Run() error {
-	http.Handle("/", s.handler.AssignStatus(http.HandlerFunc(s.handler.IndexHandler)))
-	http.Handle("/signin_page/", s.handler.AssignStatus(http.HandlerFunc(s.handler.SignInPageHandler)))
-	http.Handle("/signup_page/", s.handler.AssignStatus(http.HandlerFunc(s.handler.SignUpPageHandler)))
-	http.Handle("/signin/", s.handler.AssignStatus(http.HandlerFunc(s.handler.SignInHandler)))
-	http.Handle("/signup/", s.handler.AssignStatus(http.HandlerFunc(s.handler.SignUpHandler)))
-	http.Handle("/signout/", s.handler.CheckAuth(http.HandlerFunc(s.handler.SignOutHandler)))
-	http.Handle("/edit_profile_page/", s.handler.CheckAuth(http.HandlerFunc(s.handler.EditProfilePageHandler)))
-	http.Handle("/edit_profile/", s.handler.CheckAuth(http.HandlerFunc(s.handler.EditProfileHandler)))
-	http.Handle("/users/", s.handler.AssignStatus(http.HandlerFunc(s.handler.UserPageHandler)))
-	http.Handle("/all_users_page/", s.handler.AssignStatus(http.HandlerFunc(s.handler.AllUsersPageHandler)))
-	http.Handle("/search_page/", s.handler.AssignStatus(http.HandlerFunc(s.handler.SearchPageHandler)))
-	http.Handle("/search/", s.handler.AssignStatus(http.HandlerFunc(s.handler.SearchHandler)))
-	http.Handle("/create_category_page/", s.handler.CheckAuth(http.HandlerFunc(s.handler.CreateCategoryPageHandler)))
-	http.Handle("/create_category/", s.handler.CheckAuth(http.HandlerFunc(s.handler.CreateCategoryHandler)))
-	http.Handle("/categories/", s.handler.AssignStatus(http.HandlerFunc(s.handler.SearchByCategoryHandler)))
-	http.Handle("/posts/", s.handler.AssignStatus(http.HandlerFunc(s.handler.PostPageHandler)))
-	http.Handle("/create_post_page/", s.handler.CheckAuth(http.HandlerFunc(s.handler.CreatePostPageHandler)))
-	http.Handle("/create_post/", s.handler.CheckAuth(http.HandlerFunc(s.handler.CreatePostHandler)))
-	http.Handle("/find_posts/", s.handler.CheckAuth(http.HandlerFunc(s.handler.FindPostsHandler)))
-	http.Handle("/put_post_like/", s.handler.CheckAuth(http.HandlerFunc(s.handler.PostPutLikeHandler)))
-	http.Handle("/put_post_dislike/", s.handler.CheckAuth(http.HandlerFunc(s.handler.PostPutDislikeHandler)))
-	http.Handle("/create_comment_page/", s.handler.CheckAuth(http.HandlerFunc(s.handler.CreateCommentPageHandler)))
-	http.Handle("/create_comment/", s.handler.CheckAuth(http.HandlerFunc(s.handler.CreateCommentHandler)))
-	http.Handle("/put_comment_like/", s.handler.CheckAuth(http.HandlerFunc(s.handler.CommentPutLikeHandler)))
-	http.Handle("/put_comment_dislike/", s.handler.CheckAuth(http.HandlerFunc(s.handler.CommentPutDislikeHandler)))
-	http.Handle("/find_reacted_users/", s.handler.CheckAuth(http.HandlerFunc(s.handler.FindReactedUsersHandler)))
+	http.Handle("/", s.h.AssignStatus(http.HandlerFunc(s.h.IndexHandler)))
+	http.Handle("/signin_page/", s.h.AssignStatus(http.HandlerFunc(s.h.SignInPageHandler)))
+	http.Handle("/signup_page/", s.h.AssignStatus(http.HandlerFunc(s.h.SignUpPageHandler)))
+	http.Handle("/signin/", s.h.AssignStatus(http.HandlerFunc(s.h.SignInHandler)))
+	http.Handle("/signup/", s.h.AssignStatus(http.HandlerFunc(s.h.SignUpHandler)))
+	http.Handle("/signout/", s.h.CheckAuth(http.HandlerFunc(s.h.SignOutHandler)))
+	http.Handle("/edit_profile_page/", s.h.CheckAuth(http.HandlerFunc(s.h.EditProfilePageHandler)))
+	http.Handle("/edit_profile/", s.h.CheckAuth(http.HandlerFunc(s.h.EditProfileHandler)))
+	http.Handle("/users/", s.h.AssignStatus(http.HandlerFunc(s.h.UserPageHandler)))
+	http.Handle("/all_users_page/", s.h.AssignStatus(http.HandlerFunc(s.h.AllUsersPageHandler)))
+	http.Handle("/search_page/", s.h.AssignStatus(http.HandlerFunc(s.h.SearchPageHandler)))
+	http.Handle("/search/", s.h.AssignStatus(http.HandlerFunc(s.h.SearchHandler)))
+	http.Handle("/create_category_page/", s.h.CheckAuth(http.HandlerFunc(s.h.CreateCategoryPageHandler)))
+	http.Handle("/create_category/", s.h.CheckAuth(http.HandlerFunc(s.h.CreateCategoryHandler)))
+	http.Handle("/categories/", s.h.AssignStatus(http.HandlerFunc(s.h.SearchByCategoryHandler)))
+	http.Handle("/posts/", s.h.AssignStatus(http.HandlerFunc(s.h.PostPageHandler)))
+	http.Handle("/create_post_page/", s.h.CheckAuth(http.HandlerFunc(s.h.CreatePostPageHandler)))
+	http.Handle("/create_post/", s.h.CheckAuth(http.HandlerFunc(s.h.CreatePostHandler)))
+	http.Handle("/find_posts/", s.h.CheckAuth(http.HandlerFunc(s.h.FindPostsHandler)))
+	http.Handle("/put_post_like/", s.h.CheckAuth(http.HandlerFunc(s.h.PostPutLikeHandler)))
+	http.Handle("/put_post_dislike/", s.h.CheckAuth(http.HandlerFunc(s.h.PostPutDislikeHandler)))
+	http.Handle("/create_comment_page/", s.h.CheckAuth(http.HandlerFunc(s.h.CreateCommentPageHandler)))
+	http.Handle("/create_comment/", s.h.CheckAuth(http.HandlerFunc(s.h.CreateCommentHandler)))
+	http.Handle("/put_comment_like/", s.h.CheckAuth(http.HandlerFunc(s.h.CommentPutLikeHandler)))
+	http.Handle("/put_comment_dislike/", s.h.CheckAuth(http.HandlerFunc(s.h.CommentPutDislikeHandler)))
+	http.Handle("/find_reacted_users/", s.h.CheckAuth(http.HandlerFunc(s.h.FindReactedUsersHandler)))
 	http.Handle("/templates/css/", http.StripPrefix("/templates/css/", http.FileServer(http.Dir("templates/css"))))
 	http.Handle("/templates/img/", http.StripPrefix("/templates/img/", http.FileServer(http.Dir("templates/img"))))
 	return s.httpServer.ListenAndServe()

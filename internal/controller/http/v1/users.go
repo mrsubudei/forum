@@ -1,7 +1,9 @@
 package v1
 
 import (
+	"fmt"
 	"forum/internal/entity"
+	"log"
 	"net/http"
 	"net/mail"
 	"strconv"
@@ -20,6 +22,10 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
+	if err != nil {
+		log.Println(fmt.Errorf("v1 - UserPageHandler - Atoi: %w", err))
+	}
+
 	if r.URL.Path != "/users/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
 		errors.Message = ErrPageNotFound
@@ -29,6 +35,8 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - UserPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -37,6 +45,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.usecases.Users.GetById(int64(id))
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - UserPageHandler - GetById: %w", err))
 		if strings.Contains(err.Error(), entity.ErrUserNotFound.Error()) {
 			errors.Code = http.StatusBadRequest
 			errors.Message = UserNotExist
@@ -56,6 +65,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	html, err := template.ParseFiles("templates/user.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - UserPageHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -64,6 +74,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = html.Execute(w, content)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - UserPageHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -88,6 +99,8 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - AllUsersPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -97,6 +110,7 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 	users, err := h.usecases.Users.GetAllUsers()
 	content.Users = users
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - AllUsersPageHandler - GetAllUsers: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -105,6 +119,7 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	html, err := template.ParseFiles("templates/all_users.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - AllUsersPageHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -112,6 +127,7 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err = html.Execute(w, content)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - AllUsersPageHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -123,6 +139,7 @@ func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	html, err := template.ParseFiles("templates/login.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SignInPageHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -131,6 +148,7 @@ func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = html.Execute(w, nil)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SignInPageHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -141,6 +159,7 @@ func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 	html, err := template.ParseFiles("templates/registration.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SignUpPageHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -149,6 +168,7 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = html.Execute(w, nil)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SignUpPageHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -160,6 +180,9 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
+	if err != nil {
+		log.Println(fmt.Errorf("v1 - EditProfilePageHandler - Atoi: %w", err))
+	}
 	if r.URL.Path != "/edit_profile_page/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
 		errors.Message = ErrPageNotFound
@@ -169,6 +192,8 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - EditProfilePageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -184,6 +209,7 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 
 	html, err := template.ParseFiles("templates/edit_profile.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - EditProfilePageHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -192,6 +218,7 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 
 	err = html.Execute(w, content)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - EditProfilePageHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -209,6 +236,8 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - EditProfileHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -220,6 +249,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	if len(r.Form["id"]) != 0 && r.Form["id"][0] != "" {
 		id, err := strconv.Atoi(r.Form["id"][0])
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - EditProfileHandler - Atoi: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
@@ -230,6 +260,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	existUser, err := h.usecases.Users.GetById(content.User.Id)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - EditProfileHandler - GetById: %w", err))
 		errors.Code = http.StatusBadRequest
 		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
@@ -255,6 +286,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	err = h.usecases.Users.UpdateUserInfo(existUser, UpdateQueryInfo)
 
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - EditProfileHandler - UpdateUserInfo: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -297,6 +329,9 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.usecases.Users.SignIn(user)
 
+	if err != nil && !strings.Contains(err.Error(), ErrNoRowsInResult) {
+		log.Println(fmt.Errorf("v1 - SignInHandler - SignIn: %w", err))
+	}
 	if err == entity.ErrUserNotFound {
 		content.ErrorMsg.Message = UserNotExist
 		valid = false
@@ -308,6 +343,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	if !valid {
 		html, err := template.ParseFiles("templates/login.html")
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - SignInHandler - ParseFiles: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
@@ -315,6 +351,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		err = html.Execute(w, content)
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - SignInHandler - Execute: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
@@ -323,6 +360,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		id, err := h.usecases.Users.GetIdBy(user)
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - SignInHandler - GetIdBy: %w", err))
 			errors.Code = http.StatusBadRequest
 			errors.Message = ErrBadRequest
 			h.Errors(w, errors)
@@ -331,6 +369,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 		userWithSession, err := h.usecases.Users.GetSession(id)
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - SignInHandler - GetSession: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
@@ -412,16 +451,19 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		} else if err == entity.ErrUserNameAlreadyExists {
 			errorMessage.Message = UserNameExist
 			valid = false
+		} else {
+			log.Println(fmt.Errorf("v1 - SignUpHandler - SignUp: %w", err))
+			errors.Code = http.StatusInternalServerError
+			errors.Message = ErrInternalServer
+			h.Errors(w, errors)
+			return
 		}
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
 	}
 
 	if !valid {
 		html, err := template.ParseFiles("templates/registration.html")
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseFiles: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
@@ -429,6 +471,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		err = html.Execute(w, errorMessage)
 		if err != nil {
+			log.Println(fmt.Errorf("v1 - SignUpHandler - Execute: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
@@ -442,6 +485,8 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - SignOutHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -450,6 +495,7 @@ func (h *Handler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.usecases.Users.DeleteSession(content.User)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - SignOutHandler - DeleteSession: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -470,6 +516,9 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 	query := path[len(path)-3]
 	reaction := path[len(path)-2]
 	id, err := strconv.Atoi(path[len(path)-1])
+	if err != nil {
+		log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - Atoi: %w", err))
+	}
 
 	if (query != QueryPost && query != QueryComment) ||
 		(reaction != QueryLiked && reaction != QueryDisliked) {
@@ -489,6 +538,8 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
+		log.Printf("v1 - FindReactedUsersHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -500,6 +551,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		if reaction == QueryLiked {
 			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryLiked)
 			if err != nil {
+				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #1: %w", err))
 				errors.Code = http.StatusBadRequest
 				errors.Message = ErrBadRequest
 				h.Errors(w, errors)
@@ -509,6 +561,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		} else if reaction == QueryDisliked {
 			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
+				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #2: %w", err))
 				errors.Code = http.StatusBadRequest
 				errors.Message = ErrBadRequest
 				h.Errors(w, errors)
@@ -520,6 +573,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		if reaction == QueryLiked {
 			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryLiked)
 			if err != nil {
+				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #3: %w", err))
 				errors.Code = http.StatusBadRequest
 				errors.Message = ErrBadRequest
 				h.Errors(w, errors)
@@ -529,6 +583,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		} else if reaction == QueryDisliked {
 			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
+				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #4: %w", err))
 				errors.Code = http.StatusBadRequest
 				errors.Message = ErrBadRequest
 				h.Errors(w, errors)
@@ -540,6 +595,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 
 	html, err := template.ParseFiles("templates/reacted_users.html")
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - ParseFiles: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -548,6 +604,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 
 	err = html.Execute(w, content)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -571,6 +628,9 @@ func (h *Handler) GetExistedSession(w http.ResponseWriter, r *http.Request) enti
 	}
 	id, err := h.usecases.Users.GetIdBy(user)
 	if err != nil {
+		if !strings.Contains(err.Error(), ErrNoRowsInResult) {
+			log.Println(fmt.Errorf("v1 - GetExistedSession - GetIdBy: %w", err))
+		}
 		return foundUser
 	}
 
