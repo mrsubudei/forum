@@ -167,13 +167,13 @@ func (pr *PostsRepo) FetchIdsByReaction(user entity.User, reaction string) ([]in
 	var err error
 
 	switch reaction {
-	case queryLike:
+	case QueryLiked:
 		rows, err = pr.DB.Query(`
 		SELECT post_id
 		FROM post_likes
 		WHERE user_id = ?
 	`, user.Id)
-	case queryDislike:
+	case QueryDislike:
 		rows, err = pr.DB.Query(`
 		SELECT post_id
 		FROM post_dislikes

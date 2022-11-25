@@ -10,14 +10,14 @@ import (
 func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
 
 	if r.URL.Path != "/" {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -61,7 +61,7 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -94,14 +94,14 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
 	r.ParseForm()
 	if len(r.Form["search"]) == 0 {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -111,7 +111,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	filtered := h.filterPosts(posts, searchRequest)
 	if err != nil {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -146,7 +146,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -161,7 +161,7 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 
 	if !content.Admin {
 		errors.Code = http.StatusForbidden
-		errors.Message = errLowAccessLevel
+		errors.Message = ErrLowAccessLevel
 		h.Errors(w, errors)
 		return
 	}
@@ -186,7 +186,7 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -194,7 +194,7 @@ func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) 
 	r.ParseForm()
 	if len(r.Form["category"]) == 0 {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -215,7 +215,7 @@ func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) 
 func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -224,7 +224,7 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 	category := path[len(path)-1]
 	if r.URL.Path != "/categories/"+category {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -241,7 +241,7 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		if strings.Contains(err.Error(), entity.ErrPostNotFound.Error()) {
 			errors.Code = http.StatusBadRequest
-			errors.Message = errBadRequest
+			errors.Message = ErrBadRequest
 			h.Errors(w, errors)
 			return
 		}

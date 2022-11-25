@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-const DateFormat = "2006-01-02"
-
 func CreateDB(s *sqlite3.Sqlite) error {
 
 	users := `

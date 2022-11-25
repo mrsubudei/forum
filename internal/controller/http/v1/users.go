@@ -13,7 +13,7 @@ import (
 func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -22,7 +22,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/users/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -39,7 +39,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if strings.Contains(err.Error(), entity.ErrUserNotFound.Error()) {
 			errors.Code = http.StatusBadRequest
-			errors.Message = userNotExist
+			errors.Message = UserNotExist
 			h.Errors(w, errors)
 			return
 		}
@@ -74,14 +74,14 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
 
 	if r.URL.Path != "/all_users_page/" {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -162,7 +162,7 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/edit_profile_page/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -177,7 +177,7 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 
 	if content.User.Id != 1 && content.User.Id != int64(id) {
 		errors.Code = http.StatusForbidden
-		errors.Message = errLowAccessLevel
+		errors.Message = ErrLowAccessLevel
 		h.Errors(w, errors)
 		return
 	}
@@ -202,7 +202,7 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -231,7 +231,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	existUser, err := h.usecases.Users.GetById(content.User.Id)
 	if err != nil {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -252,7 +252,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		existUser.Role = r.Form["role"][0]
 	}
 
-	err = h.usecases.Users.UpdateUserInfo(existUser, updateQueryInfo)
+	err = h.usecases.Users.UpdateUserInfo(existUser, UpdateQueryInfo)
 
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
@@ -267,7 +267,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -275,7 +275,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 	if len(r.Form["user"]) == 0 || len(r.Form["password"]) == 0 {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -298,10 +298,10 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	err := h.usecases.Users.SignIn(user)
 
 	if err == entity.ErrUserNotFound {
-		content.ErrorMsg.Message = userNotExist
+		content.ErrorMsg.Message = UserNotExist
 		valid = false
 	} else if err == entity.ErrUserPasswordIncorrect {
-		content.ErrorMsg.Message = userPassWrong
+		content.ErrorMsg.Message = UserPassWrong
 		valid = false
 	}
 
@@ -324,7 +324,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		id, err := h.usecases.Users.GetIdBy(user)
 		if err != nil {
 			errors.Code = http.StatusBadRequest
-			errors.Message = errBadRequest
+			errors.Message = ErrBadRequest
 			h.Errors(w, errors)
 			return
 		}
@@ -351,7 +351,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -364,7 +364,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if len(r.Form["user"]) == 0 || len(r.Form["password"]) == 0 ||
 		len(r.Form["email"]) == 0 || len(r.Form["confirm_password"]) == 0 {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -388,11 +388,11 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	valid := true
 
 	if !checkEmail(email) {
-		errorMessage.Message = emailFormatWrong
+		errorMessage.Message = EmailFormatWrong
 		valid = false
 	}
 	if password != confirmPassword {
-		errorMessage.Message = passwordsNotSame
+		errorMessage.Message = PasswordsNotSame
 		valid = false
 	}
 
@@ -407,10 +407,10 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err = h.usecases.Users.SignUp(user)
 	if err != nil {
 		if err == entity.ErrUserEmailAlreadyExists {
-			errorMessage.Message = userEmailExist
+			errorMessage.Message = UserEmailExist
 			valid = false
 		} else if err == entity.ErrUserNameAlreadyExists {
-			errorMessage.Message = userNameExist
+			errorMessage.Message = UserNameExist
 			valid = false
 		}
 		errors.Code = http.StatusInternalServerError
@@ -461,7 +461,7 @@ func (h *Handler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -471,10 +471,10 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 	reaction := path[len(path)-2]
 	id, err := strconv.Atoi(path[len(path)-1])
 
-	if (query != queryPost && query != queryComment) ||
-		(reaction != queryLiked && reaction != queryDisliked) {
+	if (query != QueryPost && query != QueryComment) ||
+		(reaction != QueryLiked && reaction != QueryDisliked) {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -482,7 +482,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 	if r.URL.Path != "/find_reacted_users/"+query+"/"+reaction+"/"+path[len(path)-1] ||
 		err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -496,45 +496,45 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	switch query {
-	case queryPost:
-		if reaction == queryLiked {
-			content.Users, err = h.usecases.Posts.GetReactions(int64(id), queryLiked)
+	case QueryPost:
+		if reaction == QueryLiked {
+			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryLiked)
 			if err != nil {
 				errors.Code = http.StatusBadRequest
-				errors.Message = errBadRequest
+				errors.Message = ErrBadRequest
 				h.Errors(w, errors)
 				return
 			}
-			content.Message = reactionMessageLike
-		} else if reaction == queryDisliked {
-			content.Users, err = h.usecases.Posts.GetReactions(int64(id), queryDisliked)
+			content.Message = ReactionMessageLike
+		} else if reaction == QueryDisliked {
+			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
 				errors.Code = http.StatusBadRequest
-				errors.Message = errBadRequest
+				errors.Message = ErrBadRequest
 				h.Errors(w, errors)
 				return
 			}
-			content.Message = reactionMessageDislike
+			content.Message = ReactionMessageDislike
 		}
-	case queryComment:
-		if reaction == queryLiked {
-			content.Users, err = h.usecases.Comments.GetReactions(int64(id), queryLiked)
+	case QueryComment:
+		if reaction == QueryLiked {
+			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryLiked)
 			if err != nil {
 				errors.Code = http.StatusBadRequest
-				errors.Message = errBadRequest
+				errors.Message = ErrBadRequest
 				h.Errors(w, errors)
 				return
 			}
-			content.Message = reactionMessageLike
-		} else if reaction == queryDisliked {
-			content.Users, err = h.usecases.Comments.GetReactions(int64(id), queryDisliked)
+			content.Message = ReactionMessageLike
+		} else if reaction == QueryDisliked {
+			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
 				errors.Code = http.StatusBadRequest
-				errors.Message = errBadRequest
+				errors.Message = ErrBadRequest
 				h.Errors(w, errors)
 				return
 			}
-			content.Message = reactionMessageDislike
+			content.Message = ReactionMessageDislike
 		}
 	}
 

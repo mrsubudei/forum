@@ -11,7 +11,7 @@ import (
 func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -20,7 +20,7 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/create_comment_page/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -55,7 +55,7 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -63,7 +63,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	if len(r.Form["content"]) == 0 {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -71,7 +71,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/create_comment/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -93,7 +93,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	err = h.usecases.Comments.WriteComment(newComment)
 	if err != nil {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -106,7 +106,7 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/put_comment_like/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -124,10 +124,10 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	comment.User.Id = content.User.Id
 
-	err = h.usecases.Comments.MakeReaction(comment, commandPutLike)
+	err = h.usecases.Comments.MakeReaction(comment, CommandPutLike)
 	if err != nil {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -141,7 +141,7 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/put_comment_dislike/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -159,10 +159,10 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 	}
 	comment.User.Id = content.User.Id
 
-	err = h.usecases.Comments.MakeReaction(comment, commandPutDislike)
+	err = h.usecases.Comments.MakeReaction(comment, CommandPutDislike)
 	if err != nil {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}

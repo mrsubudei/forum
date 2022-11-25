@@ -18,18 +18,6 @@ type UsersUseCase struct {
 	commentRepo  repository.Comments
 }
 
-const (
-	UpdateInfoQuery     = "info"
-	UpdatePasswordQuery = "password"
-	UpdateSessionQuery  = "session"
-	UniqueEmailErr      = "UNIQUE constraint failed: users.email"
-	UniqueNameErr       = "UNIQUE constraint failed: users.name"
-	DateFormat          = "2006-01-02"
-	DateAndTimeFormat   = "2006-01-02 15:04:05"
-	UserGenderMale      = "Male"
-	UserGenderFemale    = "Female"
-)
-
 func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
 	tokenManager auth.TokenManager, postRepo repository.Posts,
 	commentRepo repository.Comments) *UsersUseCase {

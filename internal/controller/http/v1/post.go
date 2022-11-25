@@ -11,7 +11,7 @@ import (
 func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -20,7 +20,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/posts/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -36,7 +36,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	post, err := h.usecases.Posts.GetById(int64(id))
 	if err != nil {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -64,7 +64,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -105,7 +105,7 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -113,7 +113,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	if len(r.Form["title"]) == 0 || len(r.Form["content"]) == 0 {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -132,7 +132,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	categories := r.Form["categories"]
 
 	if len(categories) == 0 {
-		content.ErrorMsg.Message = postCategoryRequired
+		content.ErrorMsg.Message = PostCategoryRequired
 		valid = false
 	}
 
@@ -183,7 +183,7 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/put_post_like/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -201,10 +201,10 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	post.User.Id = content.User.Id
 
-	err = h.usecases.Posts.MakeReaction(post, commandPutLike)
+	err = h.usecases.Posts.MakeReaction(post, CommandPutLike)
 	if err != nil {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -218,7 +218,7 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/put_post_dislike/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -236,10 +236,10 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	post.User.Id = content.User.Id
 
-	err = h.usecases.Posts.MakeReaction(post, commandPutDislike)
+	err = h.usecases.Posts.MakeReaction(post, CommandPutDislike)
 	if err != nil {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -250,7 +250,7 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = errMethodNotAllowed
+		errors.Message = ErrMethodNotAllowed
 		h.Errors(w, errors)
 		return
 	}
@@ -262,7 +262,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/find_posts/"+query+"/"+path[len(path)-1] ||
 		err != nil || userId <= 0 {
 		errors.Code = http.StatusNotFound
-		errors.Message = errPageNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -280,7 +280,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	posts, err := h.usecases.Posts.GetPostsByQuery(user, query)
 	if err != nil {
 		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
 		return
 	}

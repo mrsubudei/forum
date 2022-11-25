@@ -5,16 +5,12 @@ import (
 	"net/http"
 )
 
-type (
-	Key string
-)
-
 func (h *Handler) CheckAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		foundUser := h.GetExistedSession(w, r)
 		if foundUser.Id == 0 {
 			errors.Code = http.StatusUnauthorized
-			errors.Message = errStatusNotAuthorized
+			errors.Message = ErrStatusNotAuthorized
 			h.Errors(w, errors)
 			return
 		}
@@ -27,7 +23,7 @@ func (h *Handler) CheckAuth(next http.Handler) http.Handler {
 		}
 		if !isAuthorized {
 			errors.Code = http.StatusUnauthorized
-			errors.Message = errStatusNotAuthorized
+			errors.Message = ErrStatusNotAuthorized
 			h.Errors(w, errors)
 			return
 		}
