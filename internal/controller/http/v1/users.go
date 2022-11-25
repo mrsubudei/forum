@@ -18,31 +18,19 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authorized := h.checkSession(w, r)
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
-	content := ContentSingle{}
-
-	if foundUser.Id == 1 {
-		content.Admin = true
-	}
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
-	content.User.Id = foundUser.Id
-
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/users/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
 		errors.Message = errPageNotFound
+		h.Errors(w, errors)
+		return
+	}
+
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -56,11 +44,12 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
-	if foundUser.Id == int64(id) && authorized {
+
+	if content.User.Id == int64(id) && content.Authorized || content.Admin {
 		user.Owner = true
 	}
 	content.User = user
@@ -68,14 +57,15 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	html, err := template.ParseFiles("templates/user.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
+
 	err = html.Execute(w, content)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -96,31 +86,19 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authorized := h.checkSession(w, r)
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
 	}
-	content := Content{}
-
-	if foundUser.Id == 1 {
-		content.Admin = true
-	}
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
-	content.User.Id = foundUser.Id
 
 	users, err := h.usecases.Users.GetAllUsers()
 	content.Users = users
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -128,36 +106,33 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 	html, err := template.ParseFiles("templates/all_users.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
 	err = html.Execute(w, content)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
 }
 
 func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
-	authorized := h.checkSession(w, r)
-	if authorized {
-		http.Redirect(w, r, "/", http.StatusFound)
-	}
 
 	html, err := template.ParseFiles("templates/login.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
+
 	err = html.Execute(w, nil)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -167,7 +142,7 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 	html, err := template.ParseFiles("templates/registration.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -175,24 +150,13 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 	err = html.Execute(w, nil)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
 }
 
 func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request) {
-	authorized := h.checkSession(w, r)
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
@@ -203,26 +167,25 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if foundUser.Id != 1 && foundUser.Id != int64(id) {
-		errors.Code = http.StatusBadRequest
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
+	if content.User.Id != 1 && content.User.Id != int64(id) {
+		errors.Code = http.StatusForbidden
 		errors.Message = errLowAccessLevel
 		h.Errors(w, errors)
 		return
 	}
 
-	content := ContentSingle{}
-
-	if foundUser.Id == 1 {
-		content.Admin = true
-	}
-	content.User.Id = foundUser.Id
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
-
 	html, err := template.ParseFiles("templates/edit_profile.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -230,7 +193,7 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 	err = html.Execute(w, content)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -243,25 +206,14 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, errors)
 		return
 	}
-	authorized := h.checkSession(w, r)
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
-	content := ContentSingle{}
 
-	if foundUser.Id == 1 {
-		content.Admin = true
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
 	}
-	content.User.Id = foundUser.Id
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
 
 	r.ParseForm()
 
@@ -269,17 +221,17 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(r.Form["id"][0])
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
-		foundUser.Id = int64(id)
+		content.User.Id = int64(id)
 	}
 
-	existUser, err := h.usecases.Users.GetById(foundUser.Id)
+	existUser, err := h.usecases.Users.GetById(content.User.Id)
 	if err != nil {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Code = http.StatusBadRequest
+		errors.Message = errBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -304,12 +256,12 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
 
-	http.Redirect(w, r, "/users/"+strconv.Itoa(int(foundUser.Id)), http.StatusFound)
+	http.Redirect(w, r, "/users/"+strconv.Itoa(int(content.User.Id)), http.StatusFound)
 }
 
 func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
@@ -357,22 +309,22 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		html, err := template.ParseFiles("templates/login.html")
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
 		err = html.Execute(w, content)
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
 	} else {
 		id, err := h.usecases.Users.GetIdBy(user)
 		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Code = http.StatusBadRequest
+			errors.Message = errBadRequest
 			h.Errors(w, errors)
 			return
 		}
@@ -380,7 +332,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		userWithSession, err := h.usecases.Users.GetSession(id)
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
@@ -390,7 +342,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 			Value:   userWithSession.SessionToken,
 			Expires: userWithSession.SessionTTL,
 			Path:    "/",
-			Domain:  sessionDomain,
+			Domain:  SessionDomain,
 		})
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
@@ -462,7 +414,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 			valid = false
 		}
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -471,14 +423,14 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		html, err := template.ParseFiles("templates/registration.html")
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
 		err = html.Execute(w, errorMessage)
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
@@ -488,25 +440,22 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
-	foundUser := h.getExistedSession(w, r)
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
+	}
 
-	err := h.usecases.Users.DeleteSession(foundUser)
+	err := h.usecases.Users.DeleteSession(content.User)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 	}
 	time.Sleep(time.Second)
 	http.Redirect(w, r, "/", http.StatusFound)
-}
-
-func (h *Handler) checkSession(w http.ResponseWriter, r *http.Request) bool {
-	foundUser := h.getExistedSession(w, r)
-	authorized, err := h.usecases.Users.CheckSession(foundUser)
-	if err != nil {
-		return false
-	}
-	return authorized
 }
 
 func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -517,62 +466,51 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	authorized := h.checkSession(w, r)
-	if !authorized {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errLowAccessLevel
-		h.Errors(w, errors)
-		return
-	}
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
-	content := Content{}
-	if foundUser.Id == 1 {
-		content.Admin = true
-	}
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
-	content.User.Id = foundUser.Id
-
 	path := strings.Split(r.URL.Path, "/")
 	query := path[len(path)-3]
 	reaction := path[len(path)-2]
-
 	id, err := strconv.Atoi(path[len(path)-1])
 
-	if r.URL.Path != "/find_reacted_users/"+query+"/"+reaction+"/"+path[len(path)-1] || err != nil || id <= 0 {
-		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+	if (query != queryPost && query != queryComment) ||
+		(reaction != queryLiked && reaction != queryDisliked) {
+		errors.Code = http.StatusNotFound
+		errors.Message = errPageNotFound
 		h.Errors(w, errors)
 		return
 	}
 
-	users := []entity.User{}
+	if r.URL.Path != "/find_reacted_users/"+query+"/"+reaction+"/"+path[len(path)-1] ||
+		err != nil || id <= 0 {
+		errors.Code = http.StatusNotFound
+		errors.Message = errPageNotFound
+		h.Errors(w, errors)
+		return
+	}
+
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
+	}
 
 	switch query {
 	case queryPost:
 		if reaction == queryLiked {
-			users, err = h.usecases.Posts.GetReactions(int64(id), queryLiked)
+			content.Users, err = h.usecases.Posts.GetReactions(int64(id), queryLiked)
 			if err != nil {
-				errors.Code = http.StatusInternalServerError
-				errors.Message = errInternalServer
+				errors.Code = http.StatusBadRequest
+				errors.Message = errBadRequest
 				h.Errors(w, errors)
 				return
 			}
 			content.Message = reactionMessageLike
 		} else if reaction == queryDisliked {
-			users, err = h.usecases.Posts.GetReactions(int64(id), queryDisliked)
+			content.Users, err = h.usecases.Posts.GetReactions(int64(id), queryDisliked)
 			if err != nil {
-				errors.Code = http.StatusInternalServerError
-				errors.Message = errInternalServer
+				errors.Code = http.StatusBadRequest
+				errors.Message = errBadRequest
 				h.Errors(w, errors)
 				return
 			}
@@ -580,19 +518,19 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		}
 	case queryComment:
 		if reaction == queryLiked {
-			users, err = h.usecases.Comments.GetReactions(int64(id), queryLiked)
+			content.Users, err = h.usecases.Comments.GetReactions(int64(id), queryLiked)
 			if err != nil {
-				errors.Code = http.StatusInternalServerError
-				errors.Message = errInternalServer
+				errors.Code = http.StatusBadRequest
+				errors.Message = errBadRequest
 				h.Errors(w, errors)
 				return
 			}
 			content.Message = reactionMessageLike
 		} else if reaction == queryDisliked {
-			users, err = h.usecases.Comments.GetReactions(int64(id), queryDisliked)
+			content.Users, err = h.usecases.Comments.GetReactions(int64(id), queryDisliked)
 			if err != nil {
-				errors.Code = http.StatusInternalServerError
-				errors.Message = errInternalServer
+				errors.Code = http.StatusBadRequest
+				errors.Message = errBadRequest
 				h.Errors(w, errors)
 				return
 			}
@@ -600,12 +538,10 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	content.Users = users
-
 	html, err := template.ParseFiles("templates/reacted_users.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -613,13 +549,13 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 	err = html.Execute(w, content)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
 }
 
-func (h *Handler) getExistedSession(w http.ResponseWriter, r *http.Request) entity.User {
+func (h *Handler) GetExistedSession(w http.ResponseWriter, r *http.Request) entity.User {
 	foundUser := entity.User{}
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
@@ -629,18 +565,18 @@ func (h *Handler) getExistedSession(w http.ResponseWriter, r *http.Request) enti
 		w.WriteHeader(http.StatusBadRequest)
 		return foundUser
 	}
-	tokenExisted := cookie.Value
+	token := cookie.Value
 	user := entity.User{
-		SessionToken: tokenExisted,
+		SessionToken: token,
 	}
 	id, err := h.usecases.Users.GetIdBy(user)
 	if err != nil {
 		return foundUser
 	}
-	foundUser = entity.User{
-		Id:           id,
-		SessionToken: tokenExisted,
-	}
+
+	foundUser.Id = id
+	foundUser.SessionToken = token
+
 	return foundUser
 }
 

@@ -16,18 +16,10 @@ type Content struct {
 	Unauthorized bool
 	Admin        bool
 	User         entity.User
+	Post         entity.Post
 	Posts        []entity.Post
 	Users        []entity.User
 	Message      string
-	ErrorMsg     ErrMessage
-}
-
-type ContentSingle struct {
-	Authorized   bool
-	Unauthorized bool
-	Admin        bool
-	Post         entity.Post
-	User         entity.User
 	ErrorMsg     ErrMessage
 }
 
@@ -36,8 +28,8 @@ type ErrMessage struct {
 	Message string
 }
 
-var (
-	sessionDomain          = "localhost"
+const (
+	SessionDomain          = "localhost"
 	userNotExist           = "Такого пользователя не существует"
 	userPassWrong          = "Неверный пароль, попробуйте ещё раз"
 	passwordsNotSame       = "Пароли не совпадают"
@@ -47,7 +39,7 @@ var (
 	postCategoryRequired   = "Выберите хотя бы одну тему"
 	errPageNotFound        = "Страница не найдена"
 	errBadRequest          = "Некорректный запрос"
-	errInternalServer      = "Ошибка сервера"
+	ErrInternalServer      = "Ошибка сервера"
 	errMethodNotAllowed    = "Метод не разрешен"
 	errStatusNotAuthorized = "Вы не авторизованы"
 	errLowAccessLevel      = "Низкий уровень доступа"
@@ -60,19 +52,20 @@ var (
 	updateQueryInfo        = "info"
 	reactionMessageLike    = "\"лайк\""
 	reactionMessageDislike = "\"дизлайк\""
-	errors                 ErrMessage
 )
 
-func NewHandler(services *usecase.UseCases) *Handler {
+var errors ErrMessage
+
+func NewHandler(usecases *usecase.UseCases) *Handler {
 	return &Handler{
-		usecases: services,
+		usecases: usecases,
 	}
 }
 
 func (h *Handler) Errors(w http.ResponseWriter, errors ErrMessage) {
 	html, err := template.ParseFiles("templates/errors.html")
 	if err != nil {
-		http.Error(w, errInternalServer, http.StatusInternalServerError)
+		http.Error(w, ErrInternalServer, http.StatusInternalServerError)
 		return
 	}
 

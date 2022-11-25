@@ -25,30 +25,10 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authorized := h.checkSession(w, r)
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
-	content := ContentSingle{}
-
-	if foundUser.Id == 1 {
-		content.Admin = true
-	}
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
-	content.User.Id = foundUser.Id
-
 	html, err := template.ParseFiles("templates/post.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -61,14 +41,21 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post.ContentWeb = strings.Split(post.Content, "\\n")
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
+	}
 
+	post.ContentWeb = strings.Split(post.Content, "\\n")
 	content.Post = post
 
 	err = html.Execute(w, content)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -82,35 +69,18 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	authorized := h.checkSession(w, r)
-	if !authorized {
-		errors.Code = http.StatusForbidden
-		errors.Message = errStatusNotAuthorized
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
-	content := ContentSingle{}
-	if foundUser.Id == 1 {
-		content.Admin = true
-	}
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
-	content.User.Id = foundUser.Id
 
 	categories, err := h.usecases.Posts.GetAllCategories()
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -118,7 +88,7 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 	html, err := template.ParseFiles("templates/create_post.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -126,7 +96,7 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 	err = html.Execute(w, content)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -140,25 +110,6 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authorized := h.checkSession(w, r)
-	if !authorized {
-		errors.Code = http.StatusForbidden
-		errors.Message = errStatusNotAuthorized
-		h.Errors(w, errors)
-		return
-	}
-
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
-
 	r.ParseForm()
 	if len(r.Form["title"]) == 0 || len(r.Form["content"]) == 0 {
 		errors.Code = http.StatusBadRequest
@@ -167,12 +118,17 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content := ContentSingle{}
-	valid := true
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
+	}
 
+	valid := true
 	postTitle := r.Form["title"][0]
 	postContent := r.Form["content"][0]
-
 	categories := r.Form["categories"]
 
 	if len(categories) == 0 {
@@ -184,20 +140,20 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	newPost.Title = postTitle
 	newPost.Content = strings.ReplaceAll(postContent, "\r\n", "\\n")
 	newPost.Categories = categories
-	newPost.User = foundUser
+	newPost.User = content.User
 
 	if !valid {
 		html, err := template.ParseFiles("templates/create_post.html")
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
 		categories, err := h.usecases.Posts.GetAllCategories()
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
@@ -205,7 +161,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		err = html.Execute(w, content)
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
@@ -213,7 +169,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		err := h.usecases.Posts.CreatePost(newPost)
 		if err != nil {
 			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
+			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
@@ -222,45 +178,28 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
-	authorized := h.checkSession(w, r)
-	if !authorized {
-		errors.Code = http.StatusForbidden
-		errors.Message = errStatusNotAuthorized
-		h.Errors(w, errors)
-		return
-	}
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/put_post_like/"+path[len(path)-1] || err != nil || id <= 0 {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Code = http.StatusNotFound
+		errors.Message = errPageNotFound
 		h.Errors(w, errors)
 		return
 	}
 
-	content := ContentSingle{}
-
-	if foundUser.Id == 1 {
-		content.Admin = true
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
 	}
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
 
 	post := entity.Post{
 		Id: int64(id),
 	}
-	post.User.Id = foundUser.Id
+	post.User.Id = content.User.Id
 
 	err = h.usecases.Posts.MakeReaction(post, commandPutLike)
 	if err != nil {
@@ -274,45 +213,28 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) {
-	authorized := h.checkSession(w, r)
-	if !authorized {
-		errors.Code = http.StatusForbidden
-		errors.Message = errStatusNotAuthorized
-		h.Errors(w, errors)
-		return
-	}
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if r.URL.Path != "/put_post_dislike/"+path[len(path)-1] || err != nil || id <= 0 {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Code = http.StatusNotFound
+		errors.Message = errPageNotFound
 		h.Errors(w, errors)
 		return
 	}
 
-	content := ContentSingle{}
-
-	if foundUser.Id == 1 {
-		content.Admin = true
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
 	}
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
 
 	post := entity.Post{
 		Id: int64(id),
 	}
-	post.User.Id = foundUser.Id
+	post.User.Id = content.User.Id
 
 	err = h.usecases.Posts.MakeReaction(post, commandPutDislike)
 	if err != nil {
@@ -333,39 +255,22 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authorized := h.checkSession(w, r)
-	if !authorized {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errLowAccessLevel
+	path := strings.Split(r.URL.Path, "/")
+	query := path[len(path)-2]
+	userId, err := strconv.Atoi(path[len(path)-1])
+
+	if r.URL.Path != "/find_posts/"+query+"/"+path[len(path)-1] ||
+		err != nil || userId <= 0 {
+		errors.Code = http.StatusNotFound
+		errors.Message = errPageNotFound
 		h.Errors(w, errors)
 		return
 	}
-	foundUser := h.getExistedSession(w, r)
-	if authorized {
-		err := h.usecases.Users.UpdateSession(foundUser)
-		if err != nil {
-			errors.Code = http.StatusInternalServerError
-			errors.Message = errInternalServer
-			h.Errors(w, errors)
-			return
-		}
-	}
-	content := Content{}
-	if foundUser.Id == 1 {
-		content.Admin = true
-	}
-	content.Authorized = authorized
-	content.Unauthorized = !authorized
-	content.User.Id = foundUser.Id
 
-	path := strings.Split(r.URL.Path, "/")
-	query := path[len(path)-2]
-
-	userId, err := strconv.Atoi(path[len(path)-1])
-
-	if r.URL.Path != "/find_posts/"+query+"/"+path[len(path)-1] || err != nil || userId <= 0 {
-		errors.Code = http.StatusBadRequest
-		errors.Message = errBadRequest
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -374,8 +279,8 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	posts, err := h.usecases.Posts.GetPostsByQuery(user, query)
 	if err != nil {
-		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Code = http.StatusBadRequest
+		errors.Message = errBadRequest
 		h.Errors(w, errors)
 		return
 	}
@@ -384,7 +289,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	html, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -392,7 +297,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	err = html.Execute(w, content)
 	if err != nil {
 		errors.Code = http.StatusInternalServerError
-		errors.Message = errInternalServer
+		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
