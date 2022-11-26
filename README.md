@@ -5,6 +5,16 @@ This project allows users to communicate between each other by creating posts po
 specific category or several categories to them. Writing comments, liking and disliking  
 posts and comments. Also, searching posts by title, content and category.  
 
+## Properties  
+### Categories
+When first users is registered, he/she becomes the admin. Only admin can create topics  
+for posts. Also, only admin can change users' role.  
+### Likes/dislikes  
+Only registered users are able to like or dislike posts and comments.  
+### Activity  
+To see posts that you created or liked or disliked, go to profile page and click on relevant  
+numbers. Only registered users can get this information.  
+
 ## Usage  
 To run project:  
 ```

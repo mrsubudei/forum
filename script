@@ -1,6 +1,0 @@
-#!/bin/sh
-
-while true
-do
-    curl localhost:8087/ || sleep 1
-done    
