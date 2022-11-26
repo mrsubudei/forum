@@ -2,7 +2,6 @@ package v1
 
 import (
 	"fmt"
-	"forum/internal/entity"
 	"log"
 	"net/http"
 	"net/mail"
@@ -10,6 +9,8 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"forum/internal/entity"
 )
 
 func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -136,7 +137,6 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
-
 	html, err := template.ParseFiles("templates/login.html")
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - SignInPageHandler - ParseFiles: %w", err))
@@ -177,7 +177,6 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request) {
-
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
@@ -381,7 +380,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 			Value:   userWithSession.SessionToken,
 			Expires: userWithSession.SessionTTL,
 			Path:    "/",
-			Domain:  SessionDomain,
+			Domain:  h.Cfg.Server.Host,
 		})
 		http.Redirect(w, r, "/", http.StatusFound)
 	}

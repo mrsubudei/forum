@@ -2,17 +2,10 @@ package httpserver
 
 import (
 	"context"
-	v1 "forum/internal/controller/http/v1"
 	"net/http"
 	"time"
-)
 
-const (
-	DefaultReadTimeout     = 5 * time.Second
-	DefaultWriteTimeout    = 5 * time.Second
-	DefaultAddr            = ":8087"
-	DefaultShutdownTimeout = 3 * time.Second
-	ShutdownTimeout        = 5 * time.Second
+	v1 "forum/internal/controller/http/v1"
 )
 
 type Server struct {
@@ -20,12 +13,14 @@ type Server struct {
 	h          *v1.Handler
 }
 
+const DefaultTime = int(time.Second)
+
 func NewServer(handler *v1.Handler) *Server {
 	return &Server{
 		httpServer: &http.Server{
-			Addr:         DefaultAddr,
-			ReadTimeout:  DefaultReadTimeout,
-			WriteTimeout: DefaultWriteTimeout,
+			Addr:         handler.Cfg.Server.Port,
+			ReadTimeout:  time.Duration(handler.Cfg.Server.ReadTimeout * DefaultTime),
+			WriteTimeout: time.Duration(handler.Cfg.Server.WriteTimeout * DefaultTime),
 		},
 		h: handler,
 	}
@@ -64,7 +59,7 @@ func (s *Server) Run() error {
 }
 
 func (s *Server) Shutdown() error {
-	ctx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.h.Cfg.Server.ShutDownTimeout*DefaultTime))
 	defer cancel()
 	return s.httpServer.Shutdown(ctx)
 }

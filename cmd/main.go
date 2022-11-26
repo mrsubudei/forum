@@ -1,7 +1,16 @@
 package main
 
-import "forum/internal/app"
+import (
+	"log"
+
+	"forum/internal/app"
+	"forum/internal/config"
+)
 
 func main() {
-	app.Run()
+	cfg, err := config.LoadConfig("config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	app.Run(cfg)
 }

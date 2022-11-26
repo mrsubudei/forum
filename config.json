@@ -1,0 +1,12 @@
+{
+    "server": {
+        "host": "localhost",
+        "port": ":8087",
+        "read_timeout": 5,
+        "write_timeout": 5,
+        "shutdown_timeout": 5
+    },
+    "token_manager": {
+        "session_expiring_time": 3600
+    }
+}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"forum/internal/config"
+
 	"github.com/gofrs/uuid"
 )
 
@@ -14,15 +16,15 @@ type TokenManager interface {
 }
 
 type Manager struct {
+	Cfg config.Config
 }
 
-const (
-	SessionExpiredTime = 1800 //+n seconds
-	TimeFormat         = "2006-01-02 15:04:05"
-)
+const TimeFormat = "2006-01-02 15:04:05"
 
-func NewManager() *Manager {
-	return &Manager{}
+func NewManager(cfg config.Config) *Manager {
+	return &Manager{
+		Cfg: cfg,
+	}
 }
 
 func (m *Manager) NewToken() (string, error) {
@@ -34,7 +36,7 @@ func (m *Manager) NewToken() (string, error) {
 }
 
 func (m *Manager) UpdateTTL() time.Time {
-	TTL := time.Now().Add(SessionExpiredTime * time.Second)
+	TTL := time.Now().Add(time.Duration(m.Cfg.TokenManager.SessionExpiringTime * int(time.Second)))
 	return TTL
 }
 

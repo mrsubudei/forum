@@ -3,6 +3,13 @@ package app
 import (
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"forum/internal/config"
 	v1 "forum/internal/controller/http/v1"
 	"forum/internal/repository"
 	"forum/internal/repository/sqlite"
@@ -11,18 +18,12 @@ import (
 	"forum/pkg/hasher"
 	"forum/pkg/httpserver"
 	"forum/pkg/sqlite3"
-	"log"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
-func Run() {
-	fmt.Println("Starting server..")
-
+func Run(cfg config.Config) {
+	fmt.Println(cfg.Server.Port)
 	// Logger
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0664)
+	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o664)
 	if err != nil {
 		log.Println(fmt.Errorf("app - Run - os.OpenFile: %w", err))
 		return
@@ -48,7 +49,7 @@ func Run() {
 
 	// Dependencies
 	hasher := hasher.NewBcryptHasher()
-	tokenManager := auth.NewManager()
+	tokenManager := auth.NewManager(cfg)
 
 	// Usecases
 	useCases := usecase.NewUseCases(usecase.Dependencies{
@@ -58,7 +59,7 @@ func Run() {
 	})
 
 	// Http
-	handler := v1.NewHandler(useCases)
+	handler := v1.NewHandler(useCases, cfg)
 	server := httpserver.NewServer(handler)
 
 	go func() {
@@ -66,8 +67,8 @@ func Run() {
 			log.Printf("error occurred while running http server: %s\n", err.Error())
 		}
 	}()
-	d := "8087"
-	fmt.Printf("Server started at port %s\n", d)
+
+	fmt.Printf("Server started at port %s\n", cfg.Server.Port)
 
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)

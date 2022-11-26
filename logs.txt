@@ -96,3 +96,6 @@ created by net/http.(*Server).Serve
 2022/11/26 00:31:19 users.go:628: v1 - GetExistedSession - GetIdBy: UsersUseCase - GetIdBy - UsersRepo - GetId - case Session - Scan: sql: no rows in result set
 2022/11/26 00:31:19 users.go:628: v1 - GetExistedSession - GetIdBy: UsersUseCase - GetIdBy - UsersRepo - GetId - case Session - Scan: sql: no rows in result set
 2022/11/26 00:31:22 users.go:628: v1 - GetExistedSession - GetIdBy: UsersUseCase - GetIdBy - UsersRepo - GetId - case Session - Scan: sql: no rows in result set
+2022/11/26 13:26:36 app.go:66: error occurred while running http server: listen tcp: address 8087: missing port in address
+2022/11/26 13:26:55 app.go:66: error occurred while running http server: listen tcp: address 8087: missing port in address
+2022/11/26 13:34:58 app.go:67: error occurred while running http server: listen tcp: address 8087: missing port in address

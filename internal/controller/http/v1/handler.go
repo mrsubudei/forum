@@ -1,18 +1,22 @@
 package v1
 
 import (
-	"forum/internal/usecase"
 	"net/http"
 	"text/template"
+
+	"forum/internal/config"
+	"forum/internal/usecase"
 )
 
 type Handler struct {
 	usecases *usecase.UseCases
+	Cfg      config.Config
 }
 
-func NewHandler(usecases *usecase.UseCases) *Handler {
+func NewHandler(usecases *usecase.UseCases, cfg config.Config) *Handler {
 	return &Handler{
 		usecases: usecases,
+		Cfg:      cfg,
 	}
 }
 
