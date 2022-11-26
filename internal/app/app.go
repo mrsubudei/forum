@@ -21,7 +21,6 @@ import (
 )
 
 func Run(cfg config.Config) {
-	fmt.Println(cfg.Server.Port)
 	// Logger
 	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o664)
 	if err != nil {

@@ -11,7 +11,7 @@ type Sqlite struct {
 }
 
 func New() (*Sqlite, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
+	db, err := sql.Open("sqlite3", "./database/forum.db")
 	if err != nil {
 		return nil, err
 	}
