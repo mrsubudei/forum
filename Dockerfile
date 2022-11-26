@@ -9,7 +9,7 @@ RUN go build cmd/main.go
 
 FROM alpine:3.16 AS runner
 WORKDIR /app
-LABEL authors="@Subudei, @DarkhanShakhan"
+LABEL authors="@Subudei"
 COPY --from=build /app/main /app/main
 COPY /templates /app/templates
 COPY config.json /app/config.json

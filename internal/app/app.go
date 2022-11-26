@@ -67,7 +67,7 @@ func Run(cfg config.Config) {
 		}
 	}()
 
-	fmt.Printf("Server started at port %s\n", cfg.Server.Port)
+	fmt.Printf("Server started at http://%s%s\n", cfg.Server.Host, cfg.Server.Port)
 
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
