@@ -2,11 +2,12 @@ package v1
 
 import (
 	"fmt"
-	"forum/internal/entity"
 	"log"
 	"net/http"
 	"strings"
 	"text/template"
+
+	"forum/internal/entity"
 )
 
 func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -56,6 +57,7 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = html.Execute(w, content)
 	if err != nil {
+		log.Println(fmt.Errorf("v1 - IndexHandler - Execute: %w", err))
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
@@ -64,7 +66,6 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
 		errors.Message = ErrMethodNotAllowed

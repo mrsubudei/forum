@@ -107,6 +107,7 @@
                                         Последний ответ</th>
                                 </tr>
                             </thead>
+                            {{if .Authorized}}
                             {{range .Posts}}
                             <tr>
                                 <td class="icon1 windowbg">
@@ -146,6 +147,48 @@
                                     {{end}}
                                 </td>
                             </tr>
+                            {{end}}
+                            {{end}}
+                            {{if .Unauthorized}}
+                            {{range .Posts}}
+                            <tr>
+                                <td class="icon1 windowbg">
+                                    <img src="/templates/img/topic/veryhot_post_sticky.gif">
+                                </td>
+                                <td class="icon2 windowbg">
+                                    <img src="/templates/img/post/xx.gif" />
+                                </td>
+                                <td class="subject stickybg2">
+                                    <div class="post_title">
+                                        <strong>
+                                            <span>
+                                                <a href="/posts/{{.Id}}">{{.Title}}</a> <br>
+                                                Темы: {{range .Categories}}
+                                                <a href="/categories/{{.}}">{{.}}</a>
+                                                {{end}}
+                                            </span>
+                                        </strong>
+                                        <p>Автор: <a href="/users/{{.User.Id}}">{{.User.Name}}</a>
+                                        </p>
+                                    </div>
+                                </td>
+                                <td class="stats windowbg">
+                                    <a href="/posts/{{.Id}}">{{.TotalComments}}</a>
+                                </td>
+                                <td class="stats windowbg">
+                                    {{.TotalLikes}} / {{.TotalDislikes}}
+                                </td>
+                                <td class="lastpost windowbg2">
+                                    {{if .LastCommentExist}}
+                                    <a href="/posts/{{.Id}}#{{.LastComment.Id}}"><img
+                                            src="/templates/img/icons/last_post.gif" alt="Последний ответ"
+                                            title="Последний комментарий"></a>
+                                    {{.LastComment.Date}}<br>
+                                    от <a href="/users/{{.LastComment.User.Id}}">{{.LastComment.User.Name}}</a>
+                                    {{end}}
+                                </td>
+                            </tr>
+                            {{end}}
                             {{end}}
                         </table>
                     </div>

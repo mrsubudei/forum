@@ -99,3 +99,4 @@ created by net/http.(*Server).Serve
 2022/11/26 13:26:36 app.go:66: error occurred while running http server: listen tcp: address 8087: missing port in address
 2022/11/26 13:26:55 app.go:66: error occurred while running http server: listen tcp: address 8087: missing port in address
 2022/11/26 13:34:58 app.go:67: error occurred while running http server: listen tcp: address 8087: missing port in address
+2022/11/27 15:14:29 general.go:60: v1 - IndexHandler - Execute: template: index.html:135:37: executing "index.html" at <.Authorized>: can't evaluate field Authorized in type entity.Post
