@@ -2,12 +2,13 @@ package v1
 
 import (
 	"fmt"
-	"forum/internal/entity"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"text/template"
+
+	"forum/internal/entity"
 )
 
 func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +127,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.ParseForm()
-	if len(r.Form["title"]) == 0 || len(r.Form["content"]) == 0 {
+	if len(r.Form["title"][0]) == 0 || len(r.Form["content"][0]) == 0 {
 		errors.Code = http.StatusBadRequest
 		errors.Message = ErrBadRequest
 		h.Errors(w, errors)
@@ -199,7 +200,6 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
-
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
@@ -240,7 +240,6 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) {
-
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {

@@ -100,3 +100,16 @@ created by net/http.(*Server).Serve
 2022/11/26 13:26:55 app.go:66: error occurred while running http server: listen tcp: address 8087: missing port in address
 2022/11/26 13:34:58 app.go:67: error occurred while running http server: listen tcp: address 8087: missing port in address
 2022/11/27 15:14:29 general.go:60: v1 - IndexHandler - Execute: template: index.html:135:37: executing "index.html" at <.Authorized>: can't evaluate field Authorized in type entity.Post
+2022/11/27 15:30:22 users.go:473: v1 - SignUpHandler - Execute: template: registration.html:41:29: executing "registration.html" at <.Admin>: can't evaluate field Admin in type v1.ErrMessage
+2022/11/27 15:41:52 users.go:474: v1 - SignUpHandler - DeleteUser: UsersUseCase - DeleteUser - UsersRepo - Delete - RowsAffected: %!w(<nil>)
+2022/11/27 15:46:17 server.go:3230: http: superfluous response.WriteHeader call from forum/internal/controller/http/v1.(*Handler).SignUpHandler (users.go:506)
+2022/11/27 15:46:39 server.go:3230: http: superfluous response.WriteHeader call from forum/internal/controller/http/v1.(*Handler).SignUpHandler (users.go:506)
+2022/11/27 15:49:16 users.go:482: v1 - SignUpHandler - DeleteUser: UsersUseCase - DeleteUser - UsersRepo - Delete - Exec: database is locked
+2022/11/27 15:49:21 users.go:463: v1 - SignUpHandler - SignUp: UsersUseCase - SignUp #2 - UsersRepo - Store - Exec: database is locked
+2022/11/27 15:51:32 users.go:483: v1 - SignUpHandler - DeleteUser: UsersUseCase - DeleteUser - UsersRepo - Delete - Exec: database is locked
+2022/11/27 15:51:37 users.go:463: v1 - SignUpHandler - SignUp: UsersUseCase - SignUp #2 - UsersRepo - Store - Exec: database is locked
+2022/11/27 15:52:41 users.go:484: v1 - SignUpHandler - DeleteUser: UsersUseCase - DeleteUser - UsersRepo - Delete - Exec: database is locked
+2022/11/27 16:04:17 users.go:332: v1 - SignInHandler - SignIn: user doesn't exist
+2022/11/27 16:04:22 users.go:332: v1 - SignInHandler - SignIn: user doesn't exist
+2022/11/27 16:04:28 users.go:332: v1 - SignInHandler - SignIn: user doesn't exist
+2022/11/27 16:09:11 post.go:44: v1 - PostPageHandler - GetById: PostsUseCase - GetById #1 - PostsRepo - GetById - Scan: sql: no rows in result set

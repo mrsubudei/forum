@@ -318,7 +318,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		Password: password,
 	}
 	if checkEmail(data) {
-		user.Email = data
+		user.Email = strings.ToLower(data)
 	} else {
 		user.Name = data
 	}
@@ -422,33 +422,63 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		gender = r.Form["gender"][0]
 	}
 
-	errorMessage := ErrMessage{}
+	content, ok := r.Context().Value(Key("content")).(Content)
+	if !ok {
+		log.Printf("v1 - EditProfileHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content)
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return
+	}
+
 	valid := true
 
 	if !checkEmail(email) {
-		errorMessage.Message = EmailFormatWrong
+		content.ErrorMsg.Message = EmailFormatWrong
 		valid = false
 	}
 	if password != confirmPassword {
-		errorMessage.Message = PasswordsNotSame
+		content.ErrorMsg.Message = PasswordsNotSame
 		valid = false
+	}
+
+	if !valid {
+		html, err := template.ParseFiles("templates/registration.html")
+		if err != nil {
+			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseFiles #1: %w", err))
+			errors.Code = http.StatusInternalServerError
+			errors.Message = ErrInternalServer
+			h.Errors(w, errors)
+			return
+		}
+		err = html.Execute(w, content)
+		if err != nil {
+			log.Println(fmt.Errorf("v1 - SignUpHandler - Execute #1: %w", err))
+			errors.Code = http.StatusInternalServerError
+			errors.Message = ErrInternalServer
+			h.Errors(w, errors)
+			return
+		}
+		return
 	}
 
 	user := entity.User{
 		Name:        name,
 		Password:    password,
-		Email:       email,
+		Email:       strings.ToLower(email),
 		City:        city,
 		Gender:      gender,
 		DateOfBirth: dateOfBirth,
 	}
+
 	err = h.usecases.Users.SignUp(user)
 	if err != nil {
 		if err == entity.ErrUserEmailAlreadyExists {
-			errorMessage.Message = UserEmailExist
+			content.ErrorMsg.Message = UserEmailExist
 			valid = false
 		} else if err == entity.ErrUserNameAlreadyExists {
-			errorMessage.Message = UserNameExist
+			content.ErrorMsg.Message = UserNameExist
 			valid = false
 		} else {
 			log.Println(fmt.Errorf("v1 - SignUpHandler - SignUp: %w", err))
@@ -462,15 +492,15 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if !valid {
 		html, err := template.ParseFiles("templates/registration.html")
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseFiles: %w", err))
+			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseFiles #2: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
 			return
 		}
-		err = html.Execute(w, errorMessage)
+		err = html.Execute(w, content)
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignUpHandler - Execute: %w", err))
+			log.Println(fmt.Errorf("v1 - SignUpHandler - Execute #2: %w", err))
 			errors.Code = http.StatusInternalServerError
 			errors.Message = ErrInternalServer
 			h.Errors(w, errors)
