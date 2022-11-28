@@ -29,6 +29,6 @@ func (h *Handler) Errors(w http.ResponseWriter, errors ErrMessage) {
 		http.Error(w, ErrInternalServer, http.StatusInternalServerError)
 		return
 	}
-
+	w.WriteHeader(errors.Code)
 	html.Execute(w, errors)
 }

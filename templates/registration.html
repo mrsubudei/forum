@@ -89,11 +89,12 @@
                                 <p class="error">{{.ErrorMsg.Message}}</p>
                                 <dl>
                                     <dt>Имя пользователя:</dt>
-                                    <dd><input type="text" name="user" size="20" class="input_text" required="required">
+                                    <dd><input type="text" name="user" size="20" class="input_text" required="required"
+                                            value="{{.User.Name}}">
                                     </dd>
                                     <dt>Почта:</dt>
-                                    <dd><input type="text" name="email" size="20" class="input_text"
-                                            required="required">
+                                    <dd><input type="text" name="email" size="20" class="input_text" required="required"
+                                            value="{{.User.Email}}">
                                     </dd>
                                     <dt>Пароль:</dt>
                                     <dd><input name="password" id="password" type="password" minlength="5"
@@ -105,10 +106,12 @@
                                             required="required">
                                     </dd>
                                     <dt>Город:</dt>
-                                    <dd><input name="city" type="text" size="20" class="input_text">
+                                    <dd><input name="city" type="text" size="20" class="input_text"
+                                            value="{{.User.City}}">
                                     </dd>
                                     <dt>Дата рождения:</dt>
-                                    <dd><input name="date_of_birth" type="date" size="20" class="input_text">
+                                    <dd><input name="date_of_birth" type="date" size="20" class="input_text"
+                                            value="{{.User.DateOfBirth}}">
                                     </dd>
                                     <dt>Пол:</dt>
                                     <dd><input type="radio" name="gender" value="Male"> М

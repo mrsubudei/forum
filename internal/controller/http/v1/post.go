@@ -159,6 +159,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	newPost.Content = strings.ReplaceAll(postContent, "\r\n", "\\n")
 	newPost.Categories = categories
 	newPost.User = content.User
+	content.Post = newPost
 
 	if !valid {
 		html, err := template.ParseFiles("templates/create_post.html")

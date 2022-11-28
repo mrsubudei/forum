@@ -103,7 +103,8 @@
                                 <dl>
                                     <p class="error">{{.ErrorMsg.Message}}</p>
                                     <dt>Заголовок:</dt>
-                                    <input type="text" name="title" class="input_post_title" required="required">
+                                    <input type="text" name="title" class="input_post_title" required="required"
+                                        value="{{.Post.Title}}">
                                     <dt>Тема:</dt>
                                     <div class="input_post_categories">
                                         {{range .Post.Categories}}
@@ -112,7 +113,8 @@
                                         {{end}}
                                     </div>
                                     <dt>Содержание:</dt>
-                                    <textarea name="content" class="input_post" required="required"></textarea>
+                                    <textarea name="content" class="input_post"
+                                        required="required">{{.Post.Content}}</textarea>
                                 </dl>
                                 <p><input type="submit" value="Создать" class="button_submit"></p>
                             </div>

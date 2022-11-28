@@ -11,6 +11,7 @@ type Content struct {
 	Posts        []entity.Post
 	Users        []entity.User
 	Message      string
+	OwnerId      int64
 	ErrorMsg     ErrMessage
 }
 
