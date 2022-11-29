@@ -17,6 +17,7 @@ func NewPostsRepo(sq *sqlite3.Sqlite) *PostsRepo {
 
 func (pr *PostsRepo) Store(post *entity.Post) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Store - Begin: %w", err)
 	}
@@ -54,6 +55,7 @@ func (pr *PostsRepo) Store(post *entity.Post) error {
 
 func (pr *PostsRepo) StoreTopicReference(post entity.Post) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreTopicReference - Begin: %w", err)
 	}
@@ -282,6 +284,7 @@ func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
 
 func (pr *PostsRepo) Update(post entity.Post) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Update - Begin: %w", err)
 	}
@@ -315,6 +318,7 @@ func (pr *PostsRepo) Update(post entity.Post) error {
 
 func (pr *PostsRepo) Delete(post entity.Post) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Delete - Begin: %w", err)
 	}
@@ -347,6 +351,7 @@ func (pr *PostsRepo) Delete(post entity.Post) error {
 
 func (pr *PostsRepo) StoreLike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreLike - Begin: %w", err)
 	}
@@ -382,6 +387,7 @@ func (pr *PostsRepo) StoreLike(post entity.Post) error {
 
 func (pr *PostsRepo) DeleteLike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - DeleteLike - Begin: %w", err)
 	}
@@ -409,6 +415,7 @@ func (pr *PostsRepo) DeleteLike(post entity.Post) error {
 
 func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreDislike - Begin: %w", err)
 	}
@@ -444,6 +451,7 @@ func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 
 func (pr *PostsRepo) DeleteDislike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - DeleteDislike - Begin: %w", err)
 	}
@@ -550,6 +558,7 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 	}
 
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreCategories - Begin: %w", err)
 	}

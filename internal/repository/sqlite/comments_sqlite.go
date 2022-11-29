@@ -17,6 +17,7 @@ func NewCommentsRepo(sq *sqlite3.Sqlite) *CommentsRepo {
 
 func (cr *CommentsRepo) Store(comment entity.Comment) error {
 	tx, err := cr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - Store - Begin: %w", err)
 	}
@@ -136,6 +137,7 @@ func (cr *CommentsRepo) GetPostIds(user entity.User) ([]int64, error) {
 
 func (cr *CommentsRepo) Update(comment entity.Comment) error {
 	tx, err := cr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - Update - Begin: %w", err)
 	}
@@ -169,6 +171,7 @@ func (cr *CommentsRepo) Update(comment entity.Comment) error {
 
 func (cr *CommentsRepo) Delete(comment entity.Comment) error {
 	tx, err := cr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - Delete - Begin: %w", err)
 	}
@@ -201,6 +204,7 @@ func (cr *CommentsRepo) Delete(comment entity.Comment) error {
 
 func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - StoreLike - Begin: %w", err)
 	}
@@ -236,6 +240,7 @@ func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 
 func (pr *CommentsRepo) DeleteLike(comment entity.Comment) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteLike - Begin: %w", err)
 	}
@@ -263,6 +268,7 @@ func (pr *CommentsRepo) DeleteLike(comment entity.Comment) error {
 
 func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - StoreDislike - Begin: %w", err)
 	}
@@ -298,6 +304,7 @@ func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 
 func (pr *CommentsRepo) DeleteDislike(comment entity.Comment) error {
 	tx, err := pr.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteDislike - Begin: %w", err)
 	}

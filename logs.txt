@@ -113,3 +113,5 @@ created by net/http.(*Server).Serve
 2022/11/27 16:04:22 users.go:332: v1 - SignInHandler - SignIn: user doesn't exist
 2022/11/27 16:04:28 users.go:332: v1 - SignInHandler - SignIn: user doesn't exist
 2022/11/27 16:09:11 post.go:44: v1 - PostPageHandler - GetById: PostsUseCase - GetById #1 - PostsRepo - GetById - Scan: sql: no rows in result set
+2022/11/29 21:19:46 users.go:365: v1 - SignInHandler - SignIn: UsersUseCase - SignIn #4 - UsersRepo - NewSession - Exec: database is locked
+2022/11/29 21:19:51 users.go:365: v1 - SignInHandler - SignIn: UsersUseCase - SignIn #4 - UsersRepo - NewSession - Exec: database is locked

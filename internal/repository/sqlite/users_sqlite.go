@@ -18,6 +18,7 @@ func NewUsersRepo(sq *sqlite3.Sqlite) *UsersRepo {
 
 func (ur *UsersRepo) Store(user entity.User) error {
 	tx, err := ur.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Begin: %w", err)
 	}
@@ -26,6 +27,7 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex, role, sign) 
 		values(?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`)
+
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Prepare: %w", err)
 	}
@@ -227,6 +229,7 @@ func (ur *UsersRepo) GetSession(n int64) (entity.User, error) {
 
 func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 	tx, err := ur.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Begin: %w", err)
 	}
@@ -260,6 +263,7 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 
 func (ur *UsersRepo) UpdatePassword(user entity.User) error {
 	tx, err := ur.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdatePassword - Begin: %w", err)
 	}
@@ -293,6 +297,7 @@ func (ur *UsersRepo) UpdatePassword(user entity.User) error {
 
 func (ur *UsersRepo) NewSession(user entity.User) error {
 	tx, err := ur.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("UsersRepo - NewSession - Begin: %w", err)
 	}
@@ -326,6 +331,7 @@ func (ur *UsersRepo) NewSession(user entity.User) error {
 
 func (ur *UsersRepo) UpdateSession(user entity.User) error {
 	tx, err := ur.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdateSession - Begin: %w", err)
 	}
@@ -359,6 +365,7 @@ func (ur *UsersRepo) UpdateSession(user entity.User) error {
 
 func (ur *UsersRepo) Delete(user entity.User) error {
 	tx, err := ur.DB.Begin()
+	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Delete - Begin: %w", err)
 	}
