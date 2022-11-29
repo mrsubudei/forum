@@ -22,6 +22,27 @@ func NewHandler(usecases *usecase.UseCases, cfg config.Config) *Handler {
 	}
 }
 
+func (h *Handler) ParseAndExecute(w http.ResponseWriter, content Content, path string) error {
+	html, err := template.ParseFiles(path)
+	if err != nil {
+		log.Println(fmt.Errorf("v1 - ParseAndExecute - ParseFiles: %w", err))
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return err
+	}
+
+	err = html.Execute(w, content)
+	if err != nil {
+		log.Println(fmt.Errorf("v1 - ParseAndExecute - Execute: %w", err))
+		errors.Code = http.StatusInternalServerError
+		errors.Message = ErrInternalServer
+		h.Errors(w, errors)
+		return err
+	}
+	return nil
+}
+
 func (h *Handler) Errors(w http.ResponseWriter, errors ErrMessage) {
 	html, err := template.ParseFiles("templates/errors.html")
 	if err != nil {

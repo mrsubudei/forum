@@ -7,7 +7,6 @@ import (
 	"net/mail"
 	"strconv"
 	"strings"
-	"text/template"
 	"time"
 
 	"forum/internal/entity"
@@ -65,22 +64,9 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	content.User = user
 
-	html, err := template.ParseFiles("templates/user.html")
+	err = h.ParseAndExecute(w, content, "templates/user.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - UserPageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, content)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - UserPageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - UserPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -119,21 +105,9 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html, err := template.ParseFiles("templates/all_users.html")
+	err = h.ParseAndExecute(w, content, "templates/all_users.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - AllUsersPageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-	err = html.Execute(w, content)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - AllUsersPageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - AllUsersPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -141,15 +115,6 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errors.Code = http.StatusMethodNotAllowed
 		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
-		return
-	}
-
-	html, err := template.ParseFiles("templates/registration.html")
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - SignUpPageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -164,13 +129,9 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = html.Execute(w, content)
+	err := h.ParseAndExecute(w, content, "templates/registration.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SignUpPageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - SignUpPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -244,21 +205,9 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	if !valid {
 		w.WriteHeader(http.StatusBadRequest)
-		html, err := template.ParseFiles("templates/registration.html")
+		err := h.ParseAndExecute(w, content, "templates/registration.html")
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseFiles #1: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
-			return
-		}
-		err = html.Execute(w, content)
-		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignUpHandler - Execute #1: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
-			return
+			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseAndExecute #1 - %w", err))
 		}
 		return
 	}
@@ -282,21 +231,9 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	if !valid {
 		w.WriteHeader(http.StatusBadRequest)
-		html, err := template.ParseFiles("templates/registration.html")
+		err := h.ParseAndExecute(w, content, "templates/registration.html")
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseFiles #2: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
-			return
-		}
-		err = html.Execute(w, content)
-		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignUpHandler - Execute #2: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
-			return
+			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseAndExecute #2 - %w", err))
 		}
 	} else {
 		http.Redirect(w, r, "/signin_page", http.StatusFound)
@@ -311,22 +248,9 @@ func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html, err := template.ParseFiles("templates/login.html")
+	err := h.ParseAndExecute(w, Content{}, "templates/login.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SignInPageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, nil)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - SignInPageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - SignInPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -376,22 +300,13 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 	if !valid {
 		w.WriteHeader(http.StatusUnauthorized)
-		html, err := template.ParseFiles("templates/login.html")
+
+		err := h.ParseAndExecute(w, content, "templates/login.html")
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignInHandler - ParseFiles: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
-			return
+			log.Println(fmt.Errorf("v1 - SignInHandler - ParseAndExecute - %w", err))
 		}
-		err = html.Execute(w, content)
-		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignInHandler - Execute: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
-			return
-		}
+		return
+
 	} else {
 		id, err := h.usecases.Users.GetIdBy(user)
 		if err != nil {
@@ -459,22 +374,9 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	html, err := template.ParseFiles("templates/edit_profile.html")
+	err = h.ParseAndExecute(w, content, "templates/edit_profile.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - EditProfilePageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, content)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - EditProfilePageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - EditProfilePageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -650,8 +552,8 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
 				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #4: %w", err))
-				errors.Code = http.StatusNotFound
-				errors.Message = ErrPageNotFound
+				errors.Code = http.StatusBadRequest
+				errors.Message = ErrBadRequest
 				h.Errors(w, errors)
 				return
 			}
@@ -659,22 +561,9 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	html, err := template.ParseFiles("templates/reacted_users.html")
+	err = h.ParseAndExecute(w, content, "templates/reacted_users.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, content)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - ParseAndExecute - %w", err))
 	}
 }
 

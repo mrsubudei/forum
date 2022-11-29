@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"text/template"
 
 	"forum/internal/entity"
 )
@@ -27,15 +26,6 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/posts/"+path[len(path)-1] || err != nil || id <= 0 {
 		errors.Code = http.StatusNotFound
 		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
-		return
-	}
-
-	html, err := template.ParseFiles("templates/post.html")
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - PostPageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
 		h.Errors(w, errors)
 		return
 	}
@@ -62,13 +52,9 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	post.ContentWeb = strings.Split(post.Content, "\\n")
 	content.Post = post
 
-	err = html.Execute(w, content)
+	err = h.ParseAndExecute(w, content, "templates/post.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - PostPageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - PostPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -99,22 +85,10 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	content.Post.Categories = categories
-	html, err := template.ParseFiles("templates/create_post.html")
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreatePostPageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
 
-	err = html.Execute(w, content)
+	err = h.ParseAndExecute(w, content, "templates/create_post.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreatePostPageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - CreatePostPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -163,14 +137,6 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if !valid {
 		w.WriteHeader(http.StatusBadRequest)
-		html, err := template.ParseFiles("templates/create_post.html")
-		if err != nil {
-			log.Println(fmt.Errorf("v1 - CreatePostHandler - ParseFiles: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
-			return
-		}
 		categories, err := h.usecases.Posts.GetAllCategories()
 		if err != nil {
 			log.Println(fmt.Errorf("v1 - CreatePostHandler - GetAllCategories: %w", err))
@@ -179,15 +145,13 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 			h.Errors(w, errors)
 			return
 		}
+
 		content.Post.Categories = categories
-		err = html.Execute(w, content)
+		err = h.ParseAndExecute(w, content, "templates/create_post.html")
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - CreatePostHandler - Execute: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
-			return
+			log.Println(fmt.Errorf("v1 - CreatePostHandler - ParseAndExecute - %w", err))
 		}
+
 	} else {
 		err := h.usecases.Posts.CreatePost(newPost)
 		if err != nil {
@@ -326,21 +290,8 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	content.Posts = posts
 
-	html, err := template.ParseFiles("templates/index.html")
+	err = h.ParseAndExecute(w, content, "templates/index.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - FindPostsHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, content)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - FindPostsHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - FindPostsHandler - ParseAndExecute - %w", err))
 	}
 }

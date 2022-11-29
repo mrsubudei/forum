@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"text/template"
 
 	"forum/internal/entity"
 )
@@ -36,14 +35,7 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, errors)
 		return
 	}
-	html, err := template.ParseFiles("templates/index.html")
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - IndexHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
+
 	posts, err := h.usecases.Posts.GetAllPosts()
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - IndexHandler - GetAllPosts: %w", err))
@@ -55,13 +47,9 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	content.Posts = posts
 
-	err = html.Execute(w, content)
+	err = h.ParseAndExecute(w, content, "templates/index.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - IndexHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - IndexHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -83,22 +71,9 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html, err := template.ParseFiles("templates/search.html")
+	err := h.ParseAndExecute(w, content, "templates/search.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchPageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, content)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchPageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - SearchPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -140,22 +115,9 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	content.Posts = filtered
 
-	html, err := template.ParseFiles("templates/index.html")
+	err = h.ParseAndExecute(w, content, "templates/index.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, content)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - SearchHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -184,22 +146,9 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	html, err := template.ParseFiles("templates/create_category.html")
+	err := h.ParseAndExecute(w, content, "templates/create_category.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCategoryPageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, content)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCategoryPageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - CreateCategoryPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -275,22 +224,10 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	content.Posts = posts
-	html, err := template.ParseFiles("templates/index.html")
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchByCategoryHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
 
-	err = html.Execute(w, content)
+	err = h.ParseAndExecute(w, content, "templates/index.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchByCategoryHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - SearchByCategoryHandler - ParseAndExecute - %w", err))
 	}
 }
 

@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"text/template"
 
 	"forum/internal/entity"
 )
@@ -43,22 +42,9 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 
 	content.Post.Id = int64(id)
 
-	html, err := template.ParseFiles("templates/create_comment.html")
+	err = h.ParseAndExecute(w, content, "templates/create_comment.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCommentPageHandler - ParseFiles: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
-	}
-
-	err = html.Execute(w, content)
-	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCommentPageHandler - Execute: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
-		return
+		log.Println(fmt.Errorf("v1 - CreateCommentPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
