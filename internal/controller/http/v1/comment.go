@@ -149,8 +149,8 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 	err = h.usecases.Comments.MakeReaction(comment, CommandPutLike)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - CommentPutLikeHandler - MakeReaction: %w", err))
-		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
+		errors.Code = http.StatusNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -190,8 +190,8 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 	err = h.usecases.Comments.MakeReaction(comment, CommandPutDislike)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - CommentPutDislikeHandler - MakeReaction: %w", err))
-		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
+		errors.Code = http.StatusNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}

@@ -49,7 +49,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - UserPageHandler - GetById: %w", err))
 		if strings.Contains(err.Error(), entity.ErrUserNotFound.Error()) {
-			errors.Code = http.StatusBadRequest
+			errors.Code = http.StatusNotFound
 			errors.Message = UserNotExist
 			h.Errors(w, errors)
 			return
@@ -243,6 +243,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	content.User = user
 
 	if !valid {
+		w.WriteHeader(http.StatusBadRequest)
 		html, err := template.ParseFiles("templates/registration.html")
 		if err != nil {
 			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseFiles #1: %w", err))
@@ -280,6 +281,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !valid {
+		w.WriteHeader(http.StatusBadRequest)
 		html, err := template.ParseFiles("templates/registration.html")
 		if err != nil {
 			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseFiles #2: %w", err))
@@ -373,6 +375,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !valid {
+		w.WriteHeader(http.StatusUnauthorized)
 		html, err := template.ParseFiles("templates/login.html")
 		if err != nil {
 			log.Println(fmt.Errorf("v1 - SignInHandler - ParseFiles: %w", err))
@@ -510,8 +513,8 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	existUser, err := h.usecases.Users.GetById(content.User.Id)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - EditProfileHandler - GetById: %w", err))
-		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
+		errors.Code = http.StatusNotFound
+		errors.Message = ErrPageNotFound
 		h.Errors(w, errors)
 		return
 	}
@@ -615,8 +618,8 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryLiked)
 			if err != nil {
 				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #1: %w", err))
-				errors.Code = http.StatusBadRequest
-				errors.Message = ErrBadRequest
+				errors.Code = http.StatusNotFound
+				errors.Message = ErrPageNotFound
 				h.Errors(w, errors)
 				return
 			}
@@ -625,8 +628,8 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
 				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #2: %w", err))
-				errors.Code = http.StatusBadRequest
-				errors.Message = ErrBadRequest
+				errors.Code = http.StatusNotFound
+				errors.Message = ErrPageNotFound
 				h.Errors(w, errors)
 				return
 			}
@@ -637,8 +640,8 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryLiked)
 			if err != nil {
 				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #3: %w", err))
-				errors.Code = http.StatusBadRequest
-				errors.Message = ErrBadRequest
+				errors.Code = http.StatusNotFound
+				errors.Message = ErrPageNotFound
 				h.Errors(w, errors)
 				return
 			}
@@ -647,8 +650,8 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
 				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #4: %w", err))
-				errors.Code = http.StatusBadRequest
-				errors.Message = ErrBadRequest
+				errors.Code = http.StatusNotFound
+				errors.Message = ErrPageNotFound
 				h.Errors(w, errors)
 				return
 			}
