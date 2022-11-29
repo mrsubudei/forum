@@ -215,10 +215,10 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err = h.usecases.Users.SignUp(user)
 	if err != nil {
 		if err == entity.ErrUserEmailAlreadyExists {
-			content.ErrorMsg.Message = UserEmailExist
+			content.ErrorMsg.Message = UserEmailAlreadyExist
 			valid = false
 		} else if err == entity.ErrUserNameAlreadyExists {
-			content.ErrorMsg.Message = UserNameExist
+			content.ErrorMsg.Message = UserNameAlreadyExist
 			valid = false
 		} else {
 			log.Println(fmt.Errorf("v1 - SignUpHandler - SignUp: %w", err))
