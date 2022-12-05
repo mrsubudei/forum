@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -21,7 +22,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - UserPageHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - UserPageHandler - Atoi: %w", err))
 	}
 
 	if r.URL.Path != "/users/"+path[len(path)-1] || err != nil || id <= 0 {
@@ -40,9 +41,9 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.usecases.Users.GetById(int64(id))
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - UserPageHandler - GetById: %w", err))
-		if strings.Contains(err.Error(), entity.ErrUserNotFound.Error()) {
-			h.Errors(w, http.StatusNotAcceptable)
+		h.l.WriteLog(fmt.Errorf("v1 - UserPageHandler - GetById: %w", err))
+		if errors.Is(err, entity.ErrUserNotFound) {
+			h.Errors(w, http.StatusNotFound)
 			return
 		}
 		h.Errors(w, http.StatusInternalServerError)
@@ -56,7 +57,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.ParseAndExecute(w, content, "templates/user.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - UserPageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - UserPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -82,14 +83,14 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 	users, err := h.usecases.Users.GetAllUsers()
 	content.Users = users
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - AllUsersPageHandler - GetAllUsers: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - AllUsersPageHandler - GetAllUsers: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
 	err = h.ParseAndExecute(w, content, "templates/all_users.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - AllUsersPageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - AllUsersPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -109,7 +110,7 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.ParseAndExecute(w, content, "templates/registration.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SignUpPageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - SignUpPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -179,7 +180,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		err := h.ParseAndExecute(w, content, "templates/registration.html")
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseAndExecute #1 - %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - SignUpHandler - ParseAndExecute #1 - %w", err))
 		}
 		return
 	}
@@ -193,7 +194,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 			content.ErrorMsg.Message = UserNameAlreadyExist
 			valid = false
 		} else {
-			log.Println(fmt.Errorf("v1 - SignUpHandler - SignUp: %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - SignUpHandler - SignUp: %w", err))
 			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
@@ -203,7 +204,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		err := h.ParseAndExecute(w, content, "templates/registration.html")
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignUpHandler - ParseAndExecute #2 - %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - SignUpHandler - ParseAndExecute #2 - %w", err))
 		}
 	} else {
 		http.Redirect(w, r, "/signin_page", http.StatusFound)
@@ -218,7 +219,7 @@ func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.ParseAndExecute(w, Content{}, "templates/login.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SignInPageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - SignInPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -252,7 +253,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	err := h.usecases.Users.SignIn(user)
 
 	if err != nil && !strings.Contains(err.Error(), ErrNoRowsInResult) {
-		log.Println(fmt.Errorf("v1 - SignInHandler - SignIn: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - SignInHandler - SignIn: %w", err))
 	}
 	if err == entity.ErrUserNotFound {
 		content.ErrorMsg.Message = UserNotExist
@@ -267,21 +268,21 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 		err := h.ParseAndExecute(w, content, "templates/login.html")
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignInHandler - ParseAndExecute - %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - SignInHandler - ParseAndExecute - %w", err))
 		}
 		return
 
 	} else {
 		id, err := h.usecases.Users.GetIdBy(user)
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignInHandler - GetIdBy: %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - SignInHandler - GetIdBy: %w", err))
 			h.Errors(w, http.StatusBadRequest)
 			return
 		}
 
 		userWithSession, err := h.usecases.Users.GetSession(id)
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - SignInHandler - GetSession: %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - SignInHandler - GetSession: %w", err))
 			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
@@ -306,7 +307,7 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - EditProfilePageHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - EditProfilePageHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/edit_profile_page/"+path[len(path)-1] || err != nil || id <= 0 {
 		h.Errors(w, http.StatusNotFound)
@@ -328,7 +329,7 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 
 	err = h.ParseAndExecute(w, content, "templates/edit_profile.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - EditProfilePageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - EditProfilePageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -351,7 +352,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	if len(r.Form["id"]) != 0 && r.Form["id"][0] != "" {
 		id, err := strconv.Atoi(r.Form["id"][0])
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - EditProfileHandler - Atoi: %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - Atoi: %w", err))
 			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
@@ -360,7 +361,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	existUser, err := h.usecases.Users.GetById(content.User.Id)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - EditProfileHandler - GetById: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - GetById: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -384,7 +385,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 	err = h.usecases.Users.UpdateUserInfo(existUser, UpdateQueryInfo)
 
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - EditProfileHandler - UpdateUserInfo: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - UpdateUserInfo: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -403,7 +404,7 @@ func (h *Handler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.usecases.Users.DeleteSession(content.User)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SignOutHandler - DeleteSession: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - SignOutHandler - DeleteSession: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
 	}
 	time.Sleep(time.Second)
@@ -421,7 +422,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 	reaction := path[len(path)-2]
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - Atoi: %w", err))
 	}
 
 	if (query != QueryPost && query != QueryComment) ||
@@ -449,7 +450,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		if reaction == QueryLiked {
 			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryLiked)
 			if err != nil {
-				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #1: %w", err))
+				h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #1: %w", err))
 				h.Errors(w, http.StatusNotFound)
 				return
 			}
@@ -457,7 +458,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		} else if reaction == QueryDisliked {
 			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
-				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #2: %w", err))
+				h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #2: %w", err))
 				h.Errors(w, http.StatusNotFound)
 				return
 			}
@@ -467,7 +468,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		if reaction == QueryLiked {
 			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryLiked)
 			if err != nil {
-				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #3: %w", err))
+				h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #3: %w", err))
 				h.Errors(w, http.StatusNotFound)
 				return
 			}
@@ -475,7 +476,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		} else if reaction == QueryDisliked {
 			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
-				log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #4: %w", err))
+				h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #4: %w", err))
 				h.Errors(w, http.StatusBadRequest)
 				return
 			}
@@ -485,13 +486,13 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 
 	err = h.ParseAndExecute(w, content, "templates/reacted_users.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - FindReactedUsersHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - ParseAndExecute - %w", err))
 	}
 }
 
 func (h *Handler) GetExistedSession(w http.ResponseWriter, r *http.Request) entity.User {
 	foundUser := entity.User{}
-	cookie, err := r.Cookie("session_token")
+	cookie, err := r.Cookie(h.Cfg.TokenManager.TokenName)
 	if err != nil {
 		if err == http.ErrNoCookie {
 			return foundUser
@@ -506,7 +507,7 @@ func (h *Handler) GetExistedSession(w http.ResponseWriter, r *http.Request) enti
 	id, err := h.usecases.Users.GetIdBy(user)
 	if err != nil {
 		if !strings.Contains(err.Error(), ErrNoRowsInResult) {
-			log.Println(fmt.Errorf("v1 - GetExistedSession - GetIdBy: %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - GetExistedSession - GetIdBy: %w", err))
 		}
 		return foundUser
 	}

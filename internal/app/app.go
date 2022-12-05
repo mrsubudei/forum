@@ -17,23 +17,18 @@ import (
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
 	"forum/pkg/httpserver"
+	"forum/pkg/logger"
 	"forum/pkg/sqlite3"
 )
 
 func Run(cfg config.Config) {
 	// Logger
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o664)
-	if err != nil {
-		log.Println(fmt.Errorf("app - Run - os.OpenFile: %w", err))
-		return
-	}
-	log.SetOutput(file)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	l := logger.New()
 
 	// Sqlite
 	sq, err := sqlite3.New()
 	if err != nil {
-		log.Println(fmt.Errorf("app - Run - sqlite3.New: %w", err))
+		l.WriteLog(fmt.Errorf("app - Run - sqlite3.New: %w", err))
 		return
 	}
 	defer sq.Close()
@@ -42,7 +37,7 @@ func Run(cfg config.Config) {
 	repositories := repository.NewRepositories(sq)
 	err = sqlite.CreateDB(sq)
 	if err != nil {
-		log.Println(fmt.Errorf("app - Run - NewRepositories: %w", err))
+		l.WriteLog(fmt.Errorf("app - Run - NewRepositories: %w", err))
 		return
 	}
 
@@ -58,7 +53,7 @@ func Run(cfg config.Config) {
 	})
 
 	// Http
-	handler := v1.NewHandler(useCases, cfg)
+	handler := v1.NewHandler(useCases, cfg, l)
 	server := httpserver.NewServer(handler)
 
 	go func() {

@@ -125,3 +125,12 @@ created by net/http.(*Server).Serve
 2022/12/05 20:41:15 post.go:243: v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
 2022/12/05 20:46:38 post.go:243: v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
 2022/12/05 20:50:55 posts.go:107: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
+2022/12/05 21:02:18 users.go:255: v1 - SignInHandler - SignIn: password is incorrect
+2022/12/05 21:24:57 users.go:256: v1 - SignInHandler - SignIn: user doesn't exist
+2022/12/05 21:25:35 users.go:43: v1 - UserPageHandler - GetById: user doesn't exist
+2022/12/05 21:26:30 users.go:43: v1 - UserPageHandler - GetById: user doesn't exist
+2022/12/05 21:27:49 users.go:44: v1 - UserPageHandler - GetById: user doesn't exist
+[1;31mERROR: [0m2022/12/05 21:37:43 logger.go:35: v1 - UserPageHandler - GetById: user doesn't exist
+\033[1;31m ERROR: \033[0m2022/12/05 21:41:54 logger.go:36: v1 - UserPageHandler - GetById: user doesn't exist
+INFO: 2022/12/05 21:46:49 logger.go:36: v1 - UserPageHandler - GetById: user doesn't exist
+ERROR 2022/12/05 21:47:12 logger.go:34: v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set

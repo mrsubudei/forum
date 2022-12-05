@@ -19,7 +19,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - PostPageHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - PostPageHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/posts/"+path[len(path)-1] || err != nil || id <= 0 {
 		h.Errors(w, http.StatusNotFound)
@@ -28,7 +28,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	post, err := h.usecases.Posts.GetById(int64(id))
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - PostPageHandler - GetById: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - PostPageHandler - GetById: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -46,7 +46,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.ParseAndExecute(w, content, "templates/post.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - PostPageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - PostPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -66,7 +66,7 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 
 	categories, err := h.usecases.Posts.GetAllCategories()
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreatePostPageHandler - GetAllCategories: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CreatePostPageHandler - GetAllCategories: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -74,7 +74,7 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 
 	err = h.ParseAndExecute(w, content, "templates/create_post.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreatePostPageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CreatePostPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -119,7 +119,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		categories, err := h.usecases.Posts.GetAllCategories()
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - CreatePostHandler - GetAllCategories: %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - GetAllCategories: %w", err))
 			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
@@ -127,13 +127,13 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		content.Post.Categories = categories
 		err = h.ParseAndExecute(w, content, "templates/create_post.html")
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - CreatePostHandler - ParseAndExecute - %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - ParseAndExecute - %w", err))
 		}
 
 	} else {
 		err := h.usecases.Posts.CreatePost(newPost)
 		if err != nil {
-			log.Println(fmt.Errorf("v1 - CreatePostHandler - CreatePost: %w", err))
+			h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - CreatePost: %w", err))
 			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
@@ -145,7 +145,7 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - PostPutLikeHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - PostPutLikeHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/put_post_like/"+path[len(path)-1] || err != nil || id <= 0 {
 		h.Errors(w, http.StatusNotFound)
@@ -167,7 +167,7 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.usecases.Posts.MakeReaction(post, CommandPutLike)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - PostPutLikeHandler - MakeReaction: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - PostPutLikeHandler - MakeReaction: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -179,7 +179,7 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - PostPutDislikeHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - PostPutDislikeHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/put_post_dislike/"+path[len(path)-1] || err != nil || id <= 0 {
 		h.Errors(w, http.StatusNotFound)
@@ -201,7 +201,7 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 
 	err = h.usecases.Posts.MakeReaction(post, CommandPutDislike)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - PostPutDislikeHandler - MakeReaction: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - PostPutDislikeHandler - MakeReaction: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -219,7 +219,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	query := path[len(path)-2]
 	userId, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - FindPostsHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - FindPostsHandler - Atoi: %w", err))
 	}
 
 	if r.URL.Path != "/find_posts/"+query+"/"+path[len(path)-1] ||
@@ -240,7 +240,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	posts, err := h.usecases.Posts.GetPostsByQuery(user, query)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - FindPostsHandler - GetPostsByQuery: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - FindPostsHandler - GetPostsByQuery: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -248,6 +248,6 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.ParseAndExecute(w, content, "templates/index.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - FindPostsHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - FindPostsHandler - ParseAndExecute - %w", err))
 	}
 }

@@ -19,7 +19,7 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCommentPageHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentPageHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/create_comment_page/"+path[len(path)-1] || err != nil || id <= 0 {
 		h.Errors(w, http.StatusNotFound)
@@ -38,7 +38,7 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 
 	err = h.ParseAndExecute(w, content, "templates/create_comment.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCommentPageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -56,10 +56,10 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCommentHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/create_comment/"+path[len(path)-1] || err != nil || id <= 0 {
-		log.Println(fmt.Errorf("v1 - CreateCommentHandler - URL.Path: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - URL.Path: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -80,7 +80,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.usecases.Comments.WriteComment(newComment)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCommentHandler - WriteComment: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - WriteComment: %w", err))
 		h.Errors(w, http.StatusBadRequest)
 		return
 	}
@@ -91,10 +91,10 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CommentPutLikeHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CommentPutLikeHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/put_comment_like/"+path[len(path)-1] || err != nil || id <= 0 {
-		log.Println(fmt.Errorf("v1 - CommentPutLikeHandler - URL.Path: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CommentPutLikeHandler - URL.Path: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -114,7 +114,7 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 
 	err = h.usecases.Comments.MakeReaction(comment, CommandPutLike)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CommentPutLikeHandler - MakeReaction: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CommentPutLikeHandler - MakeReaction: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -126,10 +126,10 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CommentPutDislikeHandler - Atoi: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CommentPutDislikeHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/put_comment_dislike/"+path[len(path)-1] || err != nil || id <= 0 {
-		log.Println(fmt.Errorf("v1 - CommentPutDislikeHandler - URL.Path: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CommentPutDislikeHandler - URL.Path: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -149,7 +149,7 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 
 	err = h.usecases.Comments.MakeReaction(comment, CommandPutDislike)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CommentPutDislikeHandler - MakeReaction: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CommentPutDislikeHandler - MakeReaction: %w", err))
 		h.Errors(w, http.StatusNotFound)
 		return
 	}

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"forum/internal/entity"
 	"forum/internal/repository"
-	"log"
 	"strings"
 	"sync"
 )
@@ -104,8 +103,7 @@ func (pu *PostsUseCase) GetPostsByQuery(user entity.User, query string) ([]entit
 		for i := 0; i < len(ids); i++ {
 			post, err := pu.repo.GetById(ids[i])
 			if err != nil {
-				log.Println(fmt.Errorf("PostsUseCase - GetPostsByQuery #6 - %w", err))
-				continue
+				return posts, fmt.Errorf("PostsUseCase - GetPostsByQuery #6 - %w", err)
 			}
 			posts = append(posts, post)
 		}

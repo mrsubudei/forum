@@ -32,7 +32,7 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	posts, err := h.usecases.Posts.GetAllPosts()
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - IndexHandler - GetAllPosts: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - IndexHandler - GetAllPosts: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -41,7 +41,7 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.ParseAndExecute(w, content, "templates/index.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - IndexHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - IndexHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -61,7 +61,7 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.ParseAndExecute(w, content, "templates/search.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchPageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - SearchPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -79,7 +79,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	searchRequest := strings.ToLower(r.Form["search"][0])
 	posts, err := h.usecases.Posts.GetAllPosts()
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchHandler - GetAllPosts: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - SearchHandler - GetAllPosts: %w", err))
 		h.Errors(w, http.StatusBadRequest)
 		return
 	}
@@ -97,7 +97,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.ParseAndExecute(w, content, "templates/index.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - SearchHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -122,7 +122,7 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 
 	err := h.ParseAndExecute(w, content, "templates/create_category.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCategoryPageHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCategoryPageHandler - ParseAndExecute - %w", err))
 	}
 }
 
@@ -143,7 +143,7 @@ func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) 
 
 	err := h.usecases.Posts.CreateCategories(categories)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - CreateCategoryHandler - CreateCategories: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCategoryHandler - CreateCategories: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -173,7 +173,7 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 
 	posts, err := h.usecases.Posts.GetAllByCategory(category)
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchByCategoryHandler - GetAllByCategory: %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - SearchByCategoryHandler - GetAllByCategory: %w", err))
 		if strings.Contains(err.Error(), entity.ErrPostNotFound.Error()) {
 			h.Errors(w, http.StatusBadRequest)
 			return
@@ -185,7 +185,7 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 
 	err = h.ParseAndExecute(w, content, "templates/index.html")
 	if err != nil {
-		log.Println(fmt.Errorf("v1 - SearchByCategoryHandler - ParseAndExecute - %w", err))
+		h.l.WriteLog(fmt.Errorf("v1 - SearchByCategoryHandler - ParseAndExecute - %w", err))
 	}
 }
 

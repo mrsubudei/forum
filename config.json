@@ -7,6 +7,7 @@
         "shutdown_timeout": 5
     },
     "token_manager": {
-        "session_expiring_time": 3600
+        "session_expiring_time": 3600,
+        "token_name": "session_token"
     }
 }

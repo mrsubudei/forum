@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"forum/internal/entity"
 	"forum/pkg/sqlite3"
-	"log"
 )
 
 type PostsRepo struct {
@@ -250,8 +249,7 @@ func (cr *CommentsRepo) GetPostIds(user entity.User) ([]int64, error) {
 		var postId sql.NullInt64
 		err = rows.Scan(&postId)
 		if err != nil {
-			log.Println(fmt.Errorf("PostsRepo - GetPostIds - Scan: %w", err))
-			continue
+			return postIds, fmt.Errorf("PostsRepo - GetPostIds - Scan: %w", err)
 		}
 		postIds = append(postIds, postId.Int64)
 	}

@@ -15,7 +15,8 @@ type Config struct {
 		ShutDownTimeout int    `json:"shutdown_timeout"`
 	} `json:"server"`
 	TokenManager struct {
-		SessionExpiringTime int `json:"session_expiring_time"`
+		SessionExpiringTime int    `json:"session_expiring_time"`
+		TokenName           string `json:"token_name"`
 	} `json:"token_manager"`
 }
 
