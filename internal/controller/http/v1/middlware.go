@@ -11,31 +11,23 @@ func (h *Handler) CheckAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		foundUser := h.GetExistedSession(w, r)
 		if foundUser.Id == 0 {
-			errors.Code = http.StatusUnauthorized
-			errors.Message = ErrStatusNotAuthorized
-			h.Errors(w, errors)
+			h.Errors(w, http.StatusUnauthorized)
 			return
 		}
 		isAuthorized, err := h.usecases.Users.CheckSession(foundUser)
 		if err != nil {
 			log.Println(fmt.Errorf("v1 - CheckAuth - CheckSession: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
+			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
 		if !isAuthorized {
-			errors.Code = http.StatusUnauthorized
-			errors.Message = ErrStatusNotAuthorized
-			h.Errors(w, errors)
+			h.Errors(w, http.StatusUnauthorized)
 			return
 		}
 		err = h.usecases.Users.UpdateSession(foundUser)
 		if err != nil {
 			log.Println(fmt.Errorf("v1 - CheckAuth - UpdateSession: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
+			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
 
@@ -60,18 +52,14 @@ func (h *Handler) AssignStatus(next http.Handler) http.Handler {
 		isAuthorized, err := h.usecases.Users.CheckSession(foundUser)
 		if err != nil {
 			log.Println(fmt.Errorf("v1 - AssignStatus - CheckSession: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
+			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
 		if isAuthorized {
 			err = h.usecases.Users.UpdateSession(foundUser)
 			if err != nil {
 				log.Println(fmt.Errorf("v1 - AssignStatus - UpdateSession: %w", err))
-				errors.Code = http.StatusInternalServerError
-				errors.Message = ErrInternalServer
-				h.Errors(w, errors)
+				h.Errors(w, http.StatusInternalServerError)
 				return
 			}
 		}

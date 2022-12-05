@@ -120,3 +120,8 @@ created by net/http.(*Server).Serve
 2022/11/29 21:55:28 users.go:365: v1 - SignInHandler - SignIn: user doesn't exist
 2022/11/29 22:05:45 post.go:45: v1 - PostPageHandler - GetById: PostsUseCase - GetById #1 - PostsRepo - GetById - Scan: sql: no rows in result set
 2022/11/29 22:06:50 post.go:45: v1 - PostPageHandler - GetById: PostsUseCase - GetById #1 - PostsRepo - GetById - Scan: sql: no rows in result set
+2022/12/05 20:40:53 users.go:255: v1 - SignInHandler - SignIn: user doesn't exist
+2022/12/05 20:41:05 post.go:243: v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
+2022/12/05 20:41:15 post.go:243: v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
+2022/12/05 20:46:38 post.go:243: v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
+2022/12/05 20:50:55 posts.go:107: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set

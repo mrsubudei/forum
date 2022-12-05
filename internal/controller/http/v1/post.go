@@ -12,9 +12,7 @@ import (
 
 func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -24,18 +22,14 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(fmt.Errorf("v1 - PostPageHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/posts/"+path[len(path)-1] || err != nil || id <= 0 {
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
 	post, err := h.usecases.Posts.GetById(int64(id))
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - PostPageHandler - GetById: %w", err))
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -43,9 +37,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		log.Printf("v1 - PostPageHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -60,9 +52,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -70,18 +60,14 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 	if !ok {
 		log.Printf("v1 - CreatePostPageHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
 	categories, err := h.usecases.Posts.GetAllCategories()
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - CreatePostPageHandler - GetAllCategories: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 	content.Post.Categories = categories
@@ -94,17 +80,13 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 
 func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
 	r.ParseForm()
 	if len(r.Form["title"][0]) == 0 || len(r.Form["content"][0]) == 0 {
-		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusBadRequest)
 		return
 	}
 
@@ -112,9 +94,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		log.Printf("v1 - CreatePostHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -140,9 +120,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		categories, err := h.usecases.Posts.GetAllCategories()
 		if err != nil {
 			log.Println(fmt.Errorf("v1 - CreatePostHandler - GetAllCategories: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
+			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
 
@@ -156,9 +134,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		err := h.usecases.Posts.CreatePost(newPost)
 		if err != nil {
 			log.Println(fmt.Errorf("v1 - CreatePostHandler - CreatePost: %w", err))
-			errors.Code = http.StatusInternalServerError
-			errors.Message = ErrInternalServer
-			h.Errors(w, errors)
+			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -172,9 +148,7 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(fmt.Errorf("v1 - PostPutLikeHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/put_post_like/"+path[len(path)-1] || err != nil || id <= 0 {
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -182,9 +156,7 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		log.Printf("v1 - PostPutLikeHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -196,9 +168,7 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 	err = h.usecases.Posts.MakeReaction(post, CommandPutLike)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - PostPutLikeHandler - MakeReaction: %w", err))
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -212,9 +182,7 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 		log.Println(fmt.Errorf("v1 - PostPutDislikeHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/put_post_dislike/"+path[len(path)-1] || err != nil || id <= 0 {
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -222,9 +190,7 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 	if !ok {
 		log.Printf("v1 - PostPutDislikeHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -236,9 +202,7 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 	err = h.usecases.Posts.MakeReaction(post, CommandPutDislike)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - PostPutDislikeHandler - MakeReaction: %w", err))
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -247,9 +211,7 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 
 func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -262,9 +224,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path != "/find_posts/"+query+"/"+path[len(path)-1] ||
 		err != nil || userId <= 0 {
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -272,9 +232,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		log.Printf("v1 - FindPostsHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -283,9 +241,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 	posts, err := h.usecases.Posts.GetPostsByQuery(user, query)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - FindPostsHandler - GetPostsByQuery: %w", err))
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 	content.Posts = posts

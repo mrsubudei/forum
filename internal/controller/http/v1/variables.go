@@ -47,5 +47,3 @@ const (
 	ReactionMessageLike    = "\"лайк\""
 	ReactionMessageDislike = "\"дизлайк\""
 )
-
-var errors ErrMessage

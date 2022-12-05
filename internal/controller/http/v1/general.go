@@ -11,16 +11,12 @@ import (
 
 func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
 	if r.URL.Path != "/" {
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -30,18 +26,14 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		log.Printf("v1 - IndexHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
 	posts, err := h.usecases.Posts.GetAllPosts()
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - IndexHandler - GetAllPosts: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -55,9 +47,7 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -65,9 +55,7 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		log.Printf("v1 - SearchPageHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -79,16 +67,12 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 	r.ParseForm()
 	if len(r.Form["search"]) == 0 {
-		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusBadRequest)
 		return
 	}
 
@@ -96,9 +80,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	posts, err := h.usecases.Posts.GetAllPosts()
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - SearchHandler - GetAllPosts: %w", err))
-		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusBadRequest)
 		return
 	}
 
@@ -107,9 +89,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		log.Printf("v1 - SearchHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -123,9 +103,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -133,16 +111,12 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 	if !ok {
 		log.Printf("v1 - CreateCategoryPageHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
 	if !content.Admin {
-		errors.Code = http.StatusForbidden
-		errors.Message = ErrLowAccessLevel
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusForbidden)
 		return
 	}
 
@@ -154,17 +128,13 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 
 func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
 	r.ParseForm()
 	if len(r.Form["category"]) == 0 {
-		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusBadRequest)
 		return
 	}
 
@@ -174,9 +144,7 @@ func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) 
 	err := h.usecases.Posts.CreateCategories(categories)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - CreateCategoryHandler - CreateCategories: %w", err))
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 	http.Redirect(w, r, "/", http.StatusFound)
@@ -184,18 +152,14 @@ func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) 
 
 func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
 	path := strings.Split(r.URL.Path, "/")
 	category := path[len(path)-1]
 	if r.URL.Path != "/categories/"+category {
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -203,9 +167,7 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 	if !ok {
 		log.Printf("v1 - SearchByCategoryHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -213,14 +175,10 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - SearchByCategoryHandler - GetAllByCategory: %w", err))
 		if strings.Contains(err.Error(), entity.ErrPostNotFound.Error()) {
-			errors.Code = http.StatusBadRequest
-			errors.Message = ErrBadRequest
-			h.Errors(w, errors)
+			h.Errors(w, http.StatusBadRequest)
 			return
 		}
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 	content.Posts = posts

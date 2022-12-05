@@ -110,31 +110,6 @@ func (cr *CommentsRepo) GetById(commentId int64) (entity.Comment, error) {
 	return comment, nil
 }
 
-func (cr *CommentsRepo) GetPostIds(user entity.User) ([]int64, error) {
-	var postIds []int64
-
-	rows, err := cr.DB.Query(`
-	SELECT DISTINCT post_id
-	FROM comments
-	WHERE user_id = ?
-	`, user.Id)
-	if err != nil {
-		return nil, fmt.Errorf("PostsRepo - GetPostIds - Query: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var postId sql.NullInt64
-		err = rows.Scan(&postId)
-		if err != nil {
-			return postIds, fmt.Errorf("PostsRepo - GetPostIds - Scan: %w", err)
-		}
-		postIds = append(postIds, postId.Int64)
-	}
-
-	return postIds, nil
-}
-
 func (cr *CommentsRepo) Update(comment entity.Comment) error {
 	tx, err := cr.DB.Begin()
 	defer tx.Rollback()

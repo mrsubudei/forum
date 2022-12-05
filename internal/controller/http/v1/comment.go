@@ -12,9 +12,7 @@ import (
 
 func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -24,9 +22,7 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 		log.Println(fmt.Errorf("v1 - CreateCommentPageHandler - Atoi: %w", err))
 	}
 	if r.URL.Path != "/create_comment_page/"+path[len(path)-1] || err != nil || id <= 0 {
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -34,9 +30,7 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 	if !ok {
 		log.Printf("v1 - CreateCommentPageHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -50,17 +44,13 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 
 func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
 	r.ParseForm()
 	if len(r.Form["content"][0]) == 0 {
-		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusBadRequest)
 		return
 	}
 	path := strings.Split(r.URL.Path, "/")
@@ -70,9 +60,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.URL.Path != "/create_comment/"+path[len(path)-1] || err != nil || id <= 0 {
 		log.Println(fmt.Errorf("v1 - CreateCommentHandler - URL.Path: %w", err))
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -80,9 +68,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		log.Printf("v1 - CreateCommentHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -95,9 +81,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	err = h.usecases.Comments.WriteComment(newComment)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - CreateCommentHandler - WriteComment: %w", err))
-		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusBadRequest)
 		return
 	}
 	http.Redirect(w, r, "/posts/"+strconv.Itoa(id), http.StatusFound)
@@ -111,9 +95,7 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	if r.URL.Path != "/put_comment_like/"+path[len(path)-1] || err != nil || id <= 0 {
 		log.Println(fmt.Errorf("v1 - CommentPutLikeHandler - URL.Path: %w", err))
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -121,9 +103,7 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 	if !ok {
 		log.Printf("v1 - CommentPutLikeHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -135,9 +115,7 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 	err = h.usecases.Comments.MakeReaction(comment, CommandPutLike)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - CommentPutLikeHandler - MakeReaction: %w", err))
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -152,9 +130,7 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 	}
 	if r.URL.Path != "/put_comment_dislike/"+path[len(path)-1] || err != nil || id <= 0 {
 		log.Println(fmt.Errorf("v1 - CommentPutDislikeHandler - URL.Path: %w", err))
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
@@ -162,9 +138,7 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 	if !ok {
 		log.Printf("v1 - CommentPutDislikeHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content)
-		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -176,9 +150,7 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 	err = h.usecases.Comments.MakeReaction(comment, CommandPutDislike)
 	if err != nil {
 		log.Println(fmt.Errorf("v1 - CommentPutDislikeHandler - MakeReaction: %w", err))
-		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
-		h.Errors(w, errors)
+		h.Errors(w, http.StatusNotFound)
 		return
 	}
 	http.Redirect(w, r, r.Header.Get("Referer")+"#"+strconv.Itoa(int(comment.Id)), http.StatusFound)

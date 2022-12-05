@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"forum/internal/entity"
 	"forum/pkg/sqlite3"
+	"log"
 )
 
 type PostsRepo struct {
@@ -230,6 +231,32 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	post.TotalDislikes = postDislikes.Int64
 
 	return post, nil
+}
+
+func (cr *CommentsRepo) GetPostIds(user entity.User) ([]int64, error) {
+	var postIds []int64
+
+	rows, err := cr.DB.Query(`
+	SELECT DISTINCT post_id
+	FROM comments
+	WHERE user_id = ?
+	`, user.Id)
+	if err != nil {
+		return nil, fmt.Errorf("PostsRepo - GetPostIds - Query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var postId sql.NullInt64
+		err = rows.Scan(&postId)
+		if err != nil {
+			log.Println(fmt.Errorf("PostsRepo - GetPostIds - Scan: %w", err))
+			continue
+		}
+		postIds = append(postIds, postId.Int64)
+	}
+
+	return postIds, nil
 }
 
 func (pr *PostsRepo) GetIdsByCategory(category string) ([]int64, error) {
