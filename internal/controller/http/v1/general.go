@@ -2,7 +2,6 @@ package v1
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -24,8 +23,8 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(key).(Content)
 	if !ok {
-		log.Printf("v1 - IndexHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - IndexHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -53,8 +52,8 @@ func (h *Handler) SearchPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - SearchPageHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - SearchPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -87,8 +86,8 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	filtered := h.filterPosts(posts, searchRequest)
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - SearchHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - SearchHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -109,8 +108,8 @@ func (h *Handler) CreateCategoryPageHandler(w http.ResponseWriter, r *http.Reque
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - CreateCategoryPageHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCategoryPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -165,8 +164,8 @@ func (h *Handler) SearchByCategoryHandler(w http.ResponseWriter, r *http.Request
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - SearchByCategoryHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - SearchByCategoryHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}

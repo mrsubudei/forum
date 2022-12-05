@@ -2,7 +2,6 @@ package v1
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -35,8 +34,8 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - PostPageHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - PostPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -58,8 +57,8 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - CreatePostPageHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - CreatePostPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -92,8 +91,8 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - CreatePostHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -154,8 +153,8 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - PostPutLikeHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - PostPutLikeHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -188,8 +187,8 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - PostPutDislikeHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - PostPutDislikeHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -230,8 +229,8 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - FindPostsHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - FindPostsHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}

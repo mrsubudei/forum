@@ -2,7 +2,6 @@ package v1
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -28,8 +27,8 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - CreateCommentPageHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -66,8 +65,8 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - CreateCommentHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -101,8 +100,8 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - CommentPutLikeHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - CommentPutLikeHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -136,8 +135,8 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - CommentPutDislikeHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - CommentPutDislikeHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}

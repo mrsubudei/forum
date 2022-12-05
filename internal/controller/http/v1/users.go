@@ -3,7 +3,6 @@ package v1
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"net/mail"
 	"strconv"
@@ -32,8 +31,8 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - UserPageHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - UserPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -74,8 +73,8 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - AllUsersPageHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - AllUsersPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -102,8 +101,8 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - AllUsersPageHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - AllUsersPageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -148,8 +147,8 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - EditProfileHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -316,8 +315,8 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - EditProfilePageHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - EditProfilePageHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -341,8 +340,8 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - EditProfileHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -396,8 +395,8 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - SignOutHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - SignOutHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
@@ -439,8 +438,8 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
-		log.Printf("v1 - FindReactedUsersHandler - TypeAssertion:"+
-			"got data of type %T but wanted v1.Content", content)
+		h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - TypeAssertion:"+
+			"got data of type %T but wanted v1.Content", content))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
