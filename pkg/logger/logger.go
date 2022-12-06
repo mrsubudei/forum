@@ -3,9 +3,10 @@ package logger
 import (
 	"errors"
 	"fmt"
-	"forum/internal/entity"
 	"log"
 	"os"
+
+	"forum/internal/entity"
 )
 
 type Logger struct {
@@ -14,13 +15,13 @@ type Logger struct {
 }
 
 func New() *Logger {
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o664)
+	file, err := os.OpenFile("logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o664)
 	if err != nil {
 		log.Fatal(fmt.Errorf("logger - New - os.OpenFile: %w", err))
 	}
 
-	InfoLogger := log.New(file, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	ErrorLogger := log.New(file, "ERROR ", log.Ldate|log.Ltime|log.Lshortfile)
+	InfoLogger := log.New(file, "INFO: ", log.Ldate|log.Ltime)
+	ErrorLogger := log.New(file, "ERROR ", log.Ldate|log.Ltime)
 	return &Logger{
 		Info: InfoLogger,
 		Err:  ErrorLogger,

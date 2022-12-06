@@ -1,0 +1,3 @@
+INFO: 2022/12/06 19:35:56 logger.go:37: v1 - UserPageHandler - GetById: user doesn't exist
+ERROR 2022/12/06 19:37:11 logger.go:35: v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
+ERROR 2022/12/06 19:37:54 v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
