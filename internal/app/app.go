@@ -26,7 +26,7 @@ func Run(cfg config.Config) {
 	l := logger.New()
 
 	// Sqlite
-	sq, err := sqlite3.New()
+	sq, err := sqlite3.New("database/forum.db")
 	if err != nil {
 		l.WriteLog(fmt.Errorf("app - Run - sqlite3.New: %w", err))
 		return

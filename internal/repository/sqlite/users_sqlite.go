@@ -18,11 +18,11 @@ func NewUsersRepo(sq *sqlite3.Sqlite) *UsersRepo {
 
 func (ur *UsersRepo) Store(user entity.User) error {
 	tx, err := ur.DB.Begin()
-	defer tx.Rollback()
+
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Begin: %w", err)
 	}
-
+	defer tx.Rollback()
 	stmt, err := tx.Prepare(`
 	INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex, role, sign) 
 		values(?, ?, ?, ?, ?, ?, ?, ?, ?)
