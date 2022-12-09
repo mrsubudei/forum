@@ -3,6 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"fmt"
+
 	"forum/internal/entity"
 	"forum/pkg/sqlite3"
 )
@@ -17,10 +18,10 @@ func NewPostsRepo(sq *sqlite3.Sqlite) *PostsRepo {
 
 func (pr *PostsRepo) Store(post *entity.Post) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Store - Begin: %w", err)
 	}
+	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO posts(user_id, date, title, content) 
@@ -55,10 +56,10 @@ func (pr *PostsRepo) Store(post *entity.Post) error {
 
 func (pr *PostsRepo) StoreTopicReference(post entity.Post) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreTopicReference - Begin: %w", err)
 	}
+	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO reference_topic(post_id, topic) 
@@ -99,7 +100,6 @@ func (pr *PostsRepo) Fetch() ([]entity.Post, error) {
 		(SELECT COUNT(*) FROM post_dislikes WHERE post_dislikes.post_id = posts.id) AS post_dislikes
 	FROM posts
 	`)
-
 	if err != nil {
 		return nil, fmt.Errorf("PostsRepo - Fetch - Query: %w", err)
 	}
@@ -137,7 +137,6 @@ func (pr *PostsRepo) FetchByAuthor(user entity.User) ([]entity.Post, error) {
 	FROM posts
 	WHERE user_id = ?
 	`, user.Id)
-
 	if err != nil {
 		return nil, fmt.Errorf("PostsRepo - FetchByQuery - Query: %w", err)
 	}
@@ -283,7 +282,6 @@ func (pr *PostsRepo) GetIdsByCategory(category string) ([]int64, error) {
 }
 
 func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
-
 	categories := []string{}
 	rows, err := pr.DB.Query(`
 	SELECT topic
@@ -309,10 +307,11 @@ func (pr *PostsRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
 
 func (pr *PostsRepo) Update(post entity.Post) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Update - Begin: %w", err)
 	}
+	defer tx.Rollback()
+
 	stmt, err := pr.DB.Prepare(`
 	UPDATE posts
 	SET title = ?, content = ?
@@ -343,10 +342,11 @@ func (pr *PostsRepo) Update(post entity.Post) error {
 
 func (pr *PostsRepo) Delete(post entity.Post) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Delete - Begin: %w", err)
 	}
+	defer tx.Rollback()
+
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM posts
 	WHERE id = ?
@@ -376,10 +376,10 @@ func (pr *PostsRepo) Delete(post entity.Post) error {
 
 func (pr *PostsRepo) StoreLike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreLike - Begin: %w", err)
 	}
+	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO post_likes(post_id, user_id, date) 
@@ -412,10 +412,11 @@ func (pr *PostsRepo) StoreLike(post entity.Post) error {
 
 func (pr *PostsRepo) DeleteLike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - DeleteLike - Begin: %w", err)
 	}
+	defer tx.Rollback()
+
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM post_likes
 	WHERE post_id = ? AND user_id = ?
@@ -440,10 +441,10 @@ func (pr *PostsRepo) DeleteLike(post entity.Post) error {
 
 func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreDislike - Begin: %w", err)
 	}
+	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO post_dislikes(post_id, user_id, date) 
@@ -476,10 +477,11 @@ func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 
 func (pr *PostsRepo) DeleteDislike(post entity.Post) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - DeleteDislike - Begin: %w", err)
 	}
+	defer tx.Rollback()
+
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM post_dislikes
 	WHERE post_id = ? AND user_id = ?
@@ -512,7 +514,6 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 		FROM post_likes
 		WHERE post_id = ?
 	`, id)
-
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - FetchReactions - likes - Query: %w", err)
 	}
@@ -532,7 +533,6 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 		FROM post_dislikes
 		WHERE post_id = ?
 	`, id)
-
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - FetchReactions - dislikes - Query: %w", err)
 	}
@@ -583,10 +583,10 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 	}
 
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreCategories - Begin: %w", err)
 	}
+	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO topics(name) 
@@ -618,7 +618,6 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 }
 
 func (pr *PostsRepo) GetExistedCategories() ([]string, error) {
-
 	categories := []string{}
 	rows, err := pr.DB.Query(`
 	SELECT name

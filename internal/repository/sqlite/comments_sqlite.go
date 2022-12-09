@@ -3,6 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"fmt"
+
 	"forum/internal/entity"
 	"forum/pkg/sqlite3"
 )
@@ -17,10 +18,10 @@ func NewCommentsRepo(sq *sqlite3.Sqlite) *CommentsRepo {
 
 func (cr *CommentsRepo) Store(comment entity.Comment) error {
 	tx, err := cr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - Store - Begin: %w", err)
 	}
+	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO comments(post_id, user_id, date, content) 
@@ -112,10 +113,11 @@ func (cr *CommentsRepo) GetById(commentId int64) (entity.Comment, error) {
 
 func (cr *CommentsRepo) Update(comment entity.Comment) error {
 	tx, err := cr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - Update - Begin: %w", err)
 	}
+	defer tx.Rollback()
+
 	stmt, err := cr.DB.Prepare(`
 	UPDATE comments
 	SET content = ?
@@ -146,10 +148,11 @@ func (cr *CommentsRepo) Update(comment entity.Comment) error {
 
 func (cr *CommentsRepo) Delete(comment entity.Comment) error {
 	tx, err := cr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - Delete - Begin: %w", err)
 	}
+	defer tx.Rollback()
+
 	stmt, err := cr.DB.Prepare(`
 	DELETE FROM comments
 	WHERE id = ?
@@ -179,10 +182,10 @@ func (cr *CommentsRepo) Delete(comment entity.Comment) error {
 
 func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - StoreLike - Begin: %w", err)
 	}
+	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO comment_likes(comment_id, user_id, date) 
@@ -215,10 +218,11 @@ func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 
 func (pr *CommentsRepo) DeleteLike(comment entity.Comment) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteLike - Begin: %w", err)
 	}
+	defer tx.Rollback()
+
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM comment_likes
 	WHERE comment_id = ? AND user_id = ?
@@ -243,10 +247,10 @@ func (pr *CommentsRepo) DeleteLike(comment entity.Comment) error {
 
 func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - StoreDislike - Begin: %w", err)
 	}
+	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO comment_dislikes(comment_id, user_id, date) 
@@ -279,10 +283,11 @@ func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 
 func (pr *CommentsRepo) DeleteDislike(comment entity.Comment) error {
 	tx, err := pr.DB.Begin()
-	defer tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteDislike - Begin: %w", err)
 	}
+	defer tx.Rollback()
+
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM comment_dislikes
 	WHERE comment_id = ? AND user_id = ?
