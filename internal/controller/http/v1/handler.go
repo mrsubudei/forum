@@ -2,8 +2,8 @@ package v1
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
-	"text/template"
 
 	"forum/internal/config"
 	"forum/internal/usecase"
