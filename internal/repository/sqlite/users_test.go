@@ -10,7 +10,7 @@ import (
 	"forum/internal/repository/sqlite"
 )
 
-func TestStore(t *testing.T) {
+func TestUserStore(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := sqlite.MustOpenDB(t, "file:foobar?mode=memory&cache=shared")
 		defer sqlite.MustCloseDB(t, db)
@@ -88,7 +88,7 @@ func TestStore(t *testing.T) {
 	})
 }
 
-func TestFetch(t *testing.T) {
+func TestUserFetch(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := sqlite.MustOpenDB(t, "file:foobar?mode=memory&cache=shared")
 		defer sqlite.MustCloseDB(t, db)
@@ -122,7 +122,7 @@ func TestFetch(t *testing.T) {
 	})
 }
 
-func TestGetId(t *testing.T) {
+func TestUserGetId(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := sqlite.MustOpenDB(t, "file:foobar?mode=memory&cache=shared")
 		defer sqlite.MustCloseDB(t, db)
@@ -178,7 +178,7 @@ func TestGetId(t *testing.T) {
 	})
 }
 
-func TestGetById(t *testing.T) {
+func TestUserGetById(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := sqlite.MustOpenDB(t, "file:foobar?mode=memory&cache=shared")
 		defer sqlite.MustCloseDB(t, db)
@@ -204,7 +204,7 @@ func TestGetById(t *testing.T) {
 	})
 }
 
-func TestGetSession(t *testing.T) {
+func TestUserGetSession(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := sqlite.MustOpenDB(t, "file:foobar?mode=memory&cache=shared")
 		defer sqlite.MustCloseDB(t, db)
@@ -237,7 +237,7 @@ func TestGetSession(t *testing.T) {
 	})
 }
 
-func TestUpdateInfo(t *testing.T) {
+func TestUserUpdateInfo(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := sqlite.MustOpenDB(t, "file:foobar?mode=memory&cache=shared")
 		defer sqlite.MustCloseDB(t, db)
@@ -341,7 +341,7 @@ func TestUpdateSession(t *testing.T) {
 	})
 }
 
-func TestDelete(t *testing.T) {
+func TestUserDelete(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := sqlite.MustOpenDB(t, "file:foobar?mode=memory&cache=shared")
 		defer sqlite.MustCloseDB(t, db)

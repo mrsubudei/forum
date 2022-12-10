@@ -107,17 +107,19 @@ func (pr *PostsRepo) Fetch() ([]entity.Post, error) {
 
 	for rows.Next() {
 		var post entity.Post
+		var userName sql.NullString
 		var postsLikes sql.NullInt64
 		var postDislikes sql.NullInt64
 
 		err = rows.Scan(&post.Id, &post.User.Id, &post.Date, &post.Title, &post.Content,
-			&post.User.Name, &postsLikes, &postDislikes)
+			&userName, &postsLikes, &postDislikes)
 		if err != nil {
 			return posts, fmt.Errorf("PostsRepo - Fetch - Scan: %w", err)
 		}
 
 		post.TotalLikes = postsLikes.Int64
 		post.TotalDislikes = postDislikes.Int64
+		post.User.Name = userName.String
 
 		posts = append(posts, post)
 	}
@@ -144,17 +146,19 @@ func (pr *PostsRepo) FetchByAuthor(user entity.User) ([]entity.Post, error) {
 
 	for rows.Next() {
 		var post entity.Post
+		var userName sql.NullString
 		var postsLikes sql.NullInt64
 		var postDislikes sql.NullInt64
 
 		err = rows.Scan(&post.Id, &post.User.Id, &post.Date, &post.Title, &post.Content,
-			&post.User.Name, &postsLikes, &postDislikes)
+			&userName, &postsLikes, &postDislikes)
 		if err != nil {
 			return posts, fmt.Errorf("PostsRepo - FetchByQuery - Scan: %w", err)
 		}
 
 		post.TotalLikes = postsLikes.Int64
 		post.TotalDislikes = postDislikes.Int64
+		post.User.Name = userName.String
 
 		posts = append(posts, post)
 	}
@@ -218,42 +222,19 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	defer stmt.Close()
 	var postsLikes sql.NullInt64
 	var postDislikes sql.NullInt64
+	var userName sql.NullString
 
 	err = stmt.QueryRow(id, id, id).Scan(&post.Id, &post.User.Id, &post.Date, &post.Title, &post.Content,
-		&post.User.Name, &postsLikes, &postDislikes)
+		&userName, &postsLikes, &postDislikes)
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)
 	}
 
 	post.TotalLikes = postsLikes.Int64
 	post.TotalDislikes = postDislikes.Int64
+	post.User.Name = userName.String
 
 	return post, nil
-}
-
-func (cr *CommentsRepo) GetPostIds(user entity.User) ([]int64, error) {
-	var postIds []int64
-
-	rows, err := cr.DB.Query(`
-	SELECT DISTINCT post_id
-	FROM comments
-	WHERE user_id = ?
-	`, user.Id)
-	if err != nil {
-		return nil, fmt.Errorf("PostsRepo - GetPostIds - Query: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var postId sql.NullInt64
-		err = rows.Scan(&postId)
-		if err != nil {
-			return postIds, fmt.Errorf("PostsRepo - GetPostIds - Scan: %w", err)
-		}
-		postIds = append(postIds, postId.Int64)
-	}
-
-	return postIds, nil
 }
 
 func (pr *PostsRepo) GetIdsByCategory(category string) ([]int64, error) {
@@ -553,6 +534,8 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 
 func (pr *PostsRepo) StoreCategories(categories []string) error {
 	var existedCategories []string
+
+	// searching existed categories
 	rows, err := pr.DB.Query(`
 	SELECT name
 	FROM topics
@@ -569,6 +552,8 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 		}
 		existedCategories = append(existedCategories, category)
 	}
+
+	// selecting non repeated categories
 	var categoriesToAdd []string
 	for i := 0; i < len(categories); i++ {
 		exist := false
@@ -588,6 +573,7 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 	}
 	defer tx.Rollback()
 
+	// store categories
 	stmt, err := tx.Prepare(`
 	INSERT INTO topics(name) 
 		values(?)
