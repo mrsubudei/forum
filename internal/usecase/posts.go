@@ -2,10 +2,11 @@ package usecase
 
 import (
 	"fmt"
-	"forum/internal/entity"
-	"forum/internal/repository"
 	"strings"
 	"sync"
+
+	"forum/internal/entity"
+	"forum/internal/repository"
 )
 
 type PostsUseCase struct {
