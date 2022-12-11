@@ -60,13 +60,13 @@ type Dependencies struct {
 }
 
 func NewUseCases(deps Dependencies) *UseCases {
-	postUseCase := NewPostsUseCase(deps.Repos.Posts, deps.Repos.Users, deps.Repos.Comments)
-	userUseCase := NewUsersUseCase(deps.Repos.Users, deps.Hasher, deps.TokenManager, deps.Repos.Posts, deps.Repos.Comments)
+	postsUseCase := NewPostsUseCase(deps.Repos.Posts, deps.Repos.Users, deps.Repos.Comments)
+	usersUseCase := NewUsersUseCase(deps.Repos.Users, deps.Hasher, deps.TokenManager, deps.Repos.Posts, deps.Repos.Comments)
 	commentsUseCase := NewCommentUseCase(deps.Repos.Comments, deps.Repos.Posts, deps.Repos.Users)
 
 	return &UseCases{
-		Posts:    postUseCase,
-		Users:    userUseCase,
+		Posts:    postsUseCase,
+		Users:    usersUseCase,
 		Comments: commentsUseCase,
 	}
 }

@@ -19,15 +19,15 @@ type UsersUseCase struct {
 }
 
 func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
-	tokenManager auth.TokenManager, postRepo repository.Posts,
-	commentRepo repository.Comments) *UsersUseCase {
+	tokenManager auth.TokenManager, postsRepo repository.Posts,
+	commentsRepo repository.Comments) *UsersUseCase {
 
 	return &UsersUseCase{
 		repo:         repo,
 		hasher:       hasher,
 		tokenManager: tokenManager,
-		postRepo:     postRepo,
-		commentRepo:  commentRepo,
+		postRepo:     postsRepo,
+		commentRepo:  commentsRepo,
 	}
 }
 

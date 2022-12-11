@@ -29,7 +29,7 @@ func TestPostStore(t *testing.T) {
 		if err := repo.Store(&post); err != nil {
 			t.Fatal("Unable to store:", err)
 		} else if post.Id != 1 {
-			t.Fatalf("want id = %d, got id = %d:", post.Id, 1)
+			t.Fatalf("want id = %d, got id = %d:", 1, post.Id)
 		}
 
 		post2 := entity.Post{
@@ -42,7 +42,7 @@ func TestPostStore(t *testing.T) {
 		if err := repo.Store(&post2); err != nil {
 			t.Fatal("Unable to store:", err)
 		} else if post2.Id != 2 {
-			t.Fatalf("want id = %d, got id = %d:", post2.Id, 2)
+			t.Fatalf("want id = %d, got id = %d:", 2, post2.Id)
 		}
 	})
 }
@@ -87,7 +87,7 @@ func TestPostFetch(t *testing.T) {
 		if err := repo.Store(&post); err != nil {
 			t.Fatal("Unable to store:", err)
 		} else if post.Id != 1 {
-			t.Fatalf("want id = %d, got id = %d:", post.Id, 1)
+			t.Fatalf("want id = %d, got id = %d:", 1, post.Id)
 		}
 
 		post2 := entity.Post{
@@ -100,13 +100,13 @@ func TestPostFetch(t *testing.T) {
 		if err := repo.Store(&post2); err != nil {
 			t.Fatal("Unable to store:", err)
 		} else if post2.Id != 2 {
-			t.Fatalf("want id = %d, got id = %d:", post2.Id, 2)
+			t.Fatalf("want id = %d, got id = %d:", 2, post2.Id)
 		}
 
 		if fetched, err := repo.Fetch(); err != nil {
 			t.Fatal("Unable to Fetch:", err)
 		} else if len(fetched) != 2 {
-			t.Fatalf("want len = %d, got len = %d:", len(fetched), 2)
+			t.Fatalf("want len = %d, got len = %d:", 2, len(fetched))
 		}
 	})
 }
@@ -158,7 +158,7 @@ func TestFetchByAuthor(t *testing.T) {
 		if fetched, err := repo.FetchByAuthor(entity.User{Id: 1}); err != nil {
 			t.Fatal("Unable to FetchByAuthor:", err)
 		} else if len(fetched) != 2 {
-			t.Fatalf("want len = %d, got len = %d:", len(fetched), 2)
+			t.Fatalf("want len = %d, got len = %d:", 2, len(fetched))
 		} else if fetched[1].Title != title {
 			t.Fatalf("want title = %v, got title = %v:", title, fetched[1].Title)
 		}
@@ -385,7 +385,7 @@ func TestPostDelete(t *testing.T) {
 		if found, err := repo.GetById(1); err != nil {
 			t.Fatal("Unable to GetById:", err)
 		} else if found.Id != 1 {
-			t.Fatalf("want id = %d, got id = %d:", found.Id, 1)
+			t.Fatalf("want id = %d, got id = %d:", 1, found.Id)
 		}
 
 		if err = repo.Delete(entity.Post{Id: 1}); err != nil {
@@ -395,7 +395,7 @@ func TestPostDelete(t *testing.T) {
 		expErr := "no rows in result set"
 
 		if _, err := repo.GetById(1); err == nil {
-			t.Fatal("Expected error:", err)
+			t.Fatal("Expected error:")
 		} else if !strings.Contains(err.Error(), expErr) {
 			t.Fatalf("want err = %v, got err = %v:", expErr, err)
 		}
@@ -561,9 +561,7 @@ func TestStoreCategories(t *testing.T) {
 		}
 		repo := sqlite.NewPostsRepo(db)
 
-		categories1 := []string{"Cars", "Sports"}
-		categories2 := []string{"Cars", "Travel"}
-		summary := []string{"Cars", "Sports", "Travel"}
+		categories1 := []string{"Cars", "Sports", "Travel"}
 
 		if err = repo.StoreCategories(categories1); err != nil {
 			t.Fatal("Unable to StoreCategories:", err)
@@ -575,14 +573,5 @@ func TestStoreCategories(t *testing.T) {
 			t.Fatalf("want categories = %v, got categories = %v:", categories1, found)
 		}
 
-		if err = repo.StoreCategories(categories2); err != nil {
-			t.Fatal("Unable to StoreCategories:", err)
-		}
-
-		if found, err := repo.GetExistedCategories(); err != nil {
-			t.Fatal("Unable to GetExistedCategories:", err)
-		} else if !reflect.DeepEqual(found, summary) {
-			t.Fatalf("want categories = %v, got categories = %v:", summary, found)
-		}
 	})
 }

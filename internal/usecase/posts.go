@@ -27,11 +27,11 @@ const (
 	NoRowsResultErr    = "no rows in result set"
 )
 
-func NewPostsUseCase(repo repository.Posts, userUseCase repository.Users, commentUseCase repository.Comments) *PostsUseCase {
+func NewPostsUseCase(repo repository.Posts, usersRepo repository.Users, commentsRepo repository.Comments) *PostsUseCase {
 	return &PostsUseCase{
 		repo:        repo,
-		userRepo:    userUseCase,
-		commentRepo: commentUseCase,
+		userRepo:    usersRepo,
+		commentRepo: commentsRepo,
 	}
 }
 
@@ -389,9 +389,27 @@ func (pu *PostsUseCase) GetReactions(id int64, query string) ([]entity.User, err
 }
 
 func (pu *PostsUseCase) CreateCategories(categories []string) error {
-	err := pu.repo.StoreCategories(categories)
+	existed, err := pu.repo.GetExistedCategories()
 	if err != nil {
-		return fmt.Errorf("PostsUseCase - GetReactions #2 - %w", err)
+		return fmt.Errorf("PostsUseCase - CreateCategories #1 - %w", err)
+	}
+
+	var categoriesToAdd []string
+	for i := 0; i < len(categories); i++ {
+		exist := false
+		for j := 0; j < len(existed); j++ {
+			if categories[i] == existed[j] {
+				exist = true
+			}
+		}
+		if !exist {
+			categoriesToAdd = append(categoriesToAdd, categories[i])
+		}
+	}
+
+	err = pu.repo.StoreCategories(categoriesToAdd)
+	if err != nil {
+		return fmt.Errorf("PostsUseCase - CreateCategories #2 - %w", err)
 	}
 
 	return nil

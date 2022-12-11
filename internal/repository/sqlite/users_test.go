@@ -36,7 +36,7 @@ func TestUserStore(t *testing.T) {
 		if id, err := repo.GetId(user); err != nil {
 			t.Fatal("Unable to GetId:", err)
 		} else if id != int64(1) {
-			t.Fatalf("ID=%v, want %v", id, int64(1))
+			t.Fatalf("ID=%v, want %v", 1, id)
 		}
 
 		if found, err := repo.GetById(1); err != nil {
@@ -55,7 +55,7 @@ func TestUserStore(t *testing.T) {
 		if id2, err := repo.GetId(user2); err != nil {
 			t.Fatal("Unable to GetId:", err)
 		} else if id2 != int64(2) {
-			t.Fatalf("ID=%v, want %v", id2, int64(2))
+			t.Fatalf("ID=%v, want %v", 2, id2)
 		}
 	})
 
@@ -192,14 +192,15 @@ func TestUserGetById(t *testing.T) {
 		if err := repo.Store(entity.User{Name: "Bobik", Email: "hthth"}); err != nil {
 			t.Fatal("Unable to Store:", err)
 		}
-		if err := repo.Store(entity.User{Name: "Tuzik"}); err != nil {
+		name := "Tuzik"
+		if err := repo.Store(entity.User{Name: name}); err != nil {
 			t.Fatal("Unable to Store:", err)
 		}
 
 		if foundUser, err := repo.GetById(2); err != nil {
 			t.Fatal("Unable to GetById:", err)
 		} else if foundUser.Name != "Tuzik" {
-			t.Fatalf("want name = Tuzik, got name = %v", foundUser.Name)
+			t.Fatalf("want name = %v, got name = %v", name, foundUser.Name)
 		}
 	})
 }
@@ -363,7 +364,7 @@ func TestUserDelete(t *testing.T) {
 		}
 
 		if _, err := repo.GetById(1); err == nil {
-			t.Fatal("Expected error:", err)
+			t.Fatal("Expected error:")
 		}
 	})
 }

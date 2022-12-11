@@ -533,47 +533,12 @@ func (pr *PostsRepo) FetchReactions(id int64) (entity.Post, error) {
 }
 
 func (pr *PostsRepo) StoreCategories(categories []string) error {
-	var existedCategories []string
-
-	// searching existed categories
-	rows, err := pr.DB.Query(`
-	SELECT name
-	FROM topics
-	`)
-	if err != nil {
-		return fmt.Errorf("PostsRepo - StoreCategories - Query: %w", err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var category string
-		err = rows.Scan(&category)
-		if err != nil {
-			return fmt.Errorf("PostsRepo - StoreCategories - Scan: %w", err)
-		}
-		existedCategories = append(existedCategories, category)
-	}
-
-	// selecting non repeated categories
-	var categoriesToAdd []string
-	for i := 0; i < len(categories); i++ {
-		exist := false
-		for j := 0; j < len(existedCategories); j++ {
-			if categories[i] == existedCategories[j] {
-				exist = true
-			}
-		}
-		if !exist {
-			categoriesToAdd = append(categoriesToAdd, categories[i])
-		}
-	}
-
 	tx, err := pr.DB.Begin()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreCategories - Begin: %w", err)
 	}
 	defer tx.Rollback()
 
-	// store categories
 	stmt, err := tx.Prepare(`
 	INSERT INTO topics(name) 
 		values(?)
@@ -583,8 +548,8 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 	}
 	defer stmt.Close()
 
-	for i := 0; i < len(categoriesToAdd); i++ {
-		res, err := stmt.Exec(categoriesToAdd[i])
+	for i := 0; i < len(categories); i++ {
+		res, err := stmt.Exec(categories[i])
 		if err != nil {
 			return fmt.Errorf("PostsRepo - StoreCategories - Exec: %w", err)
 		}

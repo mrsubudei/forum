@@ -14,11 +14,11 @@ type CommentsUseCase struct {
 	userRepo repository.Users
 }
 
-func NewCommentUseCase(repo repository.Comments, postRepo repository.Posts, userRepo repository.Users) *CommentsUseCase {
+func NewCommentUseCase(repo repository.Comments, postsRepo repository.Posts, usersRepo repository.Users) *CommentsUseCase {
 	return &CommentsUseCase{
 		repo:     repo,
-		postRepo: postRepo,
-		userRepo: userRepo,
+		postRepo: postsRepo,
+		userRepo: usersRepo,
 	}
 }
 

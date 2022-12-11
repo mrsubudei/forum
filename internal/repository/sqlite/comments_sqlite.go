@@ -88,7 +88,7 @@ func (cr *CommentsRepo) GetById(commentId int64) (entity.Comment, error) {
 
 	stmt, err := cr.DB.Prepare(`
 	SELECT
-		id, post_id, user_id, date, content
+		id, post_id, user_id, date, content,
 		(SELECT COUNT(*) FROM comment_likes WHERE comment_id = ?) AS comment_likes,
 		(SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = ?) AS comment_dislikes
 	FROM comments
@@ -100,7 +100,7 @@ func (cr *CommentsRepo) GetById(commentId int64) (entity.Comment, error) {
 	defer stmt.Close()
 	var commentLikes sql.NullInt64
 	var commentDislikes sql.NullInt64
-	err = stmt.QueryRow(commentId).Scan(&comment.Id, &comment.PostId, &comment.User.Id, &comment.Date, &comment.Content, &commentLikes, &commentDislikes)
+	err = stmt.QueryRow(commentId, commentId, commentId).Scan(&comment.Id, &comment.PostId, &comment.User.Id, &comment.Date, &comment.Content, &commentLikes, &commentDislikes)
 	if err != nil {
 		return comment, fmt.Errorf("CommentsRepo - GetById - Scan: %w", err)
 	}
