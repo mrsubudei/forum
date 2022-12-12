@@ -54,15 +54,16 @@ type UseCases struct {
 }
 
 type Dependencies struct {
-	Repos        *repository.Repositories
 	Hasher       hasher.PasswordHasher
 	TokenManager auth.TokenManager
 }
 
-func NewUseCases(deps Dependencies) *UseCases {
-	postsUseCase := NewPostsUseCase(deps.Repos.Posts, deps.Repos.Users, deps.Repos.Comments)
-	usersUseCase := NewUsersUseCase(deps.Repos.Users, deps.Hasher, deps.TokenManager, deps.Repos.Posts, deps.Repos.Comments)
-	commentsUseCase := NewCommentUseCase(deps.Repos.Comments, deps.Repos.Posts, deps.Repos.Users)
+func NewUseCases(deps Dependencies, users repository.Users, posts repository.Posts,
+	comments repository.Comments) *UseCases {
+
+	postsUseCase := NewPostsUseCase(posts, users, comments)
+	usersUseCase := NewUsersUseCase(users, deps.Hasher, deps.TokenManager, posts, comments)
+	commentsUseCase := NewCommentUseCase(comments, posts, users)
 
 	return &UseCases{
 		Posts:    postsUseCase,

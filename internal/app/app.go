@@ -34,7 +34,7 @@ func Run(cfg config.Config) {
 	defer sq.Close()
 
 	// Repository
-	repositories := repository.NewRepositories(sq)
+	repo := repository.NewRepositories(sq)
 	err = sqlite.CreateDB(sq)
 	if err != nil {
 		l.WriteLog(fmt.Errorf("app - Run - NewRepositories: %w", err))
@@ -46,11 +46,8 @@ func Run(cfg config.Config) {
 	tokenManager := auth.NewManager(cfg)
 
 	// Usecases
-	useCases := usecase.NewUseCases(usecase.Dependencies{
-		Repos:        repositories,
-		Hasher:       hasher,
-		TokenManager: tokenManager,
-	})
+	useCases := usecase.NewUseCases(usecase.Dependencies{Hasher: hasher, TokenManager: tokenManager},
+		repo.Users, repo.Posts, repo.Comments)
 
 	// Http
 	handler := v1.NewHandler(useCases, cfg, l)
