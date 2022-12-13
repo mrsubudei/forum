@@ -2,12 +2,13 @@ package usecase
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"forum/internal/entity"
 	"forum/internal/repository"
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
-	"strings"
-	"time"
 )
 
 type UsersUseCase struct {
@@ -20,8 +21,8 @@ type UsersUseCase struct {
 
 func NewUsersUseCase(repo repository.Users, hasher hasher.PasswordHasher,
 	tokenManager auth.TokenManager, postsRepo repository.Posts,
-	commentsRepo repository.Comments) *UsersUseCase {
-
+	commentsRepo repository.Comments,
+) *UsersUseCase {
 	return &UsersUseCase{
 		repo:         repo,
 		hasher:       hasher,
