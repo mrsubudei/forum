@@ -45,7 +45,7 @@ type Comments interface {
 	GetById(id int64) (entity.Comment, error)
 	GetPostIds(user entity.User) ([]int64, error)
 	Update(comment entity.Comment) error
-	Delete(post entity.Comment) error
+	Delete(comment entity.Comment) error
 	StoreLike(comment entity.Comment) error
 	DeleteLike(comment entity.Comment) error
 	StoreDislike(comment entity.Comment) error

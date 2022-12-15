@@ -186,7 +186,7 @@ func (pm *PostsMockRepo) GetById(id int64) (entity.Post, error) {
 			return pm.posts[i], nil
 		}
 	}
-	return entity.Post{}, nil
+	return entity.Post{}, errNoRows
 }
 
 func (pm *PostsMockRepo) GetIdsByCategory(category string) ([]int64, error) {
@@ -363,7 +363,8 @@ func (pm *PostsMockRepo) GetExistedCategories() ([]string, error) {
 }
 
 type CommentsMockRepo struct {
-	posts []entity.Comment
+	posts    []entity.Post
+	comments []entity.Comment
 }
 
 func NewCommentsMockrepo() *CommentsMockRepo {
@@ -371,49 +372,142 @@ func NewCommentsMockrepo() *CommentsMockRepo {
 }
 
 func (cm *CommentsMockRepo) Store(comment entity.Comment) error {
+	cm.comments = append(cm.comments, comment)
 	return nil
 }
 
 func (cm *CommentsMockRepo) Fetch(postId int64) ([]entity.Comment, error) {
-	comments := []entity.Comment{}
-	return comments, nil
+	return cm.comments, nil
 }
 
 func (cm *CommentsMockRepo) GetById(id int64) (entity.Comment, error) {
-	comment := entity.Comment{}
-	return comment, nil
+	for i := 0; i < len(cm.comments); i++ {
+		if cm.comments[i].Id == id {
+			return cm.comments[i], nil
+		}
+	}
+	return entity.Comment{}, errNoRows
 }
 
 func (cm *CommentsMockRepo) GetPostIds(user entity.User) ([]int64, error) {
 	var ids []int64
+	for _, val := range cm.posts {
+		for _, v := range val.Comments {
+			if v.User.Id == user.Id {
+				ids = append(ids, val.Id)
+				break
+			}
+		}
+	}
 	return ids, nil
 }
 
 func (cm *CommentsMockRepo) Update(comment entity.Comment) error {
-	return nil
+	for i := 0; i < len(cm.comments); i++ {
+		if cm.comments[i].Id == comment.Id {
+			cm.comments[i] = comment
+			return nil
+		}
+	}
+	return errNoRows
 }
 
-func (cm *CommentsMockRepo) Delete(post entity.Comment) error {
-	return nil
+func (cm *CommentsMockRepo) Delete(comment entity.Comment) error {
+	newComments := []entity.Comment{}
+	found := false
+	for _, v := range cm.comments {
+		if v.Id != comment.Id {
+			newComments = append(newComments, v)
+		} else {
+			found = true
+		}
+	}
+	cm.comments = newComments
+
+	if found {
+		return nil
+	} else {
+		return errNoRows
+	}
 }
 
 func (cm *CommentsMockRepo) StoreLike(comment entity.Comment) error {
-	return nil
+	found := false
+	like := entity.Reaction{UserId: comment.User.Id}
+	for i := 0; i < len(cm.comments); i++ {
+		if cm.comments[i].Id == comment.Id {
+			cm.comments[i].Likes = append(cm.comments[i].Likes, like)
+			found = true
+		}
+	}
+	if found {
+		return nil
+	} else {
+		return errNoRows
+	}
 }
 
 func (cm *CommentsMockRepo) DeleteLike(comment entity.Comment) error {
-	return nil
+	found := false
+	newComments := []entity.Comment{}
+	for _, val := range cm.comments {
+		for _, v := range val.Likes {
+			if v.UserId != comment.User.Id {
+				newComments = append(newComments, val)
+			} else {
+				found = true
+			}
+		}
+	}
+	cm.comments = newComments
+	if found {
+		return nil
+	} else {
+		return errNoRows
+	}
 }
 
 func (cm *CommentsMockRepo) StoreDislike(comment entity.Comment) error {
-	return nil
+	found := false
+	dislike := entity.Reaction{UserId: comment.User.Id}
+	for i := 0; i < len(cm.comments); i++ {
+		if cm.comments[i].Id == comment.Id {
+			cm.comments[i].Dislikes = append(cm.comments[i].Dislikes, dislike)
+			found = true
+		}
+	}
+	if found {
+		return nil
+	} else {
+		return errNoRows
+	}
 }
 
 func (cm *CommentsMockRepo) DeleteDislike(comment entity.Comment) error {
-	return nil
+	found := false
+	newComments := []entity.Comment{}
+	for _, val := range cm.comments {
+		for _, v := range val.Dislikes {
+			if v.UserId != comment.User.Id {
+				newComments = append(newComments, val)
+			} else {
+				found = true
+			}
+		}
+	}
+	cm.comments = newComments
+	if found {
+		return nil
+	} else {
+		return errNoRows
+	}
 }
 
 func (cm *CommentsMockRepo) FetchReactions(id int64) (entity.Comment, error) {
-	comment := entity.Comment{}
-	return comment, nil
+	for _, v := range cm.comments {
+		if v.Id == id {
+			return v, nil
+		}
+	}
+	return entity.Comment{}, errNoRows
 }
