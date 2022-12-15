@@ -25,7 +25,7 @@ func NewMockRepos() *MockRepos {
 }
 
 type UsersMockRepo struct {
-	users []entity.User
+	Users []entity.User
 }
 
 func NewUsersMockRepo() *UsersMockRepo {
@@ -33,38 +33,38 @@ func NewUsersMockRepo() *UsersMockRepo {
 }
 
 func (um *UsersMockRepo) Store(user entity.User) error {
-	for _, v := range um.users {
+	for _, v := range um.Users {
 		if v.Name == user.Name {
 			return fmt.Errorf(usecase.UniqueNameErr)
 		} else if v.Email == user.Email {
 			return fmt.Errorf(usecase.UniqueEmailErr)
 		}
 	}
-	um.users = append(um.users, user)
+	um.Users = append(um.Users, user)
 	return nil
 }
 
 func (um *UsersMockRepo) Fetch() ([]entity.User, error) {
-	return um.users, nil
+	return um.Users, nil
 }
 
 func (um *UsersMockRepo) GetId(user entity.User) (int64, error) {
 	var id int64
 	switch {
 	case user.SessionToken != "":
-		for _, v := range um.users {
+		for _, v := range um.Users {
 			if v.SessionToken == user.SessionToken {
 				return v.Id, nil
 			}
 		}
 	case user.Name != "":
-		for _, v := range um.users {
+		for _, v := range um.Users {
 			if v.Name == user.Name {
 				return v.Id, nil
 			}
 		}
 	case user.Email != "":
-		for _, v := range um.users {
+		for _, v := range um.Users {
 			if v.Email == user.Email {
 				return v.Id, nil
 			}
@@ -75,7 +75,7 @@ func (um *UsersMockRepo) GetId(user entity.User) (int64, error) {
 }
 
 func (um *UsersMockRepo) GetById(n int64) (entity.User, error) {
-	for _, v := range um.users {
+	for _, v := range um.Users {
 		if v.Id == n {
 			return v, nil
 		}
@@ -84,7 +84,7 @@ func (um *UsersMockRepo) GetById(n int64) (entity.User, error) {
 }
 
 func (um *UsersMockRepo) GetSession(n int64) (entity.User, error) {
-	for _, v := range um.users {
+	for _, v := range um.Users {
 		if v.Id == n {
 			return v, nil
 		}
@@ -93,9 +93,9 @@ func (um *UsersMockRepo) GetSession(n int64) (entity.User, error) {
 }
 
 func (um *UsersMockRepo) UpdateInfo(user entity.User) error {
-	for i := 0; i < len(um.users); i++ {
-		if um.users[i].Id == user.Id {
-			um.users[i] = user
+	for i := 0; i < len(um.Users); i++ {
+		if um.Users[i].Id == user.Id {
+			um.Users[i] = user
 			return nil
 		}
 	}
@@ -103,9 +103,9 @@ func (um *UsersMockRepo) UpdateInfo(user entity.User) error {
 }
 
 func (um *UsersMockRepo) UpdatePassword(user entity.User) error {
-	for i := 0; i < len(um.users); i++ {
-		if um.users[i].Id == user.Id {
-			um.users[i].Password = user.Password
+	for i := 0; i < len(um.Users); i++ {
+		if um.Users[i].Id == user.Id {
+			um.Users[i].Password = user.Password
 			return nil
 		}
 	}
@@ -113,10 +113,10 @@ func (um *UsersMockRepo) UpdatePassword(user entity.User) error {
 }
 
 func (um *UsersMockRepo) NewSession(user entity.User) error {
-	for i := 0; i < len(um.users); i++ {
-		if um.users[i].Id == user.Id {
-			um.users[i].SessionToken = user.SessionToken
-			um.users[i].SessionTTL = user.SessionTTL
+	for i := 0; i < len(um.Users); i++ {
+		if um.Users[i].Id == user.Id {
+			um.Users[i].SessionToken = user.SessionToken
+			um.Users[i].SessionTTL = user.SessionTTL
 			return nil
 		}
 	}
@@ -124,9 +124,9 @@ func (um *UsersMockRepo) NewSession(user entity.User) error {
 }
 
 func (um *UsersMockRepo) UpdateSession(user entity.User) error {
-	for i := 0; i < len(um.users); i++ {
-		if um.users[i].Id == user.Id {
-			um.users[i].SessionTTL = user.SessionTTL
+	for i := 0; i < len(um.Users); i++ {
+		if um.Users[i].Id == user.Id {
+			um.Users[i].SessionTTL = user.SessionTTL
 			return nil
 		}
 	}
@@ -136,14 +136,14 @@ func (um *UsersMockRepo) UpdateSession(user entity.User) error {
 func (um *UsersMockRepo) Delete(user entity.User) error {
 	newUsers := []entity.User{}
 	found := false
-	for _, v := range um.users {
+	for _, v := range um.Users {
 		if v.Id != user.Id {
 			newUsers = append(newUsers, v)
 		} else {
 			found = true
 		}
 	}
-	um.users = newUsers
+	um.Users = newUsers
 
 	if found {
 		return nil
@@ -153,8 +153,8 @@ func (um *UsersMockRepo) Delete(user entity.User) error {
 }
 
 type PostsMockRepo struct {
-	posts     []entity.Post
-	allTopics map[string]bool
+	Posts     []entity.Post
+	AllTopics map[string]bool
 }
 
 func NewPostsMockrepo() *PostsMockRepo {
@@ -162,28 +162,28 @@ func NewPostsMockrepo() *PostsMockRepo {
 }
 
 func (pm *PostsMockRepo) Store(post *entity.Post) error {
-	pm.posts = append(pm.posts, *post)
+	pm.Posts = append(pm.Posts, *post)
 	return nil
 }
 
 func (pm *PostsMockRepo) Fetch() ([]entity.Post, error) {
-	return pm.posts, nil
+	return pm.Posts, nil
 }
 
 func (pm *PostsMockRepo) FetchByAuthor(user entity.User) ([]entity.Post, error) {
 	posts := []entity.Post{}
-	for i := 0; i < len(pm.posts); i++ {
-		if pm.posts[i].User.Id == user.Id {
-			posts = append(posts, pm.posts[i])
+	for i := 0; i < len(pm.Posts); i++ {
+		if pm.Posts[i].User.Id == user.Id {
+			posts = append(posts, pm.Posts[i])
 		}
 	}
 	return posts, nil
 }
 
 func (pm *PostsMockRepo) GetById(id int64) (entity.Post, error) {
-	for i := 0; i < len(pm.posts); i++ {
-		if pm.posts[i].Id == id {
-			return pm.posts[i], nil
+	for i := 0; i < len(pm.Posts); i++ {
+		if pm.Posts[i].Id == id {
+			return pm.Posts[i], nil
 		}
 	}
 	return entity.Post{}, errNoRows
@@ -191,7 +191,7 @@ func (pm *PostsMockRepo) GetById(id int64) (entity.Post, error) {
 
 func (pm *PostsMockRepo) GetIdsByCategory(category string) ([]int64, error) {
 	var ids []int64
-	for _, val := range pm.posts {
+	for _, val := range pm.Posts {
 		for _, v := range val.Categories {
 			if v == category {
 				ids = append(ids, val.Id)
@@ -205,7 +205,7 @@ func (pm *PostsMockRepo) FetchIdsByReaction(user entity.User, reaction string) (
 	var ids []int64
 	switch reaction {
 	case sqlite.QueryLiked:
-		for _, val := range pm.posts {
+		for _, val := range pm.Posts {
 			for _, v := range val.Likes {
 				if v.UserId == user.Id {
 					ids = append(ids, val.Id)
@@ -213,7 +213,7 @@ func (pm *PostsMockRepo) FetchIdsByReaction(user entity.User, reaction string) (
 			}
 		}
 	case sqlite.QueryDislike:
-		for _, val := range pm.posts {
+		for _, val := range pm.Posts {
 			for _, v := range val.Dislikes {
 				if v.UserId == user.Id {
 					ids = append(ids, val.Id)
@@ -225,9 +225,9 @@ func (pm *PostsMockRepo) FetchIdsByReaction(user entity.User, reaction string) (
 }
 
 func (pm *PostsMockRepo) Update(post entity.Post) error {
-	for i := 0; i < len(pm.posts); i++ {
-		if pm.posts[i].Id == post.Id {
-			pm.posts[i] = post
+	for i := 0; i < len(pm.Posts); i++ {
+		if pm.Posts[i].Id == post.Id {
+			pm.Posts[i] = post
 			return nil
 		}
 	}
@@ -237,14 +237,14 @@ func (pm *PostsMockRepo) Update(post entity.Post) error {
 func (pm *PostsMockRepo) Delete(post entity.Post) error {
 	newPosts := []entity.Post{}
 	found := false
-	for _, v := range pm.posts {
+	for _, v := range pm.Posts {
 		if v.Id != post.Id {
 			newPosts = append(newPosts, v)
 		} else {
 			found = true
 		}
 	}
-	pm.posts = newPosts
+	pm.Posts = newPosts
 
 	if found {
 		return nil
@@ -256,9 +256,9 @@ func (pm *PostsMockRepo) Delete(post entity.Post) error {
 func (pm *PostsMockRepo) StoreLike(post entity.Post) error {
 	found := false
 	like := entity.Reaction{UserId: post.User.Id}
-	for i := 0; i < len(pm.posts); i++ {
-		if pm.posts[i].Id == post.Id {
-			pm.posts[i].Likes = append(pm.posts[i].Likes, like)
+	for i := 0; i < len(pm.Posts); i++ {
+		if pm.Posts[i].Id == post.Id {
+			pm.Posts[i].Likes = append(pm.Posts[i].Likes, like)
 			found = true
 		}
 	}
@@ -272,9 +272,9 @@ func (pm *PostsMockRepo) StoreLike(post entity.Post) error {
 func (pm *PostsMockRepo) StoreDislike(post entity.Post) error {
 	found := false
 	dislike := entity.Reaction{UserId: post.User.Id}
-	for i := 0; i < len(pm.posts); i++ {
-		if pm.posts[i].Id == post.Id {
-			pm.posts[i].Dislikes = append(pm.posts[i].Dislikes, dislike)
+	for i := 0; i < len(pm.Posts); i++ {
+		if pm.Posts[i].Id == post.Id {
+			pm.Posts[i].Dislikes = append(pm.Posts[i].Dislikes, dislike)
 			found = true
 		}
 	}
@@ -288,7 +288,7 @@ func (pm *PostsMockRepo) StoreDislike(post entity.Post) error {
 func (pm *PostsMockRepo) DeleteLike(post entity.Post) error {
 	found := false
 	newPosts := []entity.Post{}
-	for _, val := range pm.posts {
+	for _, val := range pm.Posts {
 		for _, v := range val.Likes {
 			if v.UserId != post.User.Id {
 				newPosts = append(newPosts, val)
@@ -297,7 +297,7 @@ func (pm *PostsMockRepo) DeleteLike(post entity.Post) error {
 			}
 		}
 	}
-	pm.posts = newPosts
+	pm.Posts = newPosts
 	if found {
 		return nil
 	} else {
@@ -308,7 +308,7 @@ func (pm *PostsMockRepo) DeleteLike(post entity.Post) error {
 func (pm *PostsMockRepo) DeleteDislike(post entity.Post) error {
 	found := false
 	newPosts := []entity.Post{}
-	for _, val := range pm.posts {
+	for _, val := range pm.Posts {
 		for _, v := range val.Dislikes {
 			if v.UserId != post.User.Id {
 				newPosts = append(newPosts, val)
@@ -317,7 +317,7 @@ func (pm *PostsMockRepo) DeleteDislike(post entity.Post) error {
 			}
 		}
 	}
-	pm.posts = newPosts
+	pm.Posts = newPosts
 	if found {
 		return nil
 	} else {
@@ -330,7 +330,7 @@ func (pm *PostsMockRepo) StoreTopicReference(post entity.Post) error {
 }
 
 func (pm *PostsMockRepo) GetRelatedCategories(post entity.Post) ([]string, error) {
-	for _, v := range pm.posts {
+	for _, v := range pm.Posts {
 		if v.Id == post.Id {
 			return v.Categories, nil
 		}
@@ -339,7 +339,7 @@ func (pm *PostsMockRepo) GetRelatedCategories(post entity.Post) ([]string, error
 }
 
 func (pm *PostsMockRepo) FetchReactions(id int64) (entity.Post, error) {
-	for _, v := range pm.posts {
+	for _, v := range pm.Posts {
 		if v.Id == id {
 			return v, nil
 		}
@@ -349,22 +349,22 @@ func (pm *PostsMockRepo) FetchReactions(id int64) (entity.Post, error) {
 
 func (pm *PostsMockRepo) StoreCategories(categories []string) error {
 	for _, v := range categories {
-		pm.allTopics[v] = true
+		pm.AllTopics[v] = true
 	}
 	return nil
 }
 
 func (pm *PostsMockRepo) GetExistedCategories() ([]string, error) {
 	categories := []string{}
-	for key := range pm.allTopics {
+	for key := range pm.AllTopics {
 		categories = append(categories, key)
 	}
 	return categories, nil
 }
 
 type CommentsMockRepo struct {
-	posts    []entity.Post
-	comments []entity.Comment
+	Posts    []entity.Post
+	Comments []entity.Comment
 }
 
 func NewCommentsMockrepo() *CommentsMockRepo {
@@ -372,18 +372,18 @@ func NewCommentsMockrepo() *CommentsMockRepo {
 }
 
 func (cm *CommentsMockRepo) Store(comment entity.Comment) error {
-	cm.comments = append(cm.comments, comment)
+	cm.Comments = append(cm.Comments, comment)
 	return nil
 }
 
 func (cm *CommentsMockRepo) Fetch(postId int64) ([]entity.Comment, error) {
-	return cm.comments, nil
+	return cm.Comments, nil
 }
 
 func (cm *CommentsMockRepo) GetById(id int64) (entity.Comment, error) {
-	for i := 0; i < len(cm.comments); i++ {
-		if cm.comments[i].Id == id {
-			return cm.comments[i], nil
+	for i := 0; i < len(cm.Comments); i++ {
+		if cm.Comments[i].Id == id {
+			return cm.Comments[i], nil
 		}
 	}
 	return entity.Comment{}, errNoRows
@@ -391,7 +391,7 @@ func (cm *CommentsMockRepo) GetById(id int64) (entity.Comment, error) {
 
 func (cm *CommentsMockRepo) GetPostIds(user entity.User) ([]int64, error) {
 	var ids []int64
-	for _, val := range cm.posts {
+	for _, val := range cm.Posts {
 		for _, v := range val.Comments {
 			if v.User.Id == user.Id {
 				ids = append(ids, val.Id)
@@ -403,9 +403,9 @@ func (cm *CommentsMockRepo) GetPostIds(user entity.User) ([]int64, error) {
 }
 
 func (cm *CommentsMockRepo) Update(comment entity.Comment) error {
-	for i := 0; i < len(cm.comments); i++ {
-		if cm.comments[i].Id == comment.Id {
-			cm.comments[i] = comment
+	for i := 0; i < len(cm.Comments); i++ {
+		if cm.Comments[i].Id == comment.Id {
+			cm.Comments[i] = comment
 			return nil
 		}
 	}
@@ -415,14 +415,14 @@ func (cm *CommentsMockRepo) Update(comment entity.Comment) error {
 func (cm *CommentsMockRepo) Delete(comment entity.Comment) error {
 	newComments := []entity.Comment{}
 	found := false
-	for _, v := range cm.comments {
+	for _, v := range cm.Comments {
 		if v.Id != comment.Id {
 			newComments = append(newComments, v)
 		} else {
 			found = true
 		}
 	}
-	cm.comments = newComments
+	cm.Comments = newComments
 
 	if found {
 		return nil
@@ -434,9 +434,9 @@ func (cm *CommentsMockRepo) Delete(comment entity.Comment) error {
 func (cm *CommentsMockRepo) StoreLike(comment entity.Comment) error {
 	found := false
 	like := entity.Reaction{UserId: comment.User.Id}
-	for i := 0; i < len(cm.comments); i++ {
-		if cm.comments[i].Id == comment.Id {
-			cm.comments[i].Likes = append(cm.comments[i].Likes, like)
+	for i := 0; i < len(cm.Comments); i++ {
+		if cm.Comments[i].Id == comment.Id {
+			cm.Comments[i].Likes = append(cm.Comments[i].Likes, like)
 			found = true
 		}
 	}
@@ -450,7 +450,7 @@ func (cm *CommentsMockRepo) StoreLike(comment entity.Comment) error {
 func (cm *CommentsMockRepo) DeleteLike(comment entity.Comment) error {
 	found := false
 	newComments := []entity.Comment{}
-	for _, val := range cm.comments {
+	for _, val := range cm.Comments {
 		for _, v := range val.Likes {
 			if v.UserId != comment.User.Id {
 				newComments = append(newComments, val)
@@ -459,7 +459,7 @@ func (cm *CommentsMockRepo) DeleteLike(comment entity.Comment) error {
 			}
 		}
 	}
-	cm.comments = newComments
+	cm.Comments = newComments
 	if found {
 		return nil
 	} else {
@@ -470,9 +470,9 @@ func (cm *CommentsMockRepo) DeleteLike(comment entity.Comment) error {
 func (cm *CommentsMockRepo) StoreDislike(comment entity.Comment) error {
 	found := false
 	dislike := entity.Reaction{UserId: comment.User.Id}
-	for i := 0; i < len(cm.comments); i++ {
-		if cm.comments[i].Id == comment.Id {
-			cm.comments[i].Dislikes = append(cm.comments[i].Dislikes, dislike)
+	for i := 0; i < len(cm.Comments); i++ {
+		if cm.Comments[i].Id == comment.Id {
+			cm.Comments[i].Dislikes = append(cm.Comments[i].Dislikes, dislike)
 			found = true
 		}
 	}
@@ -486,7 +486,7 @@ func (cm *CommentsMockRepo) StoreDislike(comment entity.Comment) error {
 func (cm *CommentsMockRepo) DeleteDislike(comment entity.Comment) error {
 	found := false
 	newComments := []entity.Comment{}
-	for _, val := range cm.comments {
+	for _, val := range cm.Comments {
 		for _, v := range val.Dislikes {
 			if v.UserId != comment.User.Id {
 				newComments = append(newComments, val)
@@ -495,7 +495,7 @@ func (cm *CommentsMockRepo) DeleteDislike(comment entity.Comment) error {
 			}
 		}
 	}
-	cm.comments = newComments
+	cm.Comments = newComments
 	if found {
 		return nil
 	} else {
@@ -504,7 +504,7 @@ func (cm *CommentsMockRepo) DeleteDislike(comment entity.Comment) error {
 }
 
 func (cm *CommentsMockRepo) FetchReactions(id int64) (entity.Comment, error) {
-	for _, v := range cm.comments {
+	for _, v := range cm.Comments {
 		if v.Id == id {
 			return v, nil
 		}
