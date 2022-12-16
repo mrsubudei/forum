@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 	"testing"
+	"time"
 
 	"forum/internal/config"
 	"forum/internal/entity"
@@ -251,7 +252,6 @@ func TestDeleteSession(t *testing.T) {
 		}
 
 		TTL := mockRepo.Users.Users[0].SessionTTL.UTC().Format(usecase.DateAndTimeFormat)
-		fmt.Println(TTL)
 		if err := userUseCase.DeleteSession(user1); err != nil {
 			t.Fatal(err)
 		} else if mockRepo.Users.Users[0].SessionTTL.Format(usecase.DateAndTimeFormat) <= TTL {
@@ -300,11 +300,12 @@ func TestCheckSession(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if auth, err := userUseCase.CheckSession(user1); err != nil {
+		if auth, err := userUseCase.CheckSession(mockRepo.Users.Users[0]); err != nil {
 			t.Fatal(err)
-		} else if auth {
+		} else if !auth {
 			t.Fatalf("expected true")
 		}
+		fmt.Println(len(mockRepo.Users.Users))
 	})
 
 	t.Run("err did not find session", func(t *testing.T) {
@@ -325,6 +326,35 @@ func TestCheckSession(t *testing.T) {
 			t.Fatal("expected error")
 		} else if !errors.Is(err, entity.ErrUserNotFound) {
 			t.Fatalf("want : %v, got: %v", entity.ErrUserNotFound, err)
+		}
+	})
+
+	t.Run("err expired session", func(t *testing.T) {
+		hasher, tokenManager := getDependencies()
+		mockRepo := m.NewMockRepos()
+		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+			mockRepo.Posts, mockRepo.Comments)
+
+		if err := userUseCase.SignUp(user2); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := userUseCase.SignIn(user2); err != nil {
+			t.Fatal(err)
+		}
+
+		if auth, err := userUseCase.CheckSession(mockRepo.Users.Users[0]); err != nil {
+			t.Fatal(err)
+		} else if !auth {
+			t.Fatalf("expected true")
+		}
+
+		mockRepo.Users.Users[0].SessionTTL = mockRepo.Users.Users[0].SessionTTL.Add(-time.Hour * 25)
+
+		if auth, err := userUseCase.CheckSession(mockRepo.Users.Users[0]); err != nil {
+			t.Fatal(err)
+		} else if auth {
+			t.Fatalf("expected false")
 		}
 	})
 }

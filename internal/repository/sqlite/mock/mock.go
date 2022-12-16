@@ -2,6 +2,7 @@ package mock_repository
 
 import (
 	"fmt"
+	"time"
 
 	"forum/internal/entity"
 	"forum/internal/repository/sqlite"
@@ -9,6 +10,8 @@ import (
 )
 
 var errNoRows = fmt.Errorf("no rows in result set")
+
+const DateAndTimeFormat = "2006-01-02 15:04:05"
 
 type MockRepos struct {
 	Users    *UsersMockRepo
@@ -113,10 +116,15 @@ func (um *UsersMockRepo) UpdatePassword(user entity.User) error {
 }
 
 func (um *UsersMockRepo) NewSession(user entity.User) error {
+	ttl := user.SessionTTL.Format(DateAndTimeFormat)
+	formatted, err := time.Parse(DateAndTimeFormat, ttl)
+	if err != nil {
+		return err
+	}
 	for i := 0; i < len(um.Users); i++ {
 		if um.Users[i].Id == user.Id {
 			um.Users[i].SessionToken = user.SessionToken
-			um.Users[i].SessionTTL = user.SessionTTL
+			um.Users[i].SessionTTL = formatted
 			return nil
 		}
 	}
