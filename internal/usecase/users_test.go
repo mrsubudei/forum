@@ -2,7 +2,6 @@ package usecase_test
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"strings"
 	"testing"
@@ -41,6 +40,22 @@ var (
 		Email:    "Subi@mail.ru",
 		Password: "Mimi",
 		City:     "Karaganda",
+		Role:     "Пользователь",
+	}
+
+	user4 = entity.User{
+		Id:       4,
+		Name:     "Makaron",
+		Email:    "Makaron@mail.ru",
+		Password: "Mimi",
+		Role:     "Пользователь",
+	}
+
+	user5 = entity.User{
+		Id:       5,
+		Name:     "Spaget",
+		Email:    "Spaget@mail.ru",
+		Password: "Mimi",
 		Role:     "Пользователь",
 	}
 )
@@ -226,7 +241,7 @@ func TestUpdateSession(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		TTL := mockRepo.Users.Users[0].SessionTTL
+		TTL := mockRepo.Users.Users[0].SessionTTL.Add(-time.Hour * 10)
 
 		if err := userUseCase.UpdateSession(user1); err != nil {
 			t.Fatal(err)
@@ -251,10 +266,10 @@ func TestDeleteSession(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		TTL := mockRepo.Users.Users[0].SessionTTL.UTC().Format(usecase.DateAndTimeFormat)
+		TTL := mockRepo.Users.Users[0].SessionTTL
 		if err := userUseCase.DeleteSession(user1); err != nil {
 			t.Fatal(err)
-		} else if mockRepo.Users.Users[0].SessionTTL.Format(usecase.DateAndTimeFormat) <= TTL {
+		} else if !TTL.After(mockRepo.Users.Users[0].SessionTTL) {
 			t.Fatal("Could not delete session")
 		}
 	})
@@ -303,9 +318,8 @@ func TestCheckSession(t *testing.T) {
 		if auth, err := userUseCase.CheckSession(mockRepo.Users.Users[0]); err != nil {
 			t.Fatal(err)
 		} else if !auth {
-			t.Fatalf("expected true")
+			t.Fatal("expected true")
 		}
-		fmt.Println(len(mockRepo.Users.Users))
 	})
 
 	t.Run("err did not find session", func(t *testing.T) {
@@ -346,7 +360,7 @@ func TestCheckSession(t *testing.T) {
 		if auth, err := userUseCase.CheckSession(mockRepo.Users.Users[0]); err != nil {
 			t.Fatal(err)
 		} else if !auth {
-			t.Fatalf("expected true")
+			t.Fatal("expected true")
 		}
 
 		mockRepo.Users.Users[0].SessionTTL = mockRepo.Users.Users[0].SessionTTL.Add(-time.Hour * 25)
@@ -354,7 +368,136 @@ func TestCheckSession(t *testing.T) {
 		if auth, err := userUseCase.CheckSession(mockRepo.Users.Users[0]); err != nil {
 			t.Fatal(err)
 		} else if auth {
-			t.Fatalf("expected false")
+			t.Fatal("expected false")
+		}
+	})
+}
+
+func TestGetAllUsers(t *testing.T) {
+	t.Run("OK", func(t *testing.T) {
+		hasher, tokenManager := getDependencies()
+		mockRepo := m.NewMockRepos()
+		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+			mockRepo.Posts, mockRepo.Comments)
+
+		if err := userUseCase.SignUp(user1); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := userUseCase.SignUp(user4); err != nil {
+			t.Fatal(err)
+		}
+		if err := userUseCase.SignUp(user5); err != nil {
+			t.Fatal(err)
+		}
+
+		if users, err := userUseCase.GetAllUsers(); err != nil {
+			t.Fatal(err)
+		} else if len(users) != 3 {
+			t.Fatalf("want: %d, got: %d", 3, len(users))
+		}
+
+	})
+}
+
+func TestUserGetById(t *testing.T) {
+	t.Run("OK", func(t *testing.T) {
+		hasher, tokenManager := getDependencies()
+		mockRepo := m.NewMockRepos()
+		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+			mockRepo.Posts, mockRepo.Comments)
+
+		if err := userUseCase.SignUp(user1); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := userUseCase.SignUp(user4); err != nil {
+			t.Fatal(err)
+		}
+
+		if found, err := userUseCase.GetById(4); err != nil {
+			t.Fatal(err)
+		} else if found.Id != 4 {
+			t.Fatalf("want: %d, got: %d", 4, found.Id)
+		}
+	})
+
+	t.Run("err not found", func(t *testing.T) {
+		hasher, tokenManager := getDependencies()
+		mockRepo := m.NewMockRepos()
+		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+			mockRepo.Posts, mockRepo.Comments)
+
+		if err := userUseCase.SignUp(user1); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := userUseCase.SignUp(user4); err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := userUseCase.GetById(3); err == nil {
+			t.Fatal("Expected error")
+		} else if !errors.Is(err, entity.ErrUserNotFound) {
+			t.Fatalf("want: %v, got: %v", entity.ErrUserNotFound, err)
+		}
+	})
+}
+
+func TestUpdateUserInfo(t *testing.T) {
+	t.Run("OK", func(t *testing.T) {
+		hasher, tokenManager := getDependencies()
+		mockRepo := m.NewMockRepos()
+		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+			mockRepo.Posts, mockRepo.Comments)
+
+		if err := userUseCase.SignUp(user1); err != nil {
+			t.Fatal(err)
+		}
+
+		city := "Updated"
+		user1.City = city
+		if err := userUseCase.UpdateUserInfo(user1, "info"); err != nil {
+			t.Fatal(err)
+		}
+		if found, err := userUseCase.GetById(1); err != nil {
+			t.Fatal(err)
+		} else if found.City != city {
+			t.Fatalf("want: %v, got: %v", city, found.City)
+		}
+
+		password := "NewPassword"
+		user1.Password = password
+		if err := userUseCase.UpdateUserInfo(user1, "password"); err != nil {
+			t.Fatal(err)
+		}
+		if err := userUseCase.SignIn(user1); err != nil {
+			t.Fatal("Could not update password")
+		}
+	})
+}
+
+func TestDeleteUser(t *testing.T) {
+	t.Run("OK", func(t *testing.T) {
+		hasher, tokenManager := getDependencies()
+		mockRepo := m.NewMockRepos()
+		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+			mockRepo.Posts, mockRepo.Comments)
+
+		if err := userUseCase.SignUp(user1); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := userUseCase.SignIn(user1); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := userUseCase.DeleteUser(user1); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := userUseCase.SignIn(user1); err == nil {
+			t.Fatal("Could not delete user")
 		}
 	})
 }
