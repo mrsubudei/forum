@@ -122,9 +122,16 @@ func (pu *PostsUseCase) GetPostsByQuery(user entity.User, query string) ([]entit
 func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 	post, err := pu.repo.GetById(id)
 	if err != nil {
+		if strings.Contains(err.Error(), NoRowsResultErr) {
+			return post, entity.ErrPostNotFound
+		}
 		return post, fmt.Errorf("PostsUseCase - GetById #1 - %w", err)
 	}
+
 	user, err := pu.userRepo.GetById(post.User.Id)
+	if err != nil {
+		return post, fmt.Errorf("PostsUseCase - GetById #2 - %w", err)
+	}
 	if user.Gender == UserGenderMale {
 		user.Male = true
 	} else if user.Gender == UserGenderFemale {
@@ -132,38 +139,13 @@ func (pu *PostsUseCase) GetById(id int64) (entity.Post, error) {
 	}
 	post.User = user
 
-	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetById #2 - %w", err)
-	}
 	post.Id = id
-	if err != nil {
-		if strings.Contains(err.Error(), NoRowsResultErr) {
-			return post, entity.ErrPostNotFound
-		}
-		return post, fmt.Errorf("PostsUseCase - GetById #3 - %w", err)
-	}
 	posts := []entity.Post{post}
 	err = pu.fillPostDetails(&posts)
 	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetById #4 - %w", err)
+		return post, fmt.Errorf("PostsUseCase - GetById #3 - %w", err)
 	}
 	return posts[0], nil
-}
-
-func (pu *PostsUseCase) GetOneByCategory(category string) (entity.Post, error) {
-	var post entity.Post
-	ids, err := pu.repo.GetIdsByCategory(category)
-	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetOneByCategory #1 - %w", err)
-	}
-	if len(ids) == 0 {
-		return post, entity.ErrPostNotFound
-	}
-	post, err = pu.GetById(ids[0])
-	if err != nil {
-		return post, fmt.Errorf("PostsUseCase - GetOneByCategory #2 - %w", err)
-	}
-	return post, nil
 }
 
 func (pu *PostsUseCase) GetAllByCategory(category string) ([]entity.Post, error) {

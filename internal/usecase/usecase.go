@@ -12,7 +12,6 @@ type Posts interface {
 	GetAllPosts() ([]entity.Post, error)
 	GetPostsByQuery(user entity.User, query string) ([]entity.Post, error)
 	GetById(id int64) (entity.Post, error)
-	GetOneByCategory(category string) (entity.Post, error)
 	GetAllByCategory(category string) ([]entity.Post, error)
 	UpdatePost(post entity.Post) error
 	DeletePost(p entity.Post) error

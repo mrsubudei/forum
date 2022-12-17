@@ -119,7 +119,6 @@ func TestSignUp(t *testing.T) {
 }
 
 func TestSignIn(t *testing.T) {
-	t.Parallel()
 	t.Run("OK", func(t *testing.T) {
 		hasher, tokenManager := getDependencies()
 		mockRepo := m.NewMockRepos()
@@ -172,7 +171,6 @@ func TestSignIn(t *testing.T) {
 }
 
 func TestUsersGetIdBy(t *testing.T) {
-	t.Parallel()
 	t.Run("OK", func(t *testing.T) {
 		hasher, tokenManager := getDependencies()
 		mockRepo := m.NewMockRepos()

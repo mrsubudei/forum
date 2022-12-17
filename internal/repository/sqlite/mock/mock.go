@@ -9,7 +9,10 @@ import (
 	"forum/internal/usecase"
 )
 
-var errNoRows = fmt.Errorf("no rows in result set")
+var (
+	errNoRows           = fmt.Errorf("no rows in result set")
+	errUniqueConstraint = fmt.Errorf("UNIQUE constraint failed")
+)
 
 const DateAndTimeFormat = "2006-01-02 15:04:05"
 
@@ -144,16 +147,15 @@ func (um *UsersMockRepo) UpdateSession(user entity.User) error {
 func (um *UsersMockRepo) Delete(user entity.User) error {
 	newUsers := []entity.User{}
 	found := false
-	for _, v := range um.Users {
-		if v.Id != user.Id {
-			newUsers = append(newUsers, v)
-		} else {
+	for i, v := range um.Users {
+		if v.Id == user.Id {
 			found = true
+			newUsers = deleteElement(um.Users, i)
 		}
 	}
-	um.Users = newUsers
-
 	if found {
+		um.Users = []entity.User{}
+		um.Users = append(um.Users, newUsers...)
 		return nil
 	} else {
 		return errNoRows
@@ -245,16 +247,15 @@ func (pm *PostsMockRepo) Update(post entity.Post) error {
 func (pm *PostsMockRepo) Delete(post entity.Post) error {
 	newPosts := []entity.Post{}
 	found := false
-	for _, v := range pm.Posts {
-		if v.Id != post.Id {
-			newPosts = append(newPosts, v)
-		} else {
+	for i, v := range pm.Posts {
+		if v.Id == post.Id {
 			found = true
+			newPosts = deleteElement(pm.Posts, i)
 		}
 	}
-	pm.Posts = newPosts
-
 	if found {
+		pm.Posts = []entity.Post{}
+		pm.Posts = append(pm.Posts, newPosts...)
 		return nil
 	} else {
 		return errNoRows
@@ -266,6 +267,15 @@ func (pm *PostsMockRepo) StoreLike(post entity.Post) error {
 	like := entity.Reaction{UserId: post.User.Id}
 	for i := 0; i < len(pm.Posts); i++ {
 		if pm.Posts[i].Id == post.Id {
+			alreadyReacted := false
+			for _, v := range pm.Posts[i].Likes {
+				if v.UserId == post.User.Id {
+					alreadyReacted = true
+				}
+			}
+			if alreadyReacted {
+				return errUniqueConstraint
+			}
 			pm.Posts[i].Likes = append(pm.Posts[i].Likes, like)
 			found = true
 		}
@@ -282,6 +292,15 @@ func (pm *PostsMockRepo) StoreDislike(post entity.Post) error {
 	dislike := entity.Reaction{UserId: post.User.Id}
 	for i := 0; i < len(pm.Posts); i++ {
 		if pm.Posts[i].Id == post.Id {
+			alreadyReacted := false
+			for _, v := range pm.Posts[i].Dislikes {
+				if v.UserId == post.User.Id {
+					alreadyReacted = true
+				}
+			}
+			if alreadyReacted {
+				return errUniqueConstraint
+			}
 			pm.Posts[i].Dislikes = append(pm.Posts[i].Dislikes, dislike)
 			found = true
 		}
@@ -294,43 +313,47 @@ func (pm *PostsMockRepo) StoreDislike(post entity.Post) error {
 }
 
 func (pm *PostsMockRepo) DeleteLike(post entity.Post) error {
+	newLikes := []entity.Reaction{}
+	idx := 0
 	found := false
-	newPosts := []entity.Post{}
-	for _, val := range pm.Posts {
-		for _, v := range val.Likes {
-			if v.UserId != post.User.Id {
-				newPosts = append(newPosts, val)
-			} else {
+	for y, val := range pm.Posts {
+		for i, v := range val.Likes {
+			if v.UserId == post.User.Id {
 				found = true
+				newLikes = deleteElement(val.Likes, i)
+				idx = y
+				break
 			}
 		}
 	}
-	pm.Posts = newPosts
+
 	if found {
-		return nil
-	} else {
-		return errNoRows
+		pm.Posts[idx].Likes = []entity.Reaction{}
+		pm.Posts[idx].Likes = append(pm.Posts[idx].Likes, newLikes...)
 	}
+	return nil
 }
 
 func (pm *PostsMockRepo) DeleteDislike(post entity.Post) error {
+	newDislikes := []entity.Reaction{}
+	idx := 0
 	found := false
-	newPosts := []entity.Post{}
-	for _, val := range pm.Posts {
-		for _, v := range val.Dislikes {
-			if v.UserId != post.User.Id {
-				newPosts = append(newPosts, val)
-			} else {
+	for y, val := range pm.Posts {
+		for i, v := range val.Dislikes {
+			if v.UserId == post.User.Id {
 				found = true
+				newDislikes = deleteElement(val.Dislikes, i)
+				idx = y
+				break
 			}
 		}
 	}
-	pm.Posts = newPosts
+
 	if found {
-		return nil
-	} else {
-		return errNoRows
+		pm.Posts[idx].Dislikes = []entity.Reaction{}
+		pm.Posts[idx].Dislikes = append(pm.Posts[idx].Dislikes, newDislikes...)
 	}
+	return nil
 }
 
 func (pm *PostsMockRepo) StoreTopicReference(post entity.Post) error {
@@ -423,16 +446,15 @@ func (cm *CommentsMockRepo) Update(comment entity.Comment) error {
 func (cm *CommentsMockRepo) Delete(comment entity.Comment) error {
 	newComments := []entity.Comment{}
 	found := false
-	for _, v := range cm.Comments {
-		if v.Id != comment.Id {
-			newComments = append(newComments, v)
-		} else {
+	for i, v := range cm.Comments {
+		if v.Id == comment.Id {
+			newComments = deleteElement(cm.Comments, i)
 			found = true
 		}
 	}
-	cm.Comments = newComments
-
 	if found {
+		cm.Comments = []entity.Comment{}
+		cm.Comments = append(cm.Comments, newComments...)
 		return nil
 	} else {
 		return errNoRows
@@ -456,23 +478,25 @@ func (cm *CommentsMockRepo) StoreLike(comment entity.Comment) error {
 }
 
 func (cm *CommentsMockRepo) DeleteLike(comment entity.Comment) error {
+	newLikes := []entity.Reaction{}
+	Idx := 0
 	found := false
-	newComments := []entity.Comment{}
-	for _, val := range cm.Comments {
-		for _, v := range val.Likes {
+	for y, val := range cm.Comments {
+		for i, v := range val.Likes {
 			if v.UserId != comment.User.Id {
-				newComments = append(newComments, val)
-			} else {
 				found = true
+				newLikes = deleteElement(val.Likes, i)
+				Idx = y
+				break
 			}
 		}
 	}
-	cm.Comments = newComments
+
 	if found {
-		return nil
-	} else {
-		return errNoRows
+		cm.Comments[Idx].Likes = []entity.Reaction{}
+		cm.Comments[Idx].Likes = append(cm.Comments[Idx].Likes, newLikes...)
 	}
+	return nil
 }
 
 func (cm *CommentsMockRepo) StoreDislike(comment entity.Comment) error {
@@ -492,23 +516,25 @@ func (cm *CommentsMockRepo) StoreDislike(comment entity.Comment) error {
 }
 
 func (cm *CommentsMockRepo) DeleteDislike(comment entity.Comment) error {
+	newDislikes := []entity.Reaction{}
+	Idx := 0
 	found := false
-	newComments := []entity.Comment{}
-	for _, val := range cm.Comments {
-		for _, v := range val.Dislikes {
+	for y, val := range cm.Comments {
+		for i, v := range val.Dislikes {
 			if v.UserId != comment.User.Id {
-				newComments = append(newComments, val)
-			} else {
 				found = true
+				newDislikes = deleteElement(val.Dislikes, i)
+				Idx = y
+				break
 			}
 		}
 	}
-	cm.Comments = newComments
+
 	if found {
-		return nil
-	} else {
-		return errNoRows
+		cm.Comments[Idx].Dislikes = []entity.Reaction{}
+		cm.Comments[Idx].Dislikes = append(cm.Comments[Idx].Dislikes, newDislikes...)
 	}
+	return nil
 }
 
 func (cm *CommentsMockRepo) FetchReactions(id int64) (entity.Comment, error) {
@@ -518,4 +544,11 @@ func (cm *CommentsMockRepo) FetchReactions(id int64) (entity.Comment, error) {
 		}
 	}
 	return entity.Comment{}, errNoRows
+}
+
+func deleteElement[C any](sl []C, index int) []C {
+	newSlice := []C{}
+	newSlice = append(newSlice, sl[:index]...)
+	newSlice = append(newSlice, sl[index+1:]...)
+	return newSlice
 }
