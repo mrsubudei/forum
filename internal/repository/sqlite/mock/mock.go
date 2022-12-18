@@ -468,7 +468,7 @@ func (cm *CommentsMockRepo) StoreLike(comment entity.Comment) error {
 		if cm.Comments[i].Id == comment.Id {
 			alreadyReacted := false
 			for _, v := range cm.Comments[i].Likes {
-				if v.UserId == comment.Id {
+				if v.UserId == comment.User.Id {
 					alreadyReacted = true
 				}
 			}
@@ -492,7 +492,7 @@ func (cm *CommentsMockRepo) DeleteLike(comment entity.Comment) error {
 	found := false
 	for y, val := range cm.Comments {
 		for i, v := range val.Likes {
-			if v.UserId != comment.User.Id {
+			if v.UserId == comment.User.Id {
 				found = true
 				newLikes = deleteElement(val.Likes, i)
 				Idx = y
@@ -539,7 +539,7 @@ func (cm *CommentsMockRepo) DeleteDislike(comment entity.Comment) error {
 	found := false
 	for y, val := range cm.Comments {
 		for i, v := range val.Dislikes {
-			if v.UserId != comment.User.Id {
+			if v.UserId == comment.User.Id {
 				found = true
 				newDislikes = deleteElement(val.Dislikes, i)
 				Idx = y
