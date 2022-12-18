@@ -466,6 +466,15 @@ func (cm *CommentsMockRepo) StoreLike(comment entity.Comment) error {
 	like := entity.Reaction{UserId: comment.User.Id}
 	for i := 0; i < len(cm.Comments); i++ {
 		if cm.Comments[i].Id == comment.Id {
+			alreadyReacted := false
+			for _, v := range cm.Comments[i].Likes {
+				if v.UserId == comment.Id {
+					alreadyReacted = true
+				}
+			}
+			if alreadyReacted {
+				return errUniqueConstraint
+			}
 			cm.Comments[i].Likes = append(cm.Comments[i].Likes, like)
 			found = true
 		}
@@ -504,6 +513,15 @@ func (cm *CommentsMockRepo) StoreDislike(comment entity.Comment) error {
 	dislike := entity.Reaction{UserId: comment.User.Id}
 	for i := 0; i < len(cm.Comments); i++ {
 		if cm.Comments[i].Id == comment.Id {
+			alreadyReacted := false
+			for _, v := range cm.Comments[i].Dislikes {
+				if v.UserId == comment.User.Id {
+					alreadyReacted = true
+				}
+			}
+			if alreadyReacted {
+				return errUniqueConstraint
+			}
 			cm.Comments[i].Dislikes = append(cm.Comments[i].Dislikes, dislike)
 			found = true
 		}
