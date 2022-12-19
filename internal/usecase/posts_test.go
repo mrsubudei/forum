@@ -123,13 +123,13 @@ func TestGetPostsByQuery(t *testing.T) {
 }
 
 func TestPostGetById(t *testing.T) {
-	t.Run("OK", func(t *testing.T) {
-		mockRepo := m.NewMockRepos()
-		hasher, tokenManager := getDependencies()
-		postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
+	mockRepo := m.NewMockRepos()
+	hasher, tokenManager := getDependencies()
+	postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
+	userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+		mockRepo.Posts, mockRepo.Comments)
 
+	t.Run("OK", func(t *testing.T) {
 		if err := userUseCase.SignUp(user4); err != nil {
 			t.Fatal(err)
 		}
@@ -147,15 +147,7 @@ func TestPostGetById(t *testing.T) {
 	})
 
 	t.Run("err not found", func(t *testing.T) {
-		mockRepo := m.NewMockRepos()
-
-		postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-
-		if err := postUseCase.CreatePost(post1); err != nil {
-			t.Fatal(err)
-		}
-
-		id := post2.Id
+		id := int64(14)
 		if _, err := postUseCase.GetById(id); err == nil {
 			t.Fatal("Expected error")
 		} else if !errors.Is(err, entity.ErrPostNotFound) {
@@ -165,13 +157,13 @@ func TestPostGetById(t *testing.T) {
 }
 
 func TestGetAllByCategory(t *testing.T) {
-	t.Run("OK", func(t *testing.T) {
-		mockRepo := m.NewMockRepos()
-		hasher, tokenManager := getDependencies()
-		postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
+	mockRepo := m.NewMockRepos()
+	hasher, tokenManager := getDependencies()
+	postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
+	userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+		mockRepo.Posts, mockRepo.Comments)
 
+	t.Run("OK", func(t *testing.T) {
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
 		}
@@ -209,20 +201,6 @@ func TestGetAllByCategory(t *testing.T) {
 	})
 
 	t.Run("err not found", func(t *testing.T) {
-		mockRepo := m.NewMockRepos()
-		hasher, tokenManager := getDependencies()
-		postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
-
-		if err := userUseCase.SignUp(user1); err != nil {
-			t.Fatal(err)
-		}
-
-		if err := postUseCase.CreatePost(post1); err != nil {
-			t.Fatal(err)
-		}
-
 		category := "Weather"
 
 		if _, err := postUseCase.GetAllByCategory(category); err == nil {

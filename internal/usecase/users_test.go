@@ -37,7 +37,7 @@ var (
 	user3 = entity.User{
 		Id:       3,
 		Name:     "Isa",
-		Email:    "Subi@mail.ru",
+		Email:    "Riddle@mail.ru",
 		Password: "Mimi",
 		City:     "Karaganda",
 		Role:     "Пользователь",
@@ -71,28 +71,18 @@ func getDependencies() (*hasher.BcryptHasher, *auth.Manager) {
 }
 
 func TestSignUp(t *testing.T) {
-	t.Parallel()
-	t.Run("OK", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
+	hasher, tokenManager := getDependencies()
+	mockRepo := m.NewMockRepos()
+	userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+		mockRepo.Posts, mockRepo.Comments)
 
+	t.Run("OK", func(t *testing.T) {
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
 		}
 	})
 
 	t.Run("err name already exist", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
-
-		if err := userUseCase.SignUp(user1); err != nil {
-			t.Fatal(err)
-		}
-
 		if err := userUseCase.SignUp(user2); err == nil {
 			t.Fatal("Expected error")
 		} else if !errors.Is(err, entity.ErrUserNameAlreadyExists) {
@@ -101,15 +91,6 @@ func TestSignUp(t *testing.T) {
 	})
 
 	t.Run("err email already exist", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
-
-		if err := userUseCase.SignUp(user2); err != nil {
-			t.Fatal(err)
-		}
-
 		if err := userUseCase.SignUp(user3); err == nil {
 			t.Fatal("Expected error")
 		} else if !errors.Is(err, entity.ErrUserEmailAlreadyExists) {
@@ -119,12 +100,12 @@ func TestSignUp(t *testing.T) {
 }
 
 func TestSignIn(t *testing.T) {
-	t.Run("OK", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
+	hasher, tokenManager := getDependencies()
+	mockRepo := m.NewMockRepos()
+	userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+		mockRepo.Posts, mockRepo.Comments)
 
+	t.Run("OK", func(t *testing.T) {
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
 		}
@@ -138,13 +119,6 @@ func TestSignIn(t *testing.T) {
 	})
 
 	t.Run("err user not exist", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager, mockRepo.Posts, mockRepo.Comments)
-
-		if err := userUseCase.SignUp(user1); err != nil {
-			t.Fatal(err)
-		}
 		if err := userUseCase.SignIn(user3); err == nil {
 			t.Fatal("Expected error")
 		} else if !errors.Is(err, entity.ErrUserNotFound) {
@@ -153,15 +127,6 @@ func TestSignIn(t *testing.T) {
 	})
 
 	t.Run("err wrong password", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
-
-		if err := userUseCase.SignUp(user1); err != nil {
-			t.Fatal(err)
-		}
-
 		if err := userUseCase.SignIn(entity.User{Name: "Riddle", Password: "abc"}); err == nil {
 			t.Fatal("Expected error")
 		} else if !errors.Is(err, entity.ErrUserPasswordIncorrect) {
@@ -171,12 +136,12 @@ func TestSignIn(t *testing.T) {
 }
 
 func TestUsersGetIdBy(t *testing.T) {
-	t.Run("OK", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
+	hasher, tokenManager := getDependencies()
+	mockRepo := m.NewMockRepos()
+	userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+		mockRepo.Posts, mockRepo.Comments)
 
+	t.Run("OK", func(t *testing.T) {
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
 		}
@@ -207,15 +172,6 @@ func TestUsersGetIdBy(t *testing.T) {
 	})
 
 	t.Run("err user not found", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
-
-		if err := userUseCase.SignUp(user1); err != nil {
-			t.Fatal(err)
-		}
-
 		if _, err := userUseCase.GetIdBy(entity.User{Name: "Pup"}); err == nil {
 			t.Fatal("Expected error")
 		} else if !strings.Contains(err.Error(), errNoRows) {
@@ -299,12 +255,12 @@ func TestGetSession(t *testing.T) {
 }
 
 func TestCheckSession(t *testing.T) {
-	t.Run("OK", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
+	hasher, tokenManager := getDependencies()
+	mockRepo := m.NewMockRepos()
+	userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+		mockRepo.Posts, mockRepo.Comments)
 
+	t.Run("OK", func(t *testing.T) {
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
 		}
@@ -321,19 +277,6 @@ func TestCheckSession(t *testing.T) {
 	})
 
 	t.Run("err did not find session", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
-
-		if err := userUseCase.SignUp(user1); err != nil {
-			t.Fatal(err)
-		}
-
-		if err := userUseCase.SignIn(user1); err != nil {
-			t.Fatal(err)
-		}
-
 		if _, err := userUseCase.CheckSession(user2); err == nil {
 			t.Fatal("expected error")
 		} else if !errors.Is(err, entity.ErrUserNotFound) {
@@ -342,25 +285,6 @@ func TestCheckSession(t *testing.T) {
 	})
 
 	t.Run("err expired session", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
-
-		if err := userUseCase.SignUp(user2); err != nil {
-			t.Fatal(err)
-		}
-
-		if err := userUseCase.SignIn(user2); err != nil {
-			t.Fatal(err)
-		}
-
-		if auth, err := userUseCase.CheckSession(mockRepo.Users.Users[0]); err != nil {
-			t.Fatal(err)
-		} else if !auth {
-			t.Fatal("expected true")
-		}
-
 		mockRepo.Users.Users[0].SessionTTL = mockRepo.Users.Users[0].SessionTTL.Add(-time.Hour * 25)
 
 		if auth, err := userUseCase.CheckSession(mockRepo.Users.Users[0]); err != nil {
@@ -399,12 +323,12 @@ func TestGetAllUsers(t *testing.T) {
 }
 
 func TestUserGetById(t *testing.T) {
-	t.Run("OK", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
+	hasher, tokenManager := getDependencies()
+	mockRepo := m.NewMockRepos()
+	userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
+		mockRepo.Posts, mockRepo.Comments)
 
+	t.Run("OK", func(t *testing.T) {
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
 		}
@@ -421,19 +345,6 @@ func TestUserGetById(t *testing.T) {
 	})
 
 	t.Run("err not found", func(t *testing.T) {
-		hasher, tokenManager := getDependencies()
-		mockRepo := m.NewMockRepos()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
-
-		if err := userUseCase.SignUp(user1); err != nil {
-			t.Fatal(err)
-		}
-
-		if err := userUseCase.SignUp(user4); err != nil {
-			t.Fatal(err)
-		}
-
 		if _, err := userUseCase.GetById(3); err == nil {
 			t.Fatal("Expected error")
 		} else if !errors.Is(err, entity.ErrUserNotFound) {

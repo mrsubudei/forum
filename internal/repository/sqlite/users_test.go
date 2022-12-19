@@ -11,15 +11,15 @@ import (
 )
 
 func TestUserStore(t *testing.T) {
-	t.Run("OK", func(t *testing.T) {
-		db := sqlite.MustOpenDB(t, "file:foobar?mode=memory&cache=shared")
-		defer sqlite.MustCloseDB(t, db)
-		err := sqlite.CreateDB(db)
-		if err != nil {
-			t.Fatal("Unable to create db:", err)
-		}
-		repo := sqlite.NewUsersRepo(db)
+	db := sqlite.MustOpenDB(t, "file:foobar?mode=memory&cache=shared")
+	defer sqlite.MustCloseDB(t, db)
+	err := sqlite.CreateDB(db)
+	if err != nil {
+		t.Fatal("Unable to create db:", err)
+	}
+	repo := sqlite.NewUsersRepo(db)
 
+	t.Run("OK", func(t *testing.T) {
 		user := entity.User{
 			Id:    1,
 			Name:  "Riddle",
@@ -46,7 +46,8 @@ func TestUserStore(t *testing.T) {
 		}
 
 		user2 := entity.User{
-			Name: "buch",
+			Name:  "buch",
+			Email: "buch@mak.go",
 		}
 		if err := repo.Store(user2); err != nil {
 			t.Fatal("Unable to Store:", err)
@@ -60,30 +61,13 @@ func TestUserStore(t *testing.T) {
 	})
 
 	t.Run("ErrNameAlreadyExist", func(t *testing.T) {
-		db := sqlite.MustOpenDB(t, "")
-		defer sqlite.MustCloseDB(t, db)
-		err := sqlite.CreateDB(db)
-		if err != nil {
-			t.Fatal("Unable to CreateDB:", err)
-		}
-		repo := sqlite.NewUsersRepo(db)
-
-		user := entity.User{
-			Name:  "Riddle",
-			Email: "Riddle@mail.ru",
-		}
-
-		if err := repo.Store(user); err != nil {
-			t.Fatal("Unable to Store:", err)
-		}
-
 		user2 := entity.User{
 			Name: "Riddle",
 		}
 		if err = repo.Store(user2); err == nil {
 			t.Fatalf("Error expected")
 		} else if !strings.Contains(err.Error(), "UNIQUE constraint failed: users.name") {
-			t.Fatalf("unexpected error: %#v", err)
+			t.Fatalf("unexpected error: %v", err)
 		}
 	})
 }

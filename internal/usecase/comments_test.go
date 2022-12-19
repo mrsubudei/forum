@@ -66,10 +66,10 @@ func TestGetAllComments(t *testing.T) {
 }
 
 func TestUpdateComment(t *testing.T) {
-	t.Run("OK", func(t *testing.T) {
-		mockRepo := m.NewMockRepos()
-		commentUseCase := usecase.NewCommentUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
+	mockRepo := m.NewMockRepos()
+	commentUseCase := usecase.NewCommentUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
 
+	t.Run("OK", func(t *testing.T) {
 		if err := commentUseCase.WriteComment(comment1); err != nil {
 			t.Fatal(err)
 		}
@@ -84,13 +84,25 @@ func TestUpdateComment(t *testing.T) {
 			t.Fatalf("want: %v, got: %v", newContent, mockRepo.Comments.Comments[0].Content)
 		}
 	})
+
+	t.Run("err not found", func(t *testing.T) {
+		notExisted := entity.Comment{
+			Id:      15,
+			Content: "abv",
+			User:    user1,
+		}
+
+		if err := commentUseCase.UpdateComment(notExisted); err == nil {
+			t.Fatal("Epected error")
+		}
+	})
 }
 
 func TestDeleteComment(t *testing.T) {
-	t.Run("OK", func(t *testing.T) {
-		mockRepo := m.NewMockRepos()
-		commentUseCase := usecase.NewCommentUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
+	mockRepo := m.NewMockRepos()
+	commentUseCase := usecase.NewCommentUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
 
+	t.Run("OK", func(t *testing.T) {
 		if err := commentUseCase.WriteComment(comment1); err != nil {
 			t.Fatal(err)
 		}
@@ -105,6 +117,12 @@ func TestDeleteComment(t *testing.T) {
 
 		if len(mockRepo.Comments.Comments) != 0 {
 			t.Fatalf("want: %d, got: %d", 0, len(mockRepo.Comments.Comments))
+		}
+	})
+
+	t.Run("err not exist", func(t *testing.T) {
+		if err := commentUseCase.DeleteComment(comment1); err == nil {
+			t.Fatal("Expected error")
 		}
 	})
 }
