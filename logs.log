@@ -2,3 +2,6 @@ INFO: 2022/12/06 19:35:56 logger.go:37: v1 - UserPageHandler - GetById: user doe
 ERROR 2022/12/06 19:37:11 logger.go:35: v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
 ERROR 2022/12/06 19:37:54 v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
 ERROR 2022/12/12 22:15:04 v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase - GetPostsByQuery #6 - PostsRepo - GetById - Scan: sql: no rows in result set
+ERROR 2022/12/19 22:34:39 v1 - IndexHandler - TypeAssertion:got data of type v1.Content but wanted v1.Content
+ERROR 2022/12/19 22:45:33 v1 - IndexHandler - TypeAssertion:got data of type v1.Content but wanted v1.Content
+ERROR 2022/12/19 22:56:14 v1 - Errors - ParseFiles: open templates/errorhtml: The system cannot find the file specified.

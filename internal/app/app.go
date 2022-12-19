@@ -70,6 +70,6 @@ func Run(cfg config.Config) {
 	<-quit
 	err = server.Shutdown()
 	if err != nil {
-		fmt.Printf("app - Run - httpServer.Shutdown: %s\n", err.Error())
+		l.WriteLog(fmt.Errorf("app - Run - httpServer.Shutdown: %w", err))
 	}
 }
