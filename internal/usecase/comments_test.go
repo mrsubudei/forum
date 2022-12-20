@@ -26,7 +26,7 @@ var (
 func TestWriteComments(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		mockRepo := m.NewMockRepos()
-		commentUseCase := usecase.NewCommentUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
+		commentUseCase := usecase.NewCommentsUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
 		if err := commentUseCase.WriteComment(comment1); err != nil {
 			t.Fatal(err)
 		}
@@ -36,7 +36,7 @@ func TestWriteComments(t *testing.T) {
 func TestGetAllComments(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		mockRepo := m.NewMockRepos()
-		commentUseCase := usecase.NewCommentUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
+		commentUseCase := usecase.NewCommentsUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
 		hasher, tokenManager := getDependencies()
 		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
 			mockRepo.Posts, mockRepo.Comments)
@@ -67,7 +67,7 @@ func TestGetAllComments(t *testing.T) {
 
 func TestUpdateComment(t *testing.T) {
 	mockRepo := m.NewMockRepos()
-	commentUseCase := usecase.NewCommentUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
+	commentUseCase := usecase.NewCommentsUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
 
 	t.Run("OK", func(t *testing.T) {
 		if err := commentUseCase.WriteComment(comment1); err != nil {
@@ -100,7 +100,7 @@ func TestUpdateComment(t *testing.T) {
 
 func TestDeleteComment(t *testing.T) {
 	mockRepo := m.NewMockRepos()
-	commentUseCase := usecase.NewCommentUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
+	commentUseCase := usecase.NewCommentsUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
 
 	t.Run("OK", func(t *testing.T) {
 		if err := commentUseCase.WriteComment(comment1); err != nil {
@@ -130,7 +130,7 @@ func TestDeleteComment(t *testing.T) {
 func TestCommentMakeReaction(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		mockRepo := m.NewMockRepos()
-		commentUseCase := usecase.NewCommentUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
+		commentUseCase := usecase.NewCommentsUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
 		hasher, tokenManager := getDependencies()
 		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
 			mockRepo.Posts, mockRepo.Comments)

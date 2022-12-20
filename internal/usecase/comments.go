@@ -2,9 +2,10 @@ package usecase
 
 import (
 	"fmt"
+	"strings"
+
 	"forum/internal/entity"
 	"forum/internal/repository"
-	"strings"
 )
 
 type CommentsUseCase struct {
@@ -14,7 +15,7 @@ type CommentsUseCase struct {
 	userRepo repository.Users
 }
 
-func NewCommentUseCase(repo repository.Comments, postsRepo repository.Posts, usersRepo repository.Users) *CommentsUseCase {
+func NewCommentsUseCase(repo repository.Comments, postsRepo repository.Posts, usersRepo repository.Users) *CommentsUseCase {
 	return &CommentsUseCase{
 		repo:     repo,
 		postRepo: postsRepo,

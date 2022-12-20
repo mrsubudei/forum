@@ -1,46 +1,79 @@
 package mock_usecase
 
-import "forum/internal/entity"
+import (
+	"forum/internal/entity"
+	"forum/internal/usecase"
+)
 
-type UsersMockUseCase struct {
+type MockUseCases struct {
+	Users    usecase.Users
+	Posts    usecase.Posts
+	Comments usecase.Comments
+}
+
+func NewMockUseCases() *MockUseCases {
+	return &MockUseCases{
+		Users:    NewUsersMockUseCase(),
+		Posts:    NewPostsMockUseCase(),
+		Comments: NewCommentsMockUseCase(),
+	}
+}
+
+type UsersMockUseCase struct{}
+
+func NewUsersMockUseCase() *UsersMockUseCase {
+	return &UsersMockUseCase{}
 }
 
 func (um *UsersMockUseCase) SignUp(u entity.User) error {
 	return nil
 }
+
 func (um *UsersMockUseCase) SignIn(u entity.User) error {
 	return nil
 }
+
 func (um *UsersMockUseCase) GetAllUsers() ([]entity.User, error) {
 	return []entity.User{}, nil
 }
+
 func (um *UsersMockUseCase) GetById(id int64) (entity.User, error) {
 	return entity.User{}, nil
 }
+
 func (um *UsersMockUseCase) GetIdBy(user entity.User) (int64, error) {
 	var id int64
 	return id, nil
 }
+
 func (um *UsersMockUseCase) GetSession(id int64) (entity.User, error) {
 	return entity.User{}, nil
 }
+
 func (um *UsersMockUseCase) CheckSession(u entity.User) (bool, error) {
 	return false, nil
 }
+
 func (um *UsersMockUseCase) UpdateUserInfo(u entity.User, query string) error {
 	return nil
 }
+
 func (um *UsersMockUseCase) UpdateSession(u entity.User) error {
 	return nil
 }
+
 func (um *UsersMockUseCase) DeleteSession(user entity.User) error {
 	return nil
 }
+
 func (um *UsersMockUseCase) DeleteUser(u entity.User) error {
 	return nil
 }
 
-type PostsMockUseCase struct {
+type PostsMockUseCase struct{}
+
+func NewPostsMockUseCase() *PostsMockUseCase {
+	return &PostsMockUseCase{}
 }
 
 func (pm *PostsMockUseCase) CreatePost(p entity.Post) error
@@ -56,7 +89,10 @@ func (pm *PostsMockUseCase) CreateCategories(categories []string) error
 func (pm *PostsMockUseCase) GetAllCategories() ([]string, error)
 func (pm *PostsMockUseCase) GetReactions(id int64, query string) ([]entity.User, error)
 
-type CommentsMockUseCase struct {
+type CommentsMockUseCase struct{}
+
+func NewCommentsMockUseCase() *CommentsMockUseCase {
+	return &CommentsMockUseCase{}
 }
 
 func (cm *CommentsMockUseCase) WriteComment(c entity.Comment) error

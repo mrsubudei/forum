@@ -80,11 +80,10 @@ func (h *Handler) Errors(w http.ResponseWriter, status int) {
 }
 
 func (h *Handler) RegisterRoutes(router *http.ServeMux) {
-
-	//main
+	// main
 	router.Handle("/", h.AssignStatus(http.HandlerFunc(h.IndexHandler)))
 
-	//users routes
+	// users routes
 	router.Handle("/signin_page/", h.AssignStatus(http.HandlerFunc(h.SignInPageHandler)))
 	router.Handle("/signup_page/", h.AssignStatus(http.HandlerFunc(h.SignUpPageHandler)))
 	router.Handle("/signin/", h.AssignStatus(http.HandlerFunc(h.SignInHandler)))
@@ -96,11 +95,11 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.Handle("/all_users_page/", h.AssignStatus(http.HandlerFunc(h.AllUsersPageHandler)))
 	router.Handle("/find_reacted_users/", h.CheckAuth(http.HandlerFunc(h.FindReactedUsersHandler)))
 
-	//searching routes
+	// searching routes
 	router.Handle("/search_page/", h.AssignStatus(http.HandlerFunc(h.SearchPageHandler)))
 	router.Handle("/search/", h.AssignStatus(http.HandlerFunc(h.SearchHandler)))
 
-	//posts routes
+	// posts routes
 	router.Handle("/create_category_page/", h.CheckAuth(http.HandlerFunc(h.CreateCategoryPageHandler)))
 	router.Handle("/create_category/", h.CheckAuth(http.HandlerFunc(h.CreateCategoryHandler)))
 	router.Handle("/categories/", h.AssignStatus(http.HandlerFunc(h.SearchByCategoryHandler)))
@@ -111,13 +110,13 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.Handle("/put_post_like/", h.CheckAuth(http.HandlerFunc(h.PostPutLikeHandler)))
 	router.Handle("/put_post_dislike/", h.CheckAuth(http.HandlerFunc(h.PostPutDislikeHandler)))
 
-	//comments routes
+	// comments routes
 	router.Handle("/create_comment_page/", h.CheckAuth(http.HandlerFunc(h.CreateCommentPageHandler)))
 	router.Handle("/create_comment/", h.CheckAuth(http.HandlerFunc(h.CreateCommentHandler)))
 	router.Handle("/put_comment_like/", h.CheckAuth(http.HandlerFunc(h.CommentPutLikeHandler)))
 	router.Handle("/put_comment_dislike/", h.CheckAuth(http.HandlerFunc(h.CommentPutDislikeHandler)))
 
-	//fileserver
+	// fileserver
 	router.Handle("/templates/css/", http.StripPrefix("/templates/css/", http.FileServer(http.Dir("templates/css"))))
 	router.Handle("/templates/img/", http.StripPrefix("/templates/img/", http.FileServer(http.Dir("templates/img"))))
 }

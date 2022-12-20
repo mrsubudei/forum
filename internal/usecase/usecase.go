@@ -2,9 +2,6 @@ package usecase
 
 import (
 	"forum/internal/entity"
-	"forum/internal/repository"
-	"forum/pkg/auth"
-	"forum/pkg/hasher"
 )
 
 type Posts interface {
@@ -52,20 +49,10 @@ type UseCases struct {
 	Comments Comments
 }
 
-type Dependencies struct {
-	Repos        *repository.Repositories
-	Hasher       hasher.PasswordHasher
-	TokenManager auth.TokenManager
-}
-
-func NewUseCases(deps Dependencies) *UseCases {
-	postsUseCase := NewPostsUseCase(deps.Repos.Posts, deps.Repos.Users, deps.Repos.Comments)
-	usersUseCase := NewUsersUseCase(deps.Repos.Users, deps.Hasher, deps.TokenManager, deps.Repos.Posts, deps.Repos.Comments)
-	commentsUseCase := NewCommentUseCase(deps.Repos.Comments, deps.Repos.Posts, deps.Repos.Users)
-
+func NewUseCases(posts Posts, users Users, comments Comments) *UseCases {
 	return &UseCases{
-		Posts:    postsUseCase,
-		Users:    usersUseCase,
-		Comments: commentsUseCase,
+		Posts:    posts,
+		Users:    users,
+		Comments: comments,
 	}
 }
