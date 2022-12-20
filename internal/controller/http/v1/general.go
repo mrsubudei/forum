@@ -13,14 +13,12 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
-
 	if r.URL.Path != "/" {
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
 
 	key := Key("content")
-
 	content, ok := r.Context().Value(key).(Content)
 	if !ok {
 		h.l.WriteLog(fmt.Errorf("v1 - IndexHandler - TypeAssertion:"+
@@ -28,16 +26,13 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
-
 	posts, err := h.usecases.Posts.GetAllPosts()
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - IndexHandler - GetAllPosts: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
 		return
 	}
-
 	content.Posts = posts
-
 	err = h.ParseAndExecute(w, content, "templates/index.html")
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - IndexHandler - ParseAndExecute - %w", err))

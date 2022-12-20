@@ -34,7 +34,6 @@ func (h *Handler) ParseAndExecute(w http.ResponseWriter, content Content, path s
 		h.Errors(w, http.StatusInternalServerError)
 		return err
 	}
-
 	err = html.Execute(w, content)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("execute: %w", err))
