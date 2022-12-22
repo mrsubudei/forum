@@ -1,13 +1,16 @@
 package v1_test
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"forum/internal/config"
 	v1 "forum/internal/controller/http/v1"
+	"forum/internal/entity"
 	"forum/internal/usecase"
 	mu "forum/internal/usecase/mock"
 	"forum/pkg/logger"
@@ -43,6 +46,237 @@ func TestIndexHandler(t *testing.T) {
 
 		if rec.Code != http.StatusMethodNotAllowed {
 			t.Fatalf("want: %v, got: %v", http.StatusMethodNotAllowed, rec.Code)
+		}
+	})
+}
+
+func TestSearchPageHandler(t *testing.T) {
+	cfg, err := config.LoadConfig("../../../../config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	l := logger.New()
+	mockUsersUseCase := mu.NewUsersMockUseCase()
+	mockPostsUseCase := mu.NewPostsMockUseCase()
+	mockCommentsUseCase := mu.NewCommentsMockUseCase()
+	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
+	handler := v1.NewHandler(usecases, cfg, l)
+	handler.RegisterRoutes(handler.Mux)
+
+	t.Run("OK", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/search_page/", nil)
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("want: %v, got: %v", http.StatusOK, rec.Code)
+		}
+	})
+
+	t.Run("err wrong method", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPut, "/search_page/", nil)
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusMethodNotAllowed {
+			t.Fatalf("want: %v, got: %v", http.StatusMethodNotAllowed, rec.Code)
+		}
+	})
+}
+
+func TestSearchHandler(t *testing.T) {
+	cfg, err := config.LoadConfig("../../../../config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	l := logger.New()
+	mockUsersUseCase := mu.NewUsersMockUseCase()
+	mockPostsUseCase := mu.NewPostsMockUseCase()
+	mockCommentsUseCase := mu.NewCommentsMockUseCase()
+	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
+	handler := v1.NewHandler(usecases, cfg, l)
+	handler.RegisterRoutes(handler.Mux)
+
+	t.Run("OK", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+
+		req := httptest.NewRequest(http.MethodPost, "/search/", nil)
+
+		form := url.Values{}
+		form.Add("search", "abcd")
+		req.PostForm = form
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("want: %v, got: %v", http.StatusOK, rec.Code)
+		}
+	})
+
+	t.Run("err wrong method", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/search/", nil)
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusMethodNotAllowed {
+			t.Fatalf("want: %v, got: %v", http.StatusMethodNotAllowed, rec.Code)
+		}
+	})
+
+	t.Run("err empty request", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+
+		req := httptest.NewRequest(http.MethodPost, "/search/", nil)
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusBadRequest {
+			t.Fatalf("want: %v, got: %v", http.StatusBadRequest, rec.Code)
+		}
+	})
+}
+
+func TestCreateCategoryPageHandler(t *testing.T) {
+	cfg, err := config.LoadConfig("../../../../config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	l := logger.New()
+	mockUsersUseCase := mu.NewUsersMockUseCase()
+	mockPostsUseCase := mu.NewPostsMockUseCase()
+	mockCommentsUseCase := mu.NewCommentsMockUseCase()
+	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
+	handler := v1.NewHandler(usecases, cfg, l)
+	handler.RegisterRoutes(handler.Mux)
+
+	t.Run("OK", func(t *testing.T) {
+		mockUsersUseCase.SignUp(entity.User{})
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
+		cookie := &http.Cookie{
+			Name: "session_token",
+		}
+		req.AddCookie(cookie)
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("want: %v, got: %v", http.StatusOK, rec.Code)
+		}
+	})
+
+	t.Run("err not authorized", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusUnauthorized {
+			t.Fatalf("want: %v, got: %v", http.StatusUnauthorized, rec.Code)
+		}
+	})
+
+	t.Run("err method not allowed", func(t *testing.T) {
+		mockUsersUseCase.SignUp(entity.User{})
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPut, "/create_category_page/", nil)
+		cookie := &http.Cookie{
+			Name: "session_token",
+		}
+		req.AddCookie(cookie)
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusMethodNotAllowed {
+			t.Fatalf("want: %v, got: %v", http.StatusMethodNotAllowed, rec.Code)
+		}
+	})
+
+	t.Run("err low access level", func(t *testing.T) {
+		// if there is one user, he becomes admin and can create categories
+		// if more, he behaves as simple user
+		mockUsersUseCase.SignUp(entity.User{})
+
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
+		cookie := &http.Cookie{
+			Name: "session_token",
+		}
+		req.AddCookie(cookie)
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusForbidden {
+			t.Fatalf("want: %v, got: %v", http.StatusForbidden, rec.Code)
+		}
+	})
+}
+
+func TestCreateCategoryHandler(t *testing.T) {
+	cfg, err := config.LoadConfig("../../../../config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	l := logger.New()
+	mockUsersUseCase := mu.NewUsersMockUseCase()
+	mockPostsUseCase := mu.NewPostsMockUseCase()
+	mockCommentsUseCase := mu.NewCommentsMockUseCase()
+	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
+	handler := v1.NewHandler(usecases, cfg, l)
+	handler.RegisterRoutes(handler.Mux)
+
+	t.Run("OK", func(t *testing.T) {
+		mockUsersUseCase.SignUp(entity.User{})
+		fmt.Println(len(mockUsersUseCase.Users))
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPost, "/create_category/", nil)
+
+		cookie := &http.Cookie{
+			Name: "session_token",
+		}
+		req.AddCookie(cookie)
+
+		form := url.Values{}
+		form.Add("category", "movies")
+		req.PostForm = form
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusFound {
+			t.Fatalf("want: %v, got: %v", http.StatusFound, rec.Code)
+		}
+	})
+
+	t.Run("err wrong method", func(t *testing.T) {
+		fmt.Println(len(mockUsersUseCase.Users))
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodHead, "/create_category/", nil)
+
+		cookie := &http.Cookie{
+			Name: "session_token",
+		}
+		req.AddCookie(cookie)
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusMethodNotAllowed {
+			t.Fatalf("want: %v, got: %v", http.StatusMethodNotAllowed, rec.Code)
+		}
+	})
+
+	t.Run("err empty request", func(t *testing.T) {
+		fmt.Println(len(mockUsersUseCase.Users))
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPost, "/create_category/", nil)
+
+		cookie := &http.Cookie{
+			Name: "session_token",
+		}
+		req.AddCookie(cookie)
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusBadRequest {
+			t.Fatalf("want: %v, got: %v", http.StatusBadRequest, rec.Code)
 		}
 	})
 }

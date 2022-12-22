@@ -64,6 +64,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
+
 	r.ParseForm()
 	if len(r.Form["search"]) == 0 {
 		h.Errors(w, http.StatusBadRequest)
@@ -127,11 +128,10 @@ func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	r.ParseForm()
-	if len(r.Form["category"]) == 0 {
+	if len(r.Form["category"]) == 0 || len(r.Form["category"][0]) == 0 {
 		h.Errors(w, http.StatusBadRequest)
 		return
 	}
-
 	data := r.Form["category"][0]
 	categories := strings.Split(data, "\r\n")
 

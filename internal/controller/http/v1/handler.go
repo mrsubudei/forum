@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"path/filepath"
+	"runtime"
+	"strings"
 
 	"forum/internal/config"
 	"forum/internal/usecase"
@@ -28,7 +31,8 @@ func NewHandler(usecases *usecase.UseCases, cfg config.Config, logger *logger.Lo
 }
 
 func (h *Handler) ParseAndExecute(w http.ResponseWriter, content Content, path string) error {
-	html, err := template.ParseFiles(path)
+	root := getRootPath()
+	html, err := template.ParseFiles(root + path)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("parseFiles: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
@@ -44,6 +48,8 @@ func (h *Handler) ParseAndExecute(w http.ResponseWriter, content Content, path s
 }
 
 func (h *Handler) Errors(w http.ResponseWriter, status int) {
+	root := getRootPath()
+
 	errors := ErrMessage{}
 	switch status {
 	case http.StatusBadRequest:
@@ -68,7 +74,7 @@ func (h *Handler) Errors(w http.ResponseWriter, status int) {
 		errors.Code = http.StatusInternalServerError
 		errors.Message = ErrInternalServer
 	}
-	html, err := template.ParseFiles("templates/errors.html")
+	html, err := template.ParseFiles(root + "templates/errors.html")
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - Errors - ParseFiles: %w", err))
 		http.Error(w, ErrInternalServer, http.StatusInternalServerError)
@@ -118,4 +124,12 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	// fileserver
 	router.Handle("/templates/css/", http.StripPrefix("/templates/css/", http.FileServer(http.Dir("templates/css"))))
 	router.Handle("/templates/img/", http.StripPrefix("/templates/img/", http.FileServer(http.Dir("templates/img"))))
+}
+
+func getRootPath() string {
+	_, basePath, _, _ := runtime.Caller(0)
+	pathSlice := strings.Split(filepath.Dir(basePath), "/")
+	rootSlice := pathSlice[:len(pathSlice)-4]
+	root := strings.Join(rootSlice, "/")
+	return root + "/"
 }

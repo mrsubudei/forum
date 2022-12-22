@@ -4,13 +4,16 @@ import (
 	"forum/internal/entity"
 )
 
-type UsersMockUseCase struct{}
+type UsersMockUseCase struct {
+	Users []entity.User
+}
 
 func NewUsersMockUseCase() *UsersMockUseCase {
 	return &UsersMockUseCase{}
 }
 
 func (um *UsersMockUseCase) SignUp(u entity.User) error {
+	um.Users = append(um.Users, u)
 	return nil
 }
 
@@ -28,6 +31,12 @@ func (um *UsersMockUseCase) GetById(id int64) (entity.User, error) {
 
 func (um *UsersMockUseCase) GetIdBy(user entity.User) (int64, error) {
 	var id int64
+	if len(um.Users) > 1 {
+		id = 5
+	} else if len(um.Users) == 1 {
+		id = 1
+	}
+
 	return id, nil
 }
 
@@ -36,6 +45,9 @@ func (um *UsersMockUseCase) GetSession(id int64) (entity.User, error) {
 }
 
 func (um *UsersMockUseCase) CheckSession(u entity.User) (bool, error) {
+	if len(um.Users) != 0 {
+		return true, nil
+	}
 	return false, nil
 }
 
@@ -52,6 +64,7 @@ func (um *UsersMockUseCase) DeleteSession(user entity.User) error {
 }
 
 func (um *UsersMockUseCase) DeleteUser(u entity.User) error {
+	um.Users = um.Users[:len(um.Users)-1]
 	return nil
 }
 
