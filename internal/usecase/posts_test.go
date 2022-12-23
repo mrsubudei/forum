@@ -346,7 +346,7 @@ func TestPostMakeReaction(t *testing.T) {
 			t.Fatalf("want: %d, got: %d", post2.Id, found[0].Id)
 		}
 
-		//second time reaction should delete reaction
+		// second time reaction should delete reaction
 		if err := postUseCase.MakeReaction(post2, usecase.ReactionDislike); err != nil {
 			t.Fatal(err)
 		}
@@ -356,7 +356,6 @@ func TestPostMakeReaction(t *testing.T) {
 		} else if len(found) != 0 {
 			t.Fatalf("want: %d, got: %d", 0, len(found))
 		}
-
 	})
 }
 

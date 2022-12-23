@@ -318,7 +318,6 @@ func TestGetAllUsers(t *testing.T) {
 		} else if len(users) != 3 {
 			t.Fatalf("want: %d, got: %d", 3, len(users))
 		}
-
 	})
 }
 

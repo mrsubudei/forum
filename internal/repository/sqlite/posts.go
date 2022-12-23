@@ -21,7 +21,9 @@ func (pr *PostsRepo) Store(post *entity.Post) error {
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Store - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO posts(user_id, date, title, content) 
@@ -59,7 +61,9 @@ func (pr *PostsRepo) StoreTopicReference(post entity.Post) error {
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreTopicReference - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO reference_topic(post_id, topic) 
@@ -252,7 +256,7 @@ func (pr *PostsRepo) GetIdsByCategory(category string) ([]int64, error) {
 
 	for rows.Next() {
 		var id int64
-		rows.Scan(&id)
+		err = rows.Scan(&id)
 		if err != nil {
 			return nil, fmt.Errorf("PostsRepo - GetIdsByCategory - Scan: %w", err)
 		}
@@ -291,7 +295,9 @@ func (pr *PostsRepo) Update(post entity.Post) error {
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Update - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := pr.DB.Prepare(`
 	UPDATE posts
@@ -326,7 +332,9 @@ func (pr *PostsRepo) Delete(post entity.Post) error {
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Delete - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM posts
@@ -360,7 +368,9 @@ func (pr *PostsRepo) StoreLike(post entity.Post) error {
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreLike - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO post_likes(post_id, user_id, date) 
@@ -373,10 +383,6 @@ func (pr *PostsRepo) StoreLike(post entity.Post) error {
 
 	res, err := stmt.Exec(post.Id, post.User.Id, getRegTime(DateFormat))
 	if err != nil {
-		tx.Commit()
-		if err != nil {
-			return fmt.Errorf("PostsRepo - StoreLike - Exec Commit: %w", err)
-		}
 		return fmt.Errorf("PostsRepo - StoreLike - Exec: %w", err)
 	}
 	affected, err := res.RowsAffected()
@@ -396,7 +402,9 @@ func (pr *PostsRepo) DeleteLike(post entity.Post) error {
 	if err != nil {
 		return fmt.Errorf("PostsRepo - DeleteLike - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM post_likes
@@ -425,7 +433,9 @@ func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreDislike - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO post_dislikes(post_id, user_id, date) 
@@ -438,10 +448,6 @@ func (pr *PostsRepo) StoreDislike(post entity.Post) error {
 
 	res, err := stmt.Exec(post.Id, post.User.Id, getRegTime(DateFormat))
 	if err != nil {
-		tx.Commit()
-		if err != nil {
-			return fmt.Errorf("PostsRepo - StoreDislike - Exec Commit: %w", err)
-		}
 		return fmt.Errorf("PostsRepo - StoreDislike - Exec: %w", err)
 	}
 	affected, err := res.RowsAffected()
@@ -461,7 +467,9 @@ func (pr *PostsRepo) DeleteDislike(post entity.Post) error {
 	if err != nil {
 		return fmt.Errorf("PostsRepo - DeleteDislike - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM post_dislikes
@@ -537,7 +545,9 @@ func (pr *PostsRepo) StoreCategories(categories []string) error {
 	if err != nil {
 		return fmt.Errorf("PostsRepo - StoreCategories - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO topics(name) 

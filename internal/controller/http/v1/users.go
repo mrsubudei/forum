@@ -118,7 +118,9 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
-	r.ParseForm()
+	if err := r.ParseForm(); err != nil {
+		h.Errors(w, http.StatusInternalServerError)
+	}
 	var dateOfBirth string
 	var city string
 	var gender string
@@ -227,7 +229,10 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
-	r.ParseForm()
+
+	if err := r.ParseForm(); err != nil {
+		h.Errors(w, http.StatusInternalServerError)
+	}
 
 	if len(r.Form["user"]) == 0 || len(r.Form["password"]) == 0 {
 		h.Errors(w, http.StatusBadRequest)
@@ -346,7 +351,9 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.ParseForm()
+	if err := r.ParseForm(); err != nil {
+		h.Errors(w, http.StatusInternalServerError)
+	}
 
 	if len(r.Form["id"]) != 0 && r.Form["id"][0] != "" {
 		id, err := strconv.Atoi(r.Form["id"][0])

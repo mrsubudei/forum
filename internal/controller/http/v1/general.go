@@ -65,7 +65,10 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.ParseForm()
+	if err := r.ParseForm(); err != nil {
+		h.Errors(w, http.StatusInternalServerError)
+	}
+
 	if len(r.Form["search"]) == 0 {
 		h.Errors(w, http.StatusBadRequest)
 		return
@@ -127,7 +130,10 @@ func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	r.ParseForm()
+	if err := r.ParseForm(); err != nil {
+		h.Errors(w, http.StatusInternalServerError)
+	}
+
 	if len(r.Form["category"]) == 0 || len(r.Form["category"][0]) == 0 {
 		h.Errors(w, http.StatusBadRequest)
 		return

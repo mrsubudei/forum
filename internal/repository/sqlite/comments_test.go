@@ -157,7 +157,6 @@ func TestCommentUpdate(t *testing.T) {
 		} else if found.Content != newContent {
 			t.Fatalf("want = %v, got = %v:", newContent, found.Content)
 		}
-
 	})
 }
 
@@ -285,7 +284,6 @@ func TestCommentDeleteLike(t *testing.T) {
 		if err = repo.DeleteLike(comment); err != nil {
 			t.Fatal("Unable to DeleteLike:", err)
 		}
-
 	})
 }
 
@@ -334,7 +332,6 @@ func TestCommentDeleteDislike(t *testing.T) {
 		if err = repo.DeleteDislike(comment); err != nil {
 			t.Fatal("Unable to DeleteDislike:", err)
 		}
-
 	})
 }
 
@@ -375,6 +372,5 @@ func TestCommentFetchReactions(t *testing.T) {
 		} else if len(found.Dislikes) != 2 {
 			t.Fatalf("want  = %d, got = %d:", 2, len(found.Dislikes))
 		}
-
 	})
 }

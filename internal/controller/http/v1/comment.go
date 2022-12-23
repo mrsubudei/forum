@@ -47,7 +47,10 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.ParseForm()
+	if err := r.ParseForm(); err != nil {
+		h.Errors(w, http.StatusInternalServerError)
+	}
+
 	if len(r.Form["content"][0]) == 0 {
 		h.Errors(w, http.StatusBadRequest)
 		return

@@ -21,7 +21,9 @@ func (cr *CommentsRepo) Store(comment entity.Comment) error {
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - Store - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO comments(post_id, user_id, date, content) 
@@ -116,7 +118,9 @@ func (cr *CommentsRepo) Update(comment entity.Comment) error {
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - Update - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := cr.DB.Prepare(`
 	UPDATE comments
@@ -176,7 +180,9 @@ func (cr *CommentsRepo) Delete(comment entity.Comment) error {
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - Delete - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := cr.DB.Prepare(`
 	DELETE FROM comments
@@ -210,7 +216,9 @@ func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - StoreLike - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO comment_likes(comment_id, user_id, date) 
@@ -223,10 +231,6 @@ func (pr *CommentsRepo) StoreLike(comment entity.Comment) error {
 
 	res, err := stmt.Exec(comment.Id, comment.User.Id, getRegTime(DateFormat))
 	if err != nil {
-		tx.Commit()
-		if err != nil {
-			return fmt.Errorf("CommentsRepo - StoreLike - Exec - Commit: %w", err)
-		}
 		return fmt.Errorf("CommentsRepo - StoreLike - Exec: %w", err)
 	}
 	affected, err := res.RowsAffected()
@@ -246,7 +250,9 @@ func (pr *CommentsRepo) DeleteLike(comment entity.Comment) error {
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteLike - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM comment_likes
@@ -275,7 +281,9 @@ func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - StoreDislike - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO comment_dislikes(comment_id, user_id, date) 
@@ -288,10 +296,6 @@ func (pr *CommentsRepo) StoreDislike(comment entity.Comment) error {
 
 	res, err := stmt.Exec(comment.Id, comment.User.Id, getRegTime(DateFormat))
 	if err != nil {
-		tx.Commit()
-		if err != nil {
-			return fmt.Errorf("CommentsRepo - StoreDislike - Exec - Commit: %w", err)
-		}
 		return fmt.Errorf("CommentsRepo - StoreDislike - Exec: %w", err)
 	}
 	affected, err := res.RowsAffected()
@@ -311,7 +315,9 @@ func (pr *CommentsRepo) DeleteDislike(comment entity.Comment) error {
 	if err != nil {
 		return fmt.Errorf("CommentsRepo - DeleteDislike - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := pr.DB.Prepare(`
 	DELETE FROM comment_dislikes

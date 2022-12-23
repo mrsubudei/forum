@@ -1,7 +1,6 @@
 package v1_test
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -150,7 +149,9 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 	handler.RegisterRoutes(handler.Mux)
 
 	t.Run("OK", func(t *testing.T) {
-		mockUsersUseCase.SignUp(entity.User{})
+		if err = mockUsersUseCase.SignUp(entity.User{}); err != nil {
+			t.Fatal(err)
+		}
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
 		cookie := &http.Cookie{
@@ -176,7 +177,9 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 	})
 
 	t.Run("err method not allowed", func(t *testing.T) {
-		mockUsersUseCase.SignUp(entity.User{})
+		if err = mockUsersUseCase.SignUp(entity.User{}); err != nil {
+			t.Fatal(err)
+		}
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodPut, "/create_category_page/", nil)
 		cookie := &http.Cookie{
@@ -194,7 +197,9 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 	t.Run("err low access level", func(t *testing.T) {
 		// if there is one user, he becomes admin and can create categories
 		// if more, he behaves as simple user
-		mockUsersUseCase.SignUp(entity.User{})
+		if err = mockUsersUseCase.SignUp(entity.User{}); err != nil {
+			t.Fatal(err)
+		}
 
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
@@ -225,8 +230,9 @@ func TestCreateCategoryHandler(t *testing.T) {
 	handler.RegisterRoutes(handler.Mux)
 
 	t.Run("OK", func(t *testing.T) {
-		mockUsersUseCase.SignUp(entity.User{})
-		fmt.Println(len(mockUsersUseCase.Users))
+		if err = mockUsersUseCase.SignUp(entity.User{}); err != nil {
+			t.Fatal(err)
+		}
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodPost, "/create_category/", nil)
 
@@ -247,7 +253,6 @@ func TestCreateCategoryHandler(t *testing.T) {
 	})
 
 	t.Run("err wrong method", func(t *testing.T) {
-		fmt.Println(len(mockUsersUseCase.Users))
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodHead, "/create_category/", nil)
 
@@ -264,7 +269,6 @@ func TestCreateCategoryHandler(t *testing.T) {
 	})
 
 	t.Run("err empty request", func(t *testing.T) {
-		fmt.Println(len(mockUsersUseCase.Users))
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodPost, "/create_category/", nil)
 

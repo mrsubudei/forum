@@ -81,7 +81,10 @@ func (h *Handler) Errors(w http.ResponseWriter, status int) {
 		return
 	}
 	w.WriteHeader(errors.Code)
-	html.Execute(w, errors)
+	err = html.Execute(w, errors)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 func (h *Handler) RegisterRoutes(router *http.ServeMux) {
