@@ -68,7 +68,9 @@ func (um *UsersMockUseCase) DeleteUser(u entity.User) error {
 	return nil
 }
 
-type PostsMockUseCase struct{}
+type PostsMockUseCase struct {
+	Categories []string
+}
 
 func NewPostsMockUseCase() *PostsMockUseCase {
 	return &PostsMockUseCase{}
@@ -91,7 +93,20 @@ func (pm *PostsMockUseCase) GetById(id int64) (entity.Post, error) {
 }
 
 func (pm *PostsMockUseCase) GetAllByCategory(category string) ([]entity.Post, error) {
-	return []entity.Post{}, nil
+	posts := []entity.Post{}
+	found := false
+
+	for _, v := range pm.Categories {
+		if v == category {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return posts, entity.ErrPostNotFound
+	}
+	return posts, nil
 }
 
 func (pm *PostsMockUseCase) UpdatePost(post entity.Post) error {
@@ -111,6 +126,7 @@ func (pm *PostsMockUseCase) DeleteReaction(post entity.Post, command string) err
 }
 
 func (pm *PostsMockUseCase) CreateCategories(categories []string) error {
+	pm.Categories = append(pm.Categories, categories...)
 	return nil
 }
 

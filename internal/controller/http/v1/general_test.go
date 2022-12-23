@@ -250,3 +250,40 @@ func TestCreateCategoryHandler(t *testing.T) {
 		}
 	})
 }
+
+func TestSearchByCategoryHandler(t *testing.T) {
+	handler := setup()
+
+	t.Run("OK", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/categories/cars", nil)
+		handler.Usecases.Posts.CreateCategories([]string{"cars"})
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("want: %v, got: %v", http.StatusOK, rec.Code)
+		}
+	})
+
+	t.Run("err wrong method", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodDelete, "/categories/", nil)
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusMethodNotAllowed {
+			t.Fatalf("want: %v, got: %v", http.StatusMethodNotAllowed, rec.Code)
+		}
+	})
+
+	t.Run("err category not found", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/categories/qwerty", nil)
+		handler.Usecases.Posts.CreateCategories([]string{"cars"})
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusBadRequest {
+			t.Fatalf("want: %v, got: %v", http.StatusBadRequest, rec.Code)
+		}
+	})
+}

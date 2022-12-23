@@ -13,3 +13,7 @@ ERROR 2022/12/22 19:28:43 parseFiles: open ../../../../home/student/github/forum
 ERROR 2022/12/22 19:28:43 v1 - IndexHandler - ParseAndExecute - open ../../../../home/student/github/forum/internal/controller/http/v1templates/index.html: no such file or directory
 ERROR 2022/12/22 19:33:27 parseFiles: open /home/student/github/forumtemplates/index.html: no such file or directory
 ERROR 2022/12/22 19:33:27 v1 - IndexHandler - ParseAndExecute - open /home/student/github/forumtemplates/index.html: no such file or directory
+INFO: 2022/12/23 19:53:09 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 19:53:12 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 19:53:16 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 19:53:34 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found

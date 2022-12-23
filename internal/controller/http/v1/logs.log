@@ -1,1 +1,6 @@
 ERROR 2022/12/22 19:34:04 v1 - Errors - ParseFiles: open templates/errors.html: no such file or directory
+INFO: 2022/12/23 19:57:02 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 19:59:58 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 20:00:12 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 20:01:26 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 20:02:00 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
