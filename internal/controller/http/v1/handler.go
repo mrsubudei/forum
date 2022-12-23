@@ -14,7 +14,7 @@ import (
 )
 
 type Handler struct {
-	usecases *usecase.UseCases
+	Usecases *usecase.UseCases
 	Cfg      config.Config
 	l        *logger.Logger
 	Mux      *http.ServeMux
@@ -23,7 +23,7 @@ type Handler struct {
 func NewHandler(usecases *usecase.UseCases, cfg config.Config, logger *logger.Logger) *Handler {
 	mux := http.NewServeMux()
 	return &Handler{
-		usecases: usecases,
+		Usecases: usecases,
 		Cfg:      cfg,
 		l:        logger,
 		Mux:      mux,

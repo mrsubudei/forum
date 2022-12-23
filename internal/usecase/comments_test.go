@@ -36,10 +36,8 @@ func TestWriteComments(t *testing.T) {
 func TestGetAllComments(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		mockRepo := m.NewMockRepos()
+		userUseCase := setupUserUseCase(mockRepo)
 		commentUseCase := usecase.NewCommentsUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
-		hasher, tokenManager := getDependencies()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
 
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
@@ -130,10 +128,8 @@ func TestDeleteComment(t *testing.T) {
 func TestCommentMakeReaction(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		mockRepo := m.NewMockRepos()
+		userUseCase := setupUserUseCase(mockRepo)
 		commentUseCase := usecase.NewCommentsUseCase(mockRepo.Comments, mockRepo.Posts, mockRepo.Users)
-		hasher, tokenManager := getDependencies()
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
 
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)

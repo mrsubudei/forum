@@ -38,7 +38,7 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	content.OwnerId = content.User.Id
 
-	user, err := h.usecases.Users.GetById(int64(id))
+	user, err := h.Usecases.Users.GetById(int64(id))
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - UserPageHandler - GetById: %w", err))
 		if errors.Is(err, entity.ErrUserNotFound) {
@@ -79,7 +79,7 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users, err := h.usecases.Users.GetAllUsers()
+	users, err := h.Usecases.Users.GetAllUsers()
 	content.Users = users
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - AllUsersPageHandler - GetAllUsers: %w", err))
@@ -186,7 +186,7 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.usecases.Users.SignUp(user)
+	err = h.Usecases.Users.SignUp(user)
 	if err != nil {
 		if err == entity.ErrUserEmailAlreadyExists {
 			content.ErrorMsg.Message = UserEmailAlreadyExist
@@ -254,7 +254,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	valid := true
 	content := Content{}
 
-	err := h.usecases.Users.SignIn(user)
+	err := h.Usecases.Users.SignIn(user)
 
 	if err != nil && !strings.Contains(err.Error(), ErrNoRowsInResult) {
 		h.l.WriteLog(fmt.Errorf("v1 - SignInHandler - SignIn: %w", err))
@@ -277,14 +277,14 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		return
 
 	} else {
-		id, err := h.usecases.Users.GetIdBy(user)
+		id, err := h.Usecases.Users.GetIdBy(user)
 		if err != nil {
 			h.l.WriteLog(fmt.Errorf("v1 - SignInHandler - GetIdBy: %w", err))
 			h.Errors(w, http.StatusBadRequest)
 			return
 		}
 
-		userWithSession, err := h.usecases.Users.GetSession(id)
+		userWithSession, err := h.Usecases.Users.GetSession(id)
 		if err != nil {
 			h.l.WriteLog(fmt.Errorf("v1 - SignInHandler - GetSession: %w", err))
 			h.Errors(w, http.StatusInternalServerError)
@@ -365,7 +365,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		content.User.Id = int64(id)
 	}
 
-	existUser, err := h.usecases.Users.GetById(content.User.Id)
+	existUser, err := h.Usecases.Users.GetById(content.User.Id)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - GetById: %w", err))
 		h.Errors(w, http.StatusNotFound)
@@ -388,7 +388,7 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		existUser.Role = r.Form["role"][0]
 	}
 
-	err = h.usecases.Users.UpdateUserInfo(existUser, UpdateQueryInfo)
+	err = h.Usecases.Users.UpdateUserInfo(existUser, UpdateQueryInfo)
 
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - UpdateUserInfo: %w", err))
@@ -408,7 +408,7 @@ func (h *Handler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.usecases.Users.DeleteSession(content.User)
+	err := h.Usecases.Users.DeleteSession(content.User)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - SignOutHandler - DeleteSession: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
@@ -454,7 +454,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 	switch query {
 	case QueryPost:
 		if reaction == QueryLiked {
-			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryLiked)
+			content.Users, err = h.Usecases.Posts.GetReactions(int64(id), QueryLiked)
 			if err != nil {
 				h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #1: %w", err))
 				h.Errors(w, http.StatusNotFound)
@@ -462,7 +462,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 			}
 			content.Message = ReactionMessageLike
 		} else if reaction == QueryDisliked {
-			content.Users, err = h.usecases.Posts.GetReactions(int64(id), QueryDisliked)
+			content.Users, err = h.Usecases.Posts.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
 				h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #2: %w", err))
 				h.Errors(w, http.StatusNotFound)
@@ -472,7 +472,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 		}
 	case QueryComment:
 		if reaction == QueryLiked {
-			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryLiked)
+			content.Users, err = h.Usecases.Comments.GetReactions(int64(id), QueryLiked)
 			if err != nil {
 				h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #3: %w", err))
 				h.Errors(w, http.StatusNotFound)
@@ -480,7 +480,7 @@ func (h *Handler) FindReactedUsersHandler(w http.ResponseWriter, r *http.Request
 			}
 			content.Message = ReactionMessageLike
 		} else if reaction == QueryDisliked {
-			content.Users, err = h.usecases.Comments.GetReactions(int64(id), QueryDisliked)
+			content.Users, err = h.Usecases.Comments.GetReactions(int64(id), QueryDisliked)
 			if err != nil {
 				h.l.WriteLog(fmt.Errorf("v1 - FindReactedUsersHandler - GetReactions #4: %w", err))
 				h.Errors(w, http.StatusBadRequest)
@@ -510,7 +510,7 @@ func (h *Handler) GetExistedSession(w http.ResponseWriter, r *http.Request) enti
 	user := entity.User{
 		SessionToken: token,
 	}
-	id, err := h.usecases.Users.GetIdBy(user)
+	id, err := h.Usecases.Users.GetIdBy(user)
 	if err != nil {
 		if !strings.Contains(err.Error(), ErrNoRowsInResult) {
 			h.l.WriteLog(fmt.Errorf("v1 - GetExistedSession - GetIdBy: %w", err))

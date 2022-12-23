@@ -25,7 +25,7 @@ func (h *Handler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err := h.usecases.Posts.GetById(int64(id))
+	post, err := h.Usecases.Posts.GetById(int64(id))
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - PostPageHandler - GetById: %w", err))
 		h.Errors(w, http.StatusNotFound)
@@ -63,7 +63,7 @@ func (h *Handler) CreatePostPageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	categories, err := h.usecases.Posts.GetAllCategories()
+	categories, err := h.Usecases.Posts.GetAllCategories()
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - CreatePostPageHandler - GetAllCategories: %w", err))
 		h.Errors(w, http.StatusInternalServerError)
@@ -119,7 +119,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if !valid {
 		w.WriteHeader(http.StatusBadRequest)
-		categories, err := h.usecases.Posts.GetAllCategories()
+		categories, err := h.Usecases.Posts.GetAllCategories()
 		if err != nil {
 			h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - GetAllCategories: %w", err))
 			h.Errors(w, http.StatusInternalServerError)
@@ -133,7 +133,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		err := h.usecases.Posts.CreatePost(newPost)
+		err := h.Usecases.Posts.CreatePost(newPost)
 		if err != nil {
 			h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - CreatePost: %w", err))
 			h.Errors(w, http.StatusInternalServerError)
@@ -167,7 +167,7 @@ func (h *Handler) PostPutLikeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	post.User.Id = content.User.Id
 
-	err = h.usecases.Posts.MakeReaction(post, CommandPutLike)
+	err = h.Usecases.Posts.MakeReaction(post, CommandPutLike)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - PostPutLikeHandler - MakeReaction: %w", err))
 		h.Errors(w, http.StatusNotFound)
@@ -201,7 +201,7 @@ func (h *Handler) PostPutDislikeHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	post.User.Id = content.User.Id
 
-	err = h.usecases.Posts.MakeReaction(post, CommandPutDislike)
+	err = h.Usecases.Posts.MakeReaction(post, CommandPutDislike)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - PostPutDislikeHandler - MakeReaction: %w", err))
 		h.Errors(w, http.StatusNotFound)
@@ -240,7 +240,7 @@ func (h *Handler) FindPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	user := entity.User{Id: int64(userId)}
 
-	posts, err := h.usecases.Posts.GetPostsByQuery(user, query)
+	posts, err := h.Usecases.Posts.GetPostsByQuery(user, query)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - FindPostsHandler - GetPostsByQuery: %w", err))
 		h.Errors(w, http.StatusNotFound)

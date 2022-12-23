@@ -15,7 +15,7 @@ import (
 	"forum/pkg/logger"
 )
 
-func TestIndexHandler(t *testing.T) {
+func setup() *v1.Handler {
 	cfg, err := config.LoadConfig("../../../../config.json")
 	if err != nil {
 		log.Fatal(err)
@@ -27,6 +27,12 @@ func TestIndexHandler(t *testing.T) {
 	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
 	handler := v1.NewHandler(usecases, cfg, l)
 	handler.RegisterRoutes(handler.Mux)
+
+	return handler
+}
+
+func TestIndexHandler(t *testing.T) {
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
@@ -50,17 +56,7 @@ func TestIndexHandler(t *testing.T) {
 }
 
 func TestSearchPageHandler(t *testing.T) {
-	cfg, err := config.LoadConfig("../../../../config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	l := logger.New()
-	mockUsersUseCase := mu.NewUsersMockUseCase()
-	mockPostsUseCase := mu.NewPostsMockUseCase()
-	mockCommentsUseCase := mu.NewCommentsMockUseCase()
-	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
-	handler := v1.NewHandler(usecases, cfg, l)
-	handler.RegisterRoutes(handler.Mux)
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
@@ -84,17 +80,7 @@ func TestSearchPageHandler(t *testing.T) {
 }
 
 func TestSearchHandler(t *testing.T) {
-	cfg, err := config.LoadConfig("../../../../config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	l := logger.New()
-	mockUsersUseCase := mu.NewUsersMockUseCase()
-	mockPostsUseCase := mu.NewPostsMockUseCase()
-	mockCommentsUseCase := mu.NewCommentsMockUseCase()
-	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
-	handler := v1.NewHandler(usecases, cfg, l)
-	handler.RegisterRoutes(handler.Mux)
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
@@ -136,20 +122,10 @@ func TestSearchHandler(t *testing.T) {
 }
 
 func TestCreateCategoryPageHandler(t *testing.T) {
-	cfg, err := config.LoadConfig("../../../../config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	l := logger.New()
-	mockUsersUseCase := mu.NewUsersMockUseCase()
-	mockPostsUseCase := mu.NewPostsMockUseCase()
-	mockCommentsUseCase := mu.NewCommentsMockUseCase()
-	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
-	handler := v1.NewHandler(usecases, cfg, l)
-	handler.RegisterRoutes(handler.Mux)
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
-		if err = mockUsersUseCase.SignUp(entity.User{}); err != nil {
+		if err := handler.Usecases.Users.SignUp(entity.User{}); err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
@@ -177,7 +153,7 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 	})
 
 	t.Run("err method not allowed", func(t *testing.T) {
-		if err = mockUsersUseCase.SignUp(entity.User{}); err != nil {
+		if err := handler.Usecases.Users.SignUp(entity.User{}); err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
@@ -197,7 +173,7 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 	t.Run("err low access level", func(t *testing.T) {
 		// if there is one user, he becomes admin and can create categories
 		// if more, he behaves as simple user
-		if err = mockUsersUseCase.SignUp(entity.User{}); err != nil {
+		if err := handler.Usecases.Users.SignUp(entity.User{}); err != nil {
 			t.Fatal(err)
 		}
 
@@ -217,20 +193,10 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 }
 
 func TestCreateCategoryHandler(t *testing.T) {
-	cfg, err := config.LoadConfig("../../../../config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	l := logger.New()
-	mockUsersUseCase := mu.NewUsersMockUseCase()
-	mockPostsUseCase := mu.NewPostsMockUseCase()
-	mockCommentsUseCase := mu.NewCommentsMockUseCase()
-	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
-	handler := v1.NewHandler(usecases, cfg, l)
-	handler.RegisterRoutes(handler.Mux)
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
-		if err = mockUsersUseCase.SignUp(entity.User{}); err != nil {
+		if err := handler.Usecases.Users.SignUp(entity.User{}); err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
