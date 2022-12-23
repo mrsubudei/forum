@@ -152,7 +152,6 @@ func (pu *PostsUseCase) GetAllByCategory(category string) ([]entity.Post, error)
 	var posts []entity.Post
 	ids, err := pu.repo.GetIdsByCategory(category)
 	if err != nil {
-		fmt.Println(err)
 		return posts, fmt.Errorf("PostsUseCase - GetAllByCategory #1 - %w", err)
 	}
 	if len(ids) == 0 {

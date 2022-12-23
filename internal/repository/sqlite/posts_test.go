@@ -572,6 +572,5 @@ func TestStoreCategories(t *testing.T) {
 		} else if !reflect.DeepEqual(found, categories1) {
 			t.Fatalf("want categories = %v, got categories = %v:", categories1, found)
 		}
-
 	})
 }

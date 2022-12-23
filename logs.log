@@ -5,3 +5,15 @@ ERROR 2022/12/12 22:15:04 v1 - FindPostsHandler - GetPostsByQuery: PostsUseCase 
 ERROR 2022/12/19 22:34:39 v1 - IndexHandler - TypeAssertion:got data of type v1.Content but wanted v1.Content
 ERROR 2022/12/19 22:45:33 v1 - IndexHandler - TypeAssertion:got data of type v1.Content but wanted v1.Content
 ERROR 2022/12/19 22:56:14 v1 - Errors - ParseFiles: open templates/errorhtml: The system cannot find the file specified.
+ERROR 2022/12/22 19:28:18 parseFiles: open ../../../..//home/student/github/forum/internal/controller/http/v1templates/index.html: no such file or directory
+ERROR 2022/12/22 19:28:18 v1 - IndexHandler - ParseAndExecute - open ../../../..//home/student/github/forum/internal/controller/http/v1templates/index.html: no such file or directory
+ERROR 2022/12/22 19:28:33 parseFiles: open ../../../..//home/student/github/forum/internal/controller/http/v1templates/index.html: no such file or directory
+ERROR 2022/12/22 19:28:33 v1 - IndexHandler - ParseAndExecute - open ../../../..//home/student/github/forum/internal/controller/http/v1templates/index.html: no such file or directory
+ERROR 2022/12/22 19:28:43 parseFiles: open ../../../../home/student/github/forum/internal/controller/http/v1templates/index.html: no such file or directory
+ERROR 2022/12/22 19:28:43 v1 - IndexHandler - ParseAndExecute - open ../../../../home/student/github/forum/internal/controller/http/v1templates/index.html: no such file or directory
+ERROR 2022/12/22 19:33:27 parseFiles: open /home/student/github/forumtemplates/index.html: no such file or directory
+ERROR 2022/12/22 19:33:27 v1 - IndexHandler - ParseAndExecute - open /home/student/github/forumtemplates/index.html: no such file or directory
+INFO: 2022/12/23 19:53:09 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 19:53:12 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 19:53:16 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/23 19:53:34 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found

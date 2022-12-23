@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 
 	"forum/internal/entity"
 )
@@ -15,7 +18,12 @@ type Logger struct {
 }
 
 func New() *Logger {
-	file, err := os.OpenFile("logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o664)
+	_, basePath, _, _ := runtime.Caller(0)
+	pathSlice := strings.Split(filepath.Dir(basePath), "/")
+	rootSlice := pathSlice[:len(pathSlice)-4]
+	root := strings.Join(rootSlice, "/")
+
+	file, err := os.OpenFile(root+"/"+"logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o664)
 	if err != nil {
 		log.Fatal(fmt.Errorf("logger - New - os.OpenFile: %w", err))
 	}

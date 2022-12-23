@@ -124,10 +124,8 @@ func TestGetPostsByQuery(t *testing.T) {
 
 func TestPostGetById(t *testing.T) {
 	mockRepo := m.NewMockRepos()
-	hasher, tokenManager := getDependencies()
+	userUseCase := setupUserUseCase(mockRepo)
 	postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-	userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-		mockRepo.Posts, mockRepo.Comments)
 
 	t.Run("OK", func(t *testing.T) {
 		if err := userUseCase.SignUp(user4); err != nil {
@@ -158,10 +156,8 @@ func TestPostGetById(t *testing.T) {
 
 func TestGetAllByCategory(t *testing.T) {
 	mockRepo := m.NewMockRepos()
-	hasher, tokenManager := getDependencies()
+	userUseCase := setupUserUseCase(mockRepo)
 	postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-	userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-		mockRepo.Posts, mockRepo.Comments)
 
 	t.Run("OK", func(t *testing.T) {
 		if err := userUseCase.SignUp(user1); err != nil {
@@ -247,10 +243,8 @@ func TestGetAllCategories(t *testing.T) {
 func TestUpdatePost(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		mockRepo := m.NewMockRepos()
-		hasher, tokenManager := getDependencies()
+		userUseCase := setupUserUseCase(mockRepo)
 		postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
 
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
@@ -277,10 +271,8 @@ func TestUpdatePost(t *testing.T) {
 func TestDeletePost(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		mockRepo := m.NewMockRepos()
-		hasher, tokenManager := getDependencies()
+		userUseCase := setupUserUseCase(mockRepo)
 		postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
 
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
@@ -309,10 +301,8 @@ func TestDeletePost(t *testing.T) {
 func TestPostMakeReaction(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		mockRepo := m.NewMockRepos()
-		hasher, tokenManager := getDependencies()
+		userUseCase := setupUserUseCase(mockRepo)
 		postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
 
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)
@@ -346,7 +336,7 @@ func TestPostMakeReaction(t *testing.T) {
 			t.Fatalf("want: %d, got: %d", post2.Id, found[0].Id)
 		}
 
-		//second time reaction should delete reaction
+		// second time reaction should delete reaction
 		if err := postUseCase.MakeReaction(post2, usecase.ReactionDislike); err != nil {
 			t.Fatal(err)
 		}
@@ -356,17 +346,14 @@ func TestPostMakeReaction(t *testing.T) {
 		} else if len(found) != 0 {
 			t.Fatalf("want: %d, got: %d", 0, len(found))
 		}
-
 	})
 }
 
 func TestPostDeleteReaction(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		mockRepo := m.NewMockRepos()
-		hasher, tokenManager := getDependencies()
+		userUseCase := setupUserUseCase(mockRepo)
 		postUseCase := usecase.NewPostsUseCase(mockRepo.Posts, mockRepo.Users, mockRepo.Comments)
-		userUseCase := usecase.NewUsersUseCase(mockRepo.Users, hasher, tokenManager,
-			mockRepo.Posts, mockRepo.Comments)
 
 		if err := userUseCase.SignUp(user1); err != nil {
 			t.Fatal(err)

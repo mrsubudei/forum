@@ -47,7 +47,10 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.ParseForm()
+	if err := r.ParseForm(); err != nil {
+		h.Errors(w, http.StatusInternalServerError)
+	}
+
 	if len(r.Form["content"][0]) == 0 {
 		h.Errors(w, http.StatusBadRequest)
 		return
@@ -77,7 +80,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	newComment.User = content.User
 	newComment.PostId = int64(id)
 
-	err = h.usecases.Comments.WriteComment(newComment)
+	err = h.Usecases.Comments.WriteComment(newComment)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - WriteComment: %w", err))
 		h.Errors(w, http.StatusBadRequest)
@@ -111,7 +114,7 @@ func (h *Handler) CommentPutLikeHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	comment.User.Id = content.User.Id
 
-	err = h.usecases.Comments.MakeReaction(comment, CommandPutLike)
+	err = h.Usecases.Comments.MakeReaction(comment, CommandPutLike)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - CommentPutLikeHandler - MakeReaction: %w", err))
 		h.Errors(w, http.StatusNotFound)
@@ -146,7 +149,7 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 	}
 	comment.User.Id = content.User.Id
 
-	err = h.usecases.Comments.MakeReaction(comment, CommandPutDislike)
+	err = h.Usecases.Comments.MakeReaction(comment, CommandPutDislike)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - CommentPutDislikeHandler - MakeReaction: %w", err))
 		h.Errors(w, http.StatusNotFound)

@@ -22,7 +22,9 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Store - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := tx.Prepare(`
 	INSERT INTO users(name, email, password, reg_date, date_of_birth, city, sex, role, sign) 
@@ -232,7 +234,9 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Update - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := ur.DB.Prepare(`
 	UPDATE users
@@ -267,7 +271,9 @@ func (ur *UsersRepo) UpdatePassword(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdatePassword - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := ur.DB.Prepare(`
 	UPDATE users
@@ -302,7 +308,9 @@ func (ur *UsersRepo) NewSession(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - NewSession - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := ur.DB.Prepare(`
 	UPDATE users
@@ -337,7 +345,9 @@ func (ur *UsersRepo) UpdateSession(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - UpdateSession - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := ur.DB.Prepare(`
 	UPDATE users
@@ -372,7 +382,9 @@ func (ur *UsersRepo) Delete(user entity.User) error {
 	if err != nil {
 		return fmt.Errorf("UsersRepo - Delete - Begin: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	stmt, err := ur.DB.Prepare(`
 	DELETE FROM users

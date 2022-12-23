@@ -1,7 +1,6 @@
 package v1_test
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -16,7 +15,7 @@ import (
 	"forum/pkg/logger"
 )
 
-func TestIndexHandler(t *testing.T) {
+func setup() *v1.Handler {
 	cfg, err := config.LoadConfig("../../../../config.json")
 	if err != nil {
 		log.Fatal(err)
@@ -28,6 +27,12 @@ func TestIndexHandler(t *testing.T) {
 	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
 	handler := v1.NewHandler(usecases, cfg, l)
 	handler.RegisterRoutes(handler.Mux)
+
+	return handler
+}
+
+func TestIndexHandler(t *testing.T) {
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
@@ -51,17 +56,7 @@ func TestIndexHandler(t *testing.T) {
 }
 
 func TestSearchPageHandler(t *testing.T) {
-	cfg, err := config.LoadConfig("../../../../config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	l := logger.New()
-	mockUsersUseCase := mu.NewUsersMockUseCase()
-	mockPostsUseCase := mu.NewPostsMockUseCase()
-	mockCommentsUseCase := mu.NewCommentsMockUseCase()
-	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
-	handler := v1.NewHandler(usecases, cfg, l)
-	handler.RegisterRoutes(handler.Mux)
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
@@ -85,17 +80,7 @@ func TestSearchPageHandler(t *testing.T) {
 }
 
 func TestSearchHandler(t *testing.T) {
-	cfg, err := config.LoadConfig("../../../../config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	l := logger.New()
-	mockUsersUseCase := mu.NewUsersMockUseCase()
-	mockPostsUseCase := mu.NewPostsMockUseCase()
-	mockCommentsUseCase := mu.NewCommentsMockUseCase()
-	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
-	handler := v1.NewHandler(usecases, cfg, l)
-	handler.RegisterRoutes(handler.Mux)
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
@@ -137,20 +122,12 @@ func TestSearchHandler(t *testing.T) {
 }
 
 func TestCreateCategoryPageHandler(t *testing.T) {
-	cfg, err := config.LoadConfig("../../../../config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	l := logger.New()
-	mockUsersUseCase := mu.NewUsersMockUseCase()
-	mockPostsUseCase := mu.NewPostsMockUseCase()
-	mockCommentsUseCase := mu.NewCommentsMockUseCase()
-	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
-	handler := v1.NewHandler(usecases, cfg, l)
-	handler.RegisterRoutes(handler.Mux)
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
-		mockUsersUseCase.SignUp(entity.User{})
+		if err := handler.Usecases.Users.SignUp(entity.User{}); err != nil {
+			t.Fatal(err)
+		}
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
 		cookie := &http.Cookie{
@@ -176,7 +153,9 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 	})
 
 	t.Run("err method not allowed", func(t *testing.T) {
-		mockUsersUseCase.SignUp(entity.User{})
+		if err := handler.Usecases.Users.SignUp(entity.User{}); err != nil {
+			t.Fatal(err)
+		}
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodPut, "/create_category_page/", nil)
 		cookie := &http.Cookie{
@@ -194,7 +173,9 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 	t.Run("err low access level", func(t *testing.T) {
 		// if there is one user, he becomes admin and can create categories
 		// if more, he behaves as simple user
-		mockUsersUseCase.SignUp(entity.User{})
+		if err := handler.Usecases.Users.SignUp(entity.User{}); err != nil {
+			t.Fatal(err)
+		}
 
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
@@ -212,21 +193,12 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 }
 
 func TestCreateCategoryHandler(t *testing.T) {
-	cfg, err := config.LoadConfig("../../../../config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	l := logger.New()
-	mockUsersUseCase := mu.NewUsersMockUseCase()
-	mockPostsUseCase := mu.NewPostsMockUseCase()
-	mockCommentsUseCase := mu.NewCommentsMockUseCase()
-	usecases := usecase.NewUseCases(mockPostsUseCase, mockUsersUseCase, mockCommentsUseCase)
-	handler := v1.NewHandler(usecases, cfg, l)
-	handler.RegisterRoutes(handler.Mux)
+	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
-		mockUsersUseCase.SignUp(entity.User{})
-		fmt.Println(len(mockUsersUseCase.Users))
+		if err := handler.Usecases.Users.SignUp(entity.User{}); err != nil {
+			t.Fatal(err)
+		}
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodPost, "/create_category/", nil)
 
@@ -247,7 +219,6 @@ func TestCreateCategoryHandler(t *testing.T) {
 	})
 
 	t.Run("err wrong method", func(t *testing.T) {
-		fmt.Println(len(mockUsersUseCase.Users))
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodHead, "/create_category/", nil)
 
@@ -264,7 +235,6 @@ func TestCreateCategoryHandler(t *testing.T) {
 	})
 
 	t.Run("err empty request", func(t *testing.T) {
-		fmt.Println(len(mockUsersUseCase.Users))
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodPost, "/create_category/", nil)
 
@@ -273,6 +243,43 @@ func TestCreateCategoryHandler(t *testing.T) {
 		}
 		req.AddCookie(cookie)
 
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusBadRequest {
+			t.Fatalf("want: %v, got: %v", http.StatusBadRequest, rec.Code)
+		}
+	})
+}
+
+func TestSearchByCategoryHandler(t *testing.T) {
+	handler := setup()
+
+	t.Run("OK", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/categories/cars", nil)
+		handler.Usecases.Posts.CreateCategories([]string{"cars"})
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("want: %v, got: %v", http.StatusOK, rec.Code)
+		}
+	})
+
+	t.Run("err wrong method", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodDelete, "/categories/", nil)
+
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusMethodNotAllowed {
+			t.Fatalf("want: %v, got: %v", http.StatusMethodNotAllowed, rec.Code)
+		}
+	})
+
+	t.Run("err category not found", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/categories/qwerty", nil)
+		handler.Usecases.Posts.CreateCategories([]string{"cars"})
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
