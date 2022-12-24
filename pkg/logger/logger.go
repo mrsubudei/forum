@@ -17,13 +17,36 @@ type Logger struct {
 	Err  *log.Logger
 }
 
-func New() *Logger {
-	_, basePath, _, _ := runtime.Caller(0)
-	pathSlice := strings.Split(filepath.Dir(basePath), "/")
-	rootSlice := pathSlice[:len(pathSlice)-4]
-	root := strings.Join(rootSlice, "/")
+func getRootPath() string {
+	separator := "/"
+	if runtime.GOOS == "windows" {
+		separator = "\\"
+	}
 
-	file, err := os.OpenFile(root+"/"+"logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o664)
+	// getting full path from where program is running
+	_, basePath, _, _ := runtime.Caller(0)
+	pathSlice := strings.Split(filepath.Dir(basePath), separator)
+	tmpSl := []string{}
+	last := false
+
+	// separating root directory
+	for i := 0; i < len(pathSlice); i++ {
+		tmpSl = append(tmpSl, pathSlice[i])
+		if pathSlice[i] == "forum" {
+			last = true
+		}
+		if last {
+			break
+		}
+	}
+
+	return strings.Join(tmpSl, separator) + separator
+}
+
+func New() *Logger {
+	path := getRootPath()
+
+	file, err := os.OpenFile(path+"logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o664)
 	if err != nil {
 		log.Fatal(fmt.Errorf("logger - New - os.OpenFile: %w", err))
 	}

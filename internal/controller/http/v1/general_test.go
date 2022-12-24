@@ -84,7 +84,6 @@ func TestSearchHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-
 		req := httptest.NewRequest(http.MethodPost, "/search/", nil)
 
 		form := url.Values{}

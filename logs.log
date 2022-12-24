@@ -17,3 +17,38 @@ INFO: 2022/12/23 19:53:09 v1 - SearchByCategoryHandler - GetAllByCategory: posts
 INFO: 2022/12/23 19:53:12 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
 INFO: 2022/12/23 19:53:16 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
 INFO: 2022/12/23 19:53:34 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+ERROR 2022/12/24 20:17:22 parseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:17:22 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:17:22 v1 - IndexHandler - ParseAndExecute - open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:17:23 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:17:32 parseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:17:32 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:17:32 v1 - IndexHandler - ParseAndExecute - open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:17:33 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:18:18 parseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:18:18 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:18:18 v1 - IndexHandler - ParseAndExecute - open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:18:18 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:19:20 parseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:19:20 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:19:20 v1 - IndexHandler - ParseAndExecute - open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:19:20 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:22:02 parseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:22:02 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:22:02 v1 - IndexHandler - ParseAndExecute - open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/index.html: The system cannot find the path specified.
+ERROR 2022/12/24 20:22:02 v1 - Errors - ParseFiles: open C:\Users\subud\Desktop\golang\frm\forum\internal\controller\http\v1/templates/errors.html: The system cannot find the path specified.
+INFO: 2022/12/24 20:28:07 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+INFO: 2022/12/24 20:28:24 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+ERROR 2022/12/24 20:30:05 v1 - PostPageHandler - Atoi: strconv.Atoi: parsing "sefdfg": invalid syntax
+INFO: 2022/12/24 20:30:18 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+ERROR 2022/12/24 20:30:18 v1 - PostPageHandler - Atoi: strconv.Atoi: parsing "sefdfg": invalid syntax
+INFO: 2022/12/24 20:30:33 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+ERROR 2022/12/24 20:30:33 v1 - PostPageHandler - Atoi: strconv.Atoi: parsing "sefdfg": invalid syntax
+INFO: 2022/12/24 20:46:58 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+ERROR 2022/12/24 20:46:58 v1 - PostPageHandler - Atoi: strconv.Atoi: parsing "sefdfg": invalid syntax
+ERROR 2022/12/24 20:47:41 v1 - PostPageHandler - Atoi: strconv.Atoi: parsing "sefdfg": invalid syntax
+ERROR 2022/12/24 21:57:29 v1 - PostPutLikeHandler - Atoi: strconv.Atoi: parsing "wewe": invalid syntax
+ERROR 2022/12/24 21:58:42 v1 - PostPutDislikeHandler - Atoi: strconv.Atoi: parsing "": invalid syntax
+ERROR 2022/12/24 21:58:42 v1 - PostPutDislikeHandler - Atoi: strconv.Atoi: parsing "e": invalid syntax
+ERROR 2022/12/24 21:59:01 v1 - PostPutDislikeHandler - Atoi: strconv.Atoi: parsing "e": invalid syntax
+ERROR 2022/12/24 22:02:23 v1 - FindPostsHandler - Atoi: strconv.Atoi: parsing "abc": invalid syntax

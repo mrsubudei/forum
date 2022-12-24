@@ -87,7 +87,8 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, http.StatusInternalServerError)
 	}
 
-	if len(r.Form["title"][0]) == 0 || len(r.Form["content"][0]) == 0 {
+	if len(r.Form["title"]) == 0 || len(r.Form["title"][0]) == 0 ||
+		len(r.Form["content"]) == 0 || len(r.Form["content"][0]) == 0 {
 		h.Errors(w, http.StatusBadRequest)
 		return
 	}
@@ -125,13 +126,11 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 			h.Errors(w, http.StatusInternalServerError)
 			return
 		}
-
 		content.Post.Categories = categories
 		err = h.ParseAndExecute(w, content, "templates/create_post.html")
 		if err != nil {
 			h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - ParseAndExecute - %w", err))
 		}
-
 	} else {
 		err := h.Usecases.Posts.CreatePost(newPost)
 		if err != nil {

@@ -32,6 +32,7 @@ func NewHandler(usecases *usecase.UseCases, cfg config.Config, logger *logger.Lo
 
 func (h *Handler) ParseAndExecute(w http.ResponseWriter, content Content, path string) error {
 	root := getRootPath()
+	fmt.Println(root)
 	html, err := template.ParseFiles(root + path)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("parseFiles: %w", err))
@@ -130,9 +131,27 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 }
 
 func getRootPath() string {
+	separator := "/"
+	if runtime.GOOS == "windows" {
+		separator = "\\"
+	}
+
+	// getting full path from where program is running
 	_, basePath, _, _ := runtime.Caller(0)
-	pathSlice := strings.Split(filepath.Dir(basePath), "/")
-	rootSlice := pathSlice[:len(pathSlice)-4]
-	root := strings.Join(rootSlice, "/")
-	return root + "/"
+	pathSlice := strings.Split(filepath.Dir(basePath), separator)
+	tmpSl := []string{}
+	last := false
+
+	// separating root directory
+	for i := 0; i < len(pathSlice); i++ {
+		tmpSl = append(tmpSl, pathSlice[i])
+		if pathSlice[i] == "forum" {
+			last = true
+		}
+		if last {
+			break
+		}
+	}
+
+	return strings.Join(tmpSl, separator) + separator
 }
