@@ -66,11 +66,6 @@ func (h *Handler) AllUsersPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.URL.Path != "/all_users_page/" {
-		h.Errors(w, http.StatusNotFound)
-		return
-	}
-
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
 		h.l.WriteLog(fmt.Errorf("v1 - AllUsersPageHandler - TypeAssertion:"+
@@ -275,7 +270,6 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 			h.l.WriteLog(fmt.Errorf("v1 - SignInHandler - ParseAndExecute - %w", err))
 		}
 		return
-
 	} else {
 		id, err := h.Usecases.Users.GetIdBy(user)
 		if err != nil {

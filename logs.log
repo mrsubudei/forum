@@ -52,3 +52,6 @@ ERROR 2022/12/24 21:58:42 v1 - PostPutDislikeHandler - Atoi: strconv.Atoi: parsi
 ERROR 2022/12/24 21:58:42 v1 - PostPutDislikeHandler - Atoi: strconv.Atoi: parsing "e": invalid syntax
 ERROR 2022/12/24 21:59:01 v1 - PostPutDislikeHandler - Atoi: strconv.Atoi: parsing "e": invalid syntax
 ERROR 2022/12/24 22:02:23 v1 - FindPostsHandler - Atoi: strconv.Atoi: parsing "abc": invalid syntax
+INFO: 2022/12/24 22:36:52 v1 - SignInHandler - SignIn: password is incorrect
+INFO: 2022/12/24 22:37:46 v1 - SignInHandler - SignIn: password is incorrect
+ERROR 2022/12/25 19:21:35 v1 - EditProfilePageHandler - Atoi: strconv.Atoi: parsing "dfg": invalid syntax
