@@ -55,3 +55,14 @@ ERROR 2022/12/24 22:02:23 v1 - FindPostsHandler - Atoi: strconv.Atoi: parsing "a
 INFO: 2022/12/24 22:36:52 v1 - SignInHandler - SignIn: password is incorrect
 INFO: 2022/12/24 22:37:46 v1 - SignInHandler - SignIn: password is incorrect
 ERROR 2022/12/25 19:21:35 v1 - EditProfilePageHandler - Atoi: strconv.Atoi: parsing "dfg": invalid syntax
+INFO: 2022/12/25 19:35:40 v1 - SignInHandler - SignIn: user doesn't exist
+ERROR 2022/12/26 19:52:52 v1 - CreateCommentPageHandler - Atoi: strconv.Atoi: parsing "dfg": invalid syntax
+ERROR 2022/12/26 19:53:18 v1 - CreateCommentPageHandler - Atoi: strconv.Atoi: parsing "dfg": invalid syntax
+ERROR 2022/12/26 19:57:48 v1 - CreateCommentHandler - Atoi: strconv.Atoi: parsing "dfg": invalid syntax
+ERROR 2022/12/26 19:57:48 v1 - CreateCommentHandler - URL.Path: strconv.Atoi: parsing "dfg": invalid syntax
+ERROR 2022/12/26 19:58:16 v1 - CreateCommentHandler - Atoi: strconv.Atoi: parsing "dfg": invalid syntax
+ERROR 2022/12/26 19:58:16 v1 - CreateCommentHandler - URL.Path: strconv.Atoi: parsing "dfg": invalid syntax
+ERROR 2022/12/26 20:00:00 v1 - CommentPutLikeHandler - Atoi: strconv.Atoi: parsing "wert": invalid syntax
+ERROR 2022/12/26 20:00:00 v1 - CommentPutLikeHandler - URL.Path: strconv.Atoi: parsing "wert": invalid syntax
+ERROR 2022/12/26 20:00:52 v1 - CommentPutDislikeHandler - Atoi: strconv.Atoi: parsing "wert": invalid syntax
+ERROR 2022/12/26 20:00:52 v1 - CommentPutDislikeHandler - URL.Path: strconv.Atoi: parsing "wert": invalid syntax

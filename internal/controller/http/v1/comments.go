@@ -51,7 +51,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, http.StatusInternalServerError)
 	}
 
-	if len(r.Form["content"][0]) == 0 {
+	if len(r.Form["content"]) == 0 || len(r.Form["content"][0]) == 0 {
 		h.Errors(w, http.StatusBadRequest)
 		return
 	}

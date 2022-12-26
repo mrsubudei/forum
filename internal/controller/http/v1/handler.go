@@ -32,7 +32,6 @@ func NewHandler(usecases *usecase.UseCases, cfg config.Config, logger *logger.Lo
 
 func (h *Handler) ParseAndExecute(w http.ResponseWriter, content Content, path string) error {
 	root := getRootPath()
-	fmt.Println(root)
 	html, err := template.ParseFiles(root + path)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("parseFiles: %w", err))
