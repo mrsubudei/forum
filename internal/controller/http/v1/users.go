@@ -3,13 +3,12 @@ package v1
 import (
 	"errors"
 	"fmt"
+	"forum/internal/entity"
 	"net/http"
 	"net/mail"
 	"strconv"
 	"strings"
 	"time"
-
-	"forum/internal/entity"
 )
 
 func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -285,13 +284,8 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.SetCookie(w, &http.Cookie{
-			Name:    "session_token",
-			Value:   userWithSession.SessionToken,
-			Expires: userWithSession.SessionTTL,
-			Path:    "/",
-			Domain:  h.Cfg.Server.Host,
-		})
+		h.setCookie(w, userWithSession)
+
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
 }
@@ -501,6 +495,7 @@ func (h *Handler) GetExistedSession(w http.ResponseWriter, r *http.Request) enti
 		return foundUser
 	}
 	token := cookie.Value
+	TTL := cookie.Expires
 	user := entity.User{
 		SessionToken: token,
 	}
@@ -514,6 +509,7 @@ func (h *Handler) GetExistedSession(w http.ResponseWriter, r *http.Request) enti
 
 	foundUser.Id = id
 	foundUser.SessionToken = token
+	foundUser.SessionTTL = TTL
 
 	return foundUser
 }
@@ -521,4 +517,14 @@ func (h *Handler) GetExistedSession(w http.ResponseWriter, r *http.Request) enti
 func checkEmail(address string) bool {
 	_, err := mail.ParseAddress(address)
 	return err == nil
+}
+
+func (h *Handler) setCookie(w http.ResponseWriter, user entity.User) {
+	http.SetCookie(w, &http.Cookie{
+		Name:    "session_token",
+		Value:   user.SessionToken,
+		Expires: user.SessionTTL,
+		Path:    "/",
+		Domain:  h.Cfg.Server.Host,
+	})
 }

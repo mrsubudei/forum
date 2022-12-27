@@ -66,3 +66,15 @@ ERROR 2022/12/26 20:00:00 v1 - CommentPutLikeHandler - Atoi: strconv.Atoi: parsi
 ERROR 2022/12/26 20:00:00 v1 - CommentPutLikeHandler - URL.Path: strconv.Atoi: parsing "wert": invalid syntax
 ERROR 2022/12/26 20:00:52 v1 - CommentPutDislikeHandler - Atoi: strconv.Atoi: parsing "wert": invalid syntax
 ERROR 2022/12/26 20:00:52 v1 - CommentPutDislikeHandler - URL.Path: strconv.Atoi: parsing "wert": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - CreateCommentPageHandler - Atoi: strconv.Atoi: parsing "dfg": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - CreateCommentHandler - Atoi: strconv.Atoi: parsing "dfg": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - CreateCommentHandler - URL.Path: strconv.Atoi: parsing "dfg": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - CommentPutLikeHandler - Atoi: strconv.Atoi: parsing "wert": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - CommentPutLikeHandler - URL.Path: strconv.Atoi: parsing "wert": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - CommentPutDislikeHandler - Atoi: strconv.Atoi: parsing "wert": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - CommentPutDislikeHandler - URL.Path: strconv.Atoi: parsing "wert": invalid syntax
+INFO: 2022/12/27 19:15:42 v1 - SearchByCategoryHandler - GetAllByCategory: posts wasn't found
+ERROR 2022/12/27 19:15:42 v1 - PostPageHandler - Atoi: strconv.Atoi: parsing "sefdfg": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - PostPutLikeHandler - Atoi: strconv.Atoi: parsing "wewe": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - PostPutDislikeHandler - Atoi: strconv.Atoi: parsing "e": invalid syntax
+ERROR 2022/12/27 19:15:42 v1 - EditProfilePageHandler - Atoi: strconv.Atoi: parsing "dfg": invalid syntax
