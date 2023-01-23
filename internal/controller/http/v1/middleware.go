@@ -3,9 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
-	"forum/internal/entity"
 	"net/http"
-	"time"
 )
 
 func (h *Handler) CheckAuth(next http.Handler) http.Handler {
@@ -24,16 +22,6 @@ func (h *Handler) CheckAuth(next http.Handler) http.Handler {
 		if !isAuthorized {
 			h.Errors(w, http.StatusUnauthorized)
 			return
-		}
-		existTTL := foundUser.SessionTTL
-		if existTTL.Before(time.Now()) {
-			newToken, TTL, err := h.Usecases.Users.GetNewToken()
-			if err != nil {
-				h.l.WriteLog(fmt.Errorf("v1 - CheckAuth - GetNewToken: %w", err))
-				h.Errors(w, http.StatusInternalServerError)
-				return
-			}
-			h.setCookie(w, entity.User{SessionToken: newToken, SessionTTL: TTL})
 		}
 		err = h.Usecases.Users.UpdateSession(foundUser)
 		if err != nil {
@@ -72,16 +60,6 @@ func (h *Handler) AssignStatus(next http.Handler) http.Handler {
 				h.l.WriteLog(fmt.Errorf("v1 - AssignStatus - UpdateSession: %w", err))
 				h.Errors(w, http.StatusInternalServerError)
 				return
-			}
-			existTTL := foundUser.SessionTTL
-			if existTTL.Before(time.Now()) {
-				newToken, TTL, err := h.Usecases.Users.GetNewToken()
-				if err != nil {
-					h.l.WriteLog(fmt.Errorf("v1 - AssignStatus - GetNewToken: %w", err))
-					h.Errors(w, http.StatusInternalServerError)
-					return
-				}
-				h.setCookie(w, entity.User{SessionToken: newToken, SessionTTL: TTL})
 			}
 		}
 		content := Content{}

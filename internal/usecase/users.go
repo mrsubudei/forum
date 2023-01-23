@@ -2,12 +2,13 @@ package usecase
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"forum/internal/entity"
 	"forum/internal/repository"
 	"forum/pkg/auth"
 	"forum/pkg/hasher"
-	"strings"
-	"time"
 )
 
 type UsersUseCase struct {
@@ -74,19 +75,19 @@ func (uu *UsersUseCase) SignIn(user entity.User) error {
 	if err != nil {
 		return entity.ErrUserPasswordIncorrect
 	}
-
-	token, TTL, err := uu.GetNewToken()
+	token, err := uu.tokenManager.NewToken()
 	if err != nil {
 		return fmt.Errorf("UsersUseCase - SignIn #3 - %w", err)
 	}
 
 	user.SessionToken = token
+	TTL := uu.tokenManager.UpdateTTL()
 	user.SessionTTL = TTL
 	user.Id = id
 
 	err = uu.repo.NewSession(user)
 	if err != nil {
-		return fmt.Errorf("UsersUseCase - SignIn #5 - %w", err)
+		return fmt.Errorf("UsersUseCase - SignIn #4 - %w", err)
 	}
 	return nil
 }
@@ -236,16 +237,6 @@ func (uu *UsersUseCase) DeleteUser(u entity.User) error {
 		return fmt.Errorf("UsersUseCase - DeleteUser - %w", err)
 	}
 	return nil
-}
-
-func (uu *UsersUseCase) GetNewToken() (string, time.Time, error) {
-	token, err := uu.tokenManager.NewToken()
-	if err != nil {
-		return "", time.Time{}, fmt.Errorf("GetNewToken - NewToken - %w", err)
-	}
-
-	TTL := uu.tokenManager.UpdateTTL()
-	return token, TTL, nil
 }
 
 func getRegTime(format string) string {

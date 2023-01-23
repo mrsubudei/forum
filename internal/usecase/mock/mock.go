@@ -2,7 +2,6 @@ package mock_usecase
 
 import (
 	"forum/internal/entity"
-	"time"
 )
 
 type UsersMockUseCase struct {
@@ -28,10 +27,6 @@ func (um *UsersMockUseCase) GetAllUsers() ([]entity.User, error) {
 
 func (um *UsersMockUseCase) GetById(id int64) (entity.User, error) {
 	return entity.User{}, nil
-}
-
-func (um *UsersMockUseCase) GetNewToken() (string, time.Time, error) {
-	return "", time.Time{}, nil
 }
 
 func (um *UsersMockUseCase) GetIdBy(user entity.User) (int64, error) {

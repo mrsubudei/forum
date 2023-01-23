@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"forum/internal/entity"
-	"time"
 )
 
 type Posts interface {
@@ -32,7 +31,6 @@ type Users interface {
 	UpdateSession(u entity.User) error
 	DeleteSession(user entity.User) error
 	DeleteUser(u entity.User) error
-	GetNewToken() (string, time.Time, error)
 }
 
 type Comments interface {
