@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="952515746557-39jc67t7bb5olv9shjr6sp9v5he3mnt7.apps.googleusercontent.com">
     <link href="/templates/css/style.css" rel="stylesheet" type="text/css" />
     <title>Forum</title>
 </head>
-
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script>
+// function onSignIn(googleUser) {
+//     var profile = googleUser.getBasicProfile();
+//     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+//     console.log('Name: ' + profile.getName());
+//     console.log('Image URL: ' + profile.getImageUrl());
+//     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+//   }
+//   </script>
 <body>
     <div id="wrapper" style="width: 98%">
         <div id="header">
@@ -90,6 +100,7 @@
                             </div>
                             <span class="lowerframe"><span></span></span>
                         </div>
+                        <div class="g-signin2" data-onsuccess="onSignIn"></div>
                     </form>
                 </div>
             </div>
@@ -99,6 +110,7 @@
             </div>
         </div>
     </div>
+    <a href="/signin_google">sdfg</a>
 </body>
 
 </html>

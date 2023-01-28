@@ -102,6 +102,8 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.Handle("/users/", h.AssignStatus(http.HandlerFunc(h.UserPageHandler)))
 	router.Handle("/all_users_page/", h.AssignStatus(http.HandlerFunc(h.AllUsersPageHandler)))
 	router.Handle("/find_reacted_users/", h.CheckAuth(http.HandlerFunc(h.FindReactedUsersHandler)))
+	router.HandleFunc("/google_callback", h.GoogleCallbackHandler)
+	router.HandleFunc("/signin_google", SignInGoogleHandler)
 
 	// searching routes
 	router.Handle("/search_page/", h.AssignStatus(http.HandlerFunc(h.SearchPageHandler)))

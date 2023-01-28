@@ -12,6 +12,11 @@ import (
 	"forum/internal/entity"
 )
 
+type Map struct {
+	Key   string
+	Value string
+}
+
 func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		h.Errors(w, http.StatusMethodNotAllowed)
