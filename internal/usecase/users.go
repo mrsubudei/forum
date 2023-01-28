@@ -94,13 +94,14 @@ func (uu *UsersUseCase) SignIn(user entity.User) error {
 
 func (uu *UsersUseCase) GetIdBy(user entity.User) (int64, error) {
 	id, err := uu.repo.GetId(user)
+	if id == 0 {
+		return 0, entity.ErrUserNotFound
+	}
+
 	if err != nil {
 		return 0, fmt.Errorf("UsersUseCase - GetIdBy - %w", err)
 	}
 
-	if id == 0 {
-		return 0, entity.ErrUserNotFound
-	}
 	return id, nil
 }
 

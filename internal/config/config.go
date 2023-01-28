@@ -18,6 +18,10 @@ type Config struct {
 		SessionExpiringTime int    `json:"session_expiring_time"`
 		TokenName           string `json:"token_name"`
 	} `json:"token_manager"`
+	GoogleTokens struct {
+		ClientID     string `json:"client_id"`
+		ClientSecret string `json:"client_secret"`
+	} `json:"google_tokens"`
 }
 
 func LoadConfig(filename string) (Config, error) {
