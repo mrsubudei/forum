@@ -3,7 +3,6 @@ package usecase_test
 import (
 	"errors"
 	"log"
-	"strings"
 	"testing"
 	"time"
 
@@ -181,7 +180,7 @@ func TestUsersGetIdBy(t *testing.T) {
 	t.Run("err user not found", func(t *testing.T) {
 		if _, err := userUseCase.GetIdBy(entity.User{Name: "Pup"}); err == nil {
 			t.Fatal("Expected error")
-		} else if !strings.Contains(err.Error(), errNoRows) {
+		} else if !errors.Is(err, entity.ErrUserNotFound) {
 			t.Fatalf("want err: %v, got: %v", errNoRows, err)
 		}
 	})

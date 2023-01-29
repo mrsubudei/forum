@@ -60,7 +60,7 @@ func TestSearchPageHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/search_page/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/search_page", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
@@ -70,7 +70,7 @@ func TestSearchPageHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPut, "/search_page/", nil)
+		req := httptest.NewRequest(http.MethodPut, "/search_page", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusMethodNotAllowed {
@@ -84,7 +84,7 @@ func TestSearchHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/search/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/search", nil)
 
 		form := url.Values{}
 		form.Add("search", "abcd")
@@ -99,7 +99,7 @@ func TestSearchHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/search/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/search", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusMethodNotAllowed {
@@ -110,7 +110,7 @@ func TestSearchHandler(t *testing.T) {
 	t.Run("err empty request", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 
-		req := httptest.NewRequest(http.MethodPost, "/search/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/search", nil)
 
 		handler.Mux.ServeHTTP(rec, req)
 
@@ -128,7 +128,7 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/create_category_page", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -143,7 +143,7 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 
 	t.Run("err not authorized", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/create_category_page", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusUnauthorized {
@@ -156,7 +156,7 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPut, "/create_category_page/", nil)
+		req := httptest.NewRequest(http.MethodPut, "/create_category_page", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -177,7 +177,7 @@ func TestCreateCategoryPageHandler(t *testing.T) {
 		}
 
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/create_category_page/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/create_category_page", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -199,7 +199,7 @@ func TestCreateCategoryHandler(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/create_category/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/create_category", nil)
 
 		cookie := &http.Cookie{
 			Name: "session_token",
@@ -219,7 +219,7 @@ func TestCreateCategoryHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodHead, "/create_category/", nil)
+		req := httptest.NewRequest(http.MethodHead, "/create_category", nil)
 
 		cookie := &http.Cookie{
 			Name: "session_token",
@@ -235,7 +235,7 @@ func TestCreateCategoryHandler(t *testing.T) {
 
 	t.Run("err empty request", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/create_category/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/create_category", nil)
 
 		cookie := &http.Cookie{
 			Name: "session_token",

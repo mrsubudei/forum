@@ -14,7 +14,7 @@
             <div class="frame">
                 <div id="top_section">
                     {{if .Unauthorized}}
-                    <div class="user"><br /><br />Пожалуйста, <a href="/signin_page/">войдите</a> или <a
+                    <div class="user"><br /><br />Пожалуйста, <a href="/signin_page">войдите</a> или <a
                             href="signup_page">зарегистрируйтесь</a>.
                     </div>
                     {{end}}
@@ -34,13 +34,13 @@
                             </a>
                         </li>
                         <li id="button_search">
-                            <a class="firstlevel" href="/search_page/">
+                            <a class="firstlevel" href="/search_page">
                                 <span class="firstlevel"><img src="/templates/img/buttons/search.png" />Поиск</span>
                             </a>
                         </li>
                         {{if .Admin}}
                         <li id="button_add_category">
-                            <a class="firstlevel" href="/create_category_page/">
+                            <a class="firstlevel" href="/create_category_page">
                                 <span class="firstlevel"><img src="/templates/img/buttons/calendar.png" />Добавить
                                     тему</span>
                             </a>
@@ -48,12 +48,12 @@
                         {{end}}
                         {{if .Unauthorized}}
                         <li id="button_login">
-                            <a class="firstlevel" href="/signin_page/">
+                            <a class="firstlevel" href="/signin_page">
                                 <span class="firstlevel"><img src="/templates/img/buttons/login.png" />Вход</span>
                             </a>
                         </li>
                         <li id="button_register">
-                            <a class="firstlevel" href="/signup_page/">
+                            <a class="firstlevel" href="/signup_page">
                                 <span class="last firstlevel"><img
                                         src="/templates/img/buttons/register.png" />Регистрация</span>
                             </a>
@@ -66,7 +66,7 @@
                             </a>
                         </li>
                         <li id="button_login">
-                            <a class="firstlevel" href="/signout/">
+                            <a class="firstlevel" href="/signout">
                                 <span class="firstlevel"><img src="/templates/img/buttons/login.png" />Выйти</span>
                             </a>
                         </li>
@@ -86,11 +86,11 @@
                                 <a href="/"><span>Форум школы Алем</span></a> »
                             </li>
                             <li class="last">
-                                <a href="/create_category_page/"><span>Добавить тему</span></a>
+                                <a href="/create_category_page"><span>Добавить тему</span></a>
                             </li>
                         </ul>
                     </div>
-                    <form action="/create_category/" name="frmLogin" id="frmLogin" method="POST">
+                    <form action="/create_category" name="frmLogin" id="frmLogin" method="POST">
                         <div>
                             <div class="cat_bar">
                                 <h3 class="catbg">

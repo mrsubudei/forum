@@ -22,6 +22,12 @@ type Config struct {
 		ClientID     string `json:"client_id"`
 		ClientSecret string `json:"client_secret"`
 	} `json:"google_tokens"`
+	Oauth struct {
+		ClientID     string
+		ClientSecret string
+		AuthURL      string
+		TokenURL     string
+	}
 }
 
 func LoadConfig(filename string) (Config, error) {

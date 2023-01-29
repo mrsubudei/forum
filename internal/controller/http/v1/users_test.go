@@ -47,7 +47,7 @@ func TestAllUsersPageHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/all_users_page/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/all_users_page", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
@@ -57,7 +57,7 @@ func TestAllUsersPageHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodHead, "/all_users_page/", nil)
+		req := httptest.NewRequest(http.MethodHead, "/all_users_page", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusMethodNotAllowed {
@@ -71,7 +71,7 @@ func TestSignUpPageHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/signup_page/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/signup_page", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
@@ -81,7 +81,7 @@ func TestSignUpPageHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodOptions, "/signup_page/", nil)
+		req := httptest.NewRequest(http.MethodOptions, "/signup_page", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusMethodNotAllowed {
@@ -95,7 +95,7 @@ func TestSignUpHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signup/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signup", nil)
 
 		form := url.Values{}
 		form.Add("user", "Riddle")
@@ -113,7 +113,7 @@ func TestSignUpHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPut, "/signup/", nil)
+		req := httptest.NewRequest(http.MethodPut, "/signup", nil)
 
 		handler.Mux.ServeHTTP(rec, req)
 
@@ -124,7 +124,7 @@ func TestSignUpHandler(t *testing.T) {
 
 	t.Run("err empty name", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signup/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signup", nil)
 
 		form := url.Values{}
 		form.Add("email", "Riddle@mail.ru")
@@ -141,7 +141,7 @@ func TestSignUpHandler(t *testing.T) {
 
 	t.Run("err empty email", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signup/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signup", nil)
 
 		form := url.Values{}
 		form.Add("user", "Riddle")
@@ -158,7 +158,7 @@ func TestSignUpHandler(t *testing.T) {
 
 	t.Run("err empty password", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signup/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signup", nil)
 
 		form := url.Values{}
 		form.Add("user", "Riddle")
@@ -175,7 +175,7 @@ func TestSignUpHandler(t *testing.T) {
 
 	t.Run("err empty confirm password", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signup/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signup", nil)
 
 		form := url.Values{}
 		form.Add("user", "Riddle")
@@ -192,7 +192,7 @@ func TestSignUpHandler(t *testing.T) {
 
 	t.Run("err incorrect email", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signup/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signup", nil)
 
 		form := url.Values{}
 		form.Add("user", "Riddle")
@@ -210,7 +210,7 @@ func TestSignUpHandler(t *testing.T) {
 
 	t.Run("err passwords are not same", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signup/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signup", nil)
 
 		form := url.Values{}
 		form.Add("user", "Riddle")
@@ -233,7 +233,7 @@ func TestSignInPageHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/signin_page/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/signin_page", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
@@ -243,7 +243,7 @@ func TestSignInPageHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodTrace, "/signin_page/", nil)
+		req := httptest.NewRequest(http.MethodTrace, "/signin_page", nil)
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusMethodNotAllowed {
@@ -257,7 +257,7 @@ func TestSignInHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signin/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signin", nil)
 
 		form := url.Values{}
 		form.Add("user", "Riddle")
@@ -273,7 +273,7 @@ func TestSignInHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodConnect, "/signin/", nil)
+		req := httptest.NewRequest(http.MethodConnect, "/signin", nil)
 
 		handler.Mux.ServeHTTP(rec, req)
 
@@ -284,7 +284,7 @@ func TestSignInHandler(t *testing.T) {
 
 	t.Run("err empty name", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signin/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signin", nil)
 
 		form := url.Values{}
 		form.Add("password", "Vivse")
@@ -299,7 +299,7 @@ func TestSignInHandler(t *testing.T) {
 
 	t.Run("err empty password", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signin/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signin", nil)
 
 		form := url.Values{}
 		form.Add("user", "Riddle")
@@ -373,7 +373,7 @@ func TestEditProfileHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/edit_profile/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/edit_profile", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -394,7 +394,7 @@ func TestEditProfileHandler(t *testing.T) {
 
 	t.Run("wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/edit_profile/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/edit_profile", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -416,7 +416,7 @@ func TestSignOutHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/signout/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/signout", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}

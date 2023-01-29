@@ -50,7 +50,7 @@ func TestCreatePostPageHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/create_post_page/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/create_post_page", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -65,7 +65,7 @@ func TestCreatePostPageHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPut, "/create_post_page/", nil)
+		req := httptest.NewRequest(http.MethodPut, "/create_post_page", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -87,7 +87,7 @@ func TestCreatePostHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/create_post/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/create_post", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -108,7 +108,7 @@ func TestCreatePostHandler(t *testing.T) {
 
 	t.Run("err wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPatch, "/create_post/", nil)
+		req := httptest.NewRequest(http.MethodPatch, "/create_post", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -123,7 +123,7 @@ func TestCreatePostHandler(t *testing.T) {
 
 	t.Run("err empty request", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/create_post/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/create_post", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -143,7 +143,7 @@ func TestCreatePostHandler(t *testing.T) {
 
 	t.Run("err category is not chosen", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/create_post/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/create_post", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}

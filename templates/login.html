@@ -13,7 +13,7 @@
         <div id="header">
             <div class="frame">
                 <div id="top_section">
-                    <div class="user"><br /><br />Пожалуйста, <a href="/signin_page/">войдите</a> или <a
+                    <div class="user"><br /><br />Пожалуйста, <a href="/signin_page">войдите</a> или <a
                             href="signup_page">зарегистрируйтесь</a>.
                     </div>
                 </div>
@@ -32,17 +32,17 @@
                             </a>
                         </li>
                         <li id="button_search">
-                            <a class="firstlevel" href="/search_page/">
+                            <a class="firstlevel" href="/search_page">
                                 <span class="firstlevel"><img src="/templates/img/buttons/search.png" />Поиск</span>
                             </a>
                         </li>
                         <li id="button_login">
-                            <a class="firstlevel" href="/signin_page/">
+                            <a class="firstlevel" href="/signin_page">
                                 <span class="firstlevel"><img src="/templates/img/buttons/login.png" />Вход</span>
                             </a>
                         </li>
                         <li id="button_register">
-                            <a class="firstlevel" href="/signup_page/">
+                            <a class="firstlevel" href="/signup_page">
                                 <span class="last firstlevel"><img
                                         src="/templates/img/buttons/register.png" />Регистрация</span>
                             </a>
@@ -66,7 +66,7 @@
                             </li>
                         </ul>
                     </div>
-                    <form action="/signin/" name="frmLogin" id="frmLogin" method="POST">
+                    <form action="/signin" name="frmLogin" id="frmLogin" method="POST">
                         <div class="tborder login">
                             <div class="cat_bar">
                                 <h3 class="catbg">
@@ -95,9 +95,9 @@
             </div>
             <div class="auth_from_api">
                 <div class="google_auth">
-                    <h4>Авторизоваться с помощью:</h4>
+                    <h4>Войти с помощью:</h4>
                 </div>
-                <div class="google_auth"><a href="/signin_google"><img src="/templates/img/googe_auth_icon.jpg"
+                <div class="google_auth"><a href="/oauth2_signin/google"><img src="/templates/img/googe_auth_icon.jpg"
                             alt=""></a></div>
             </div>
         </div>
