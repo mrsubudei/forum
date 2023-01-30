@@ -1,9 +1,12 @@
 package config
 
 import (
+	"bufio"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 type Config struct {
@@ -18,16 +21,6 @@ type Config struct {
 		SessionExpiringTime int    `json:"session_expiring_time"`
 		TokenName           string `json:"token_name"`
 	} `json:"token_manager"`
-	GoogleTokens struct {
-		ClientID     string `json:"client_id"`
-		ClientSecret string `json:"client_secret"`
-	} `json:"google_tokens"`
-	Oauth struct {
-		ClientID     string
-		ClientSecret string
-		AuthURL      string
-		TokenURL     string
-	}
 }
 
 func LoadConfig(filename string) (Config, error) {
@@ -48,4 +41,22 @@ func LoadConfig(filename string) (Config, error) {
 		return config, err
 	}
 	return config, nil
+}
+
+func ReadEnv(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("config - ReadEnv - Open: %w", err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		sl := strings.Split(line, "=")
+		key := sl[0]
+		value := sl[1]
+		os.Setenv(key, value)
+	}
+	return nil
 }

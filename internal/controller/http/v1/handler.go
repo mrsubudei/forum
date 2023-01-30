@@ -102,7 +102,9 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.Handle("/users/", h.AssignStatus(http.HandlerFunc(h.UserPageHandler)))
 	router.Handle("/all_users_page", h.AssignStatus(http.HandlerFunc(h.AllUsersPageHandler)))
 	router.Handle("/find_reacted_users/", h.CheckAuth(http.HandlerFunc(h.FindReactedUsersHandler)))
-	router.HandleFunc("/oauth2_callback", h.GoogleCallbackHandler)
+	// router.HandleFunc("/oauth2_callback_google", h.OauthCallbackGoogleHandler)
+	router.HandleFunc("/oauth2_callback_github", h.OauthCallbackGithubHandler)
+	//router.HandleFunc("/oauth2_callback_facebook", h.OauthCallbackFacebookHandler)
 	router.HandleFunc("/oauth2_signin/", h.OauthSignHandler)
 
 	// searching routes
