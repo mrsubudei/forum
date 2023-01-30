@@ -4328,3 +4328,8 @@ span.hidelink {
 	display: flex;
 	justify-content: center;
 }
+
+.oauth {
+	margin-left: 5px;
+	margin-right: 5px;
+}

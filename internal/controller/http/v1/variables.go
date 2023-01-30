@@ -54,17 +54,50 @@ const (
 	ReactionMessageDislike = "\"дизлайк\""
 )
 
-const (
-	GoogleAuthURL   = "https://accounts.google.com/o/oauth2/auth"
-	GoogleTokenURL  = "https://oauth2.googleapis.com/token"
-	GoogleAccessURL = "https://www.googleapis.com/oauth2/v2/userinfo?access_token"
-	GoogleScope     = "https://www.googleapis.com/auth/userinfo.email " +
-		"https://www.googleapis.com/auth/userinfo.profile"
-	GoogleCallbackURL = "http://localhost:8087/oauth2_callback_google"
+var oauthState = "pseudo-random-fs3f#ds38A@f"
 
-	GithubAuthURL     = "https://github.com/login/oauth/authorize"
-	GithubTokenURL    = "https://github.com/login/oauth/access_token"
-	GithubAccessURL   = "https://api.github.com/user/emails"
-	GithubScope       = "user"
-	GithubCallbackURL = "http://localhost:8087/oauth2_callback_github"
-)
+type OauthContent struct {
+	Email string `json:"email"`
+	Name  string `json:"name"`
+}
+
+type OauthParams struct {
+	AccessToken  string `json:"access_token"`
+	ApiName      string
+	ClientID     string
+	ClientSecret string
+	OauthURLS    OauthURLs
+}
+
+type OauthURLs struct {
+	Auth     string
+	Token    string
+	Access   string
+	Callback string
+	Scope    string
+}
+
+var GoogleOauthURLs = OauthURLs{
+	Auth:     "https://accounts.google.com/o/oauth2/auth",
+	Token:    "https://oauth2.googleapis.com/token",
+	Access:   "https://www.googleapis.com/oauth2/v2/userinfo?access_token",
+	Callback: "http://localhost:8087/oauth2_callback_google",
+	Scope: "https://www.googleapis.com/auth/userinfo.email " +
+		"https://www.googleapis.com/auth/userinfo.profile",
+}
+
+var GithubOauthURLs = OauthURLs{
+	Auth:     "https://github.com/login/oauth/authorize",
+	Token:    "https://github.com/login/oauth/access_token",
+	Access:   "https://api.github.com/user/emails",
+	Callback: "http://localhost:8087/oauth2_callback_github",
+	Scope:    "user",
+}
+
+var MailruOauthURLs = OauthURLs{
+	Auth:     "https://oauth.mail.ru/login",
+	Token:    "https://oauth.mail.ru/token",
+	Access:   "https://oauth.mail.ru/userinfo?access_token",
+	Callback: "http://localhost:8087/oauth2_callback_mailru",
+	Scope:    "userinfo",
+}

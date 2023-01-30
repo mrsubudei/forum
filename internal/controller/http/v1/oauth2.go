@@ -15,25 +15,6 @@ import (
 	"strings"
 )
 
-var oauthState = "pseudo-random"
-
-type OauthContent struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
-}
-
-type OauthParams struct {
-	AccessToken  string `json:"access_token"`
-	ApiName      string
-	ClientID     string
-	ClientSecret string
-	AuthURL      string
-	TokenURL     string
-	AccessURL    string
-	CallbackURL  string
-	Scope        string
-}
-
 func (h *Handler) OauthSignHandler(w http.ResponseWriter, r *http.Request) {
 	err := config.ReadEnv(".env")
 	if err != nil {
@@ -66,21 +47,34 @@ func (h *Handler) OauthSignHandler(w http.ResponseWriter, r *http.Request) {
 
 	// this is the first step
 	var buf bytes.Buffer
-	buf.WriteString(oauthParams.AuthURL)
+	buf.WriteString(oauthParams.OauthURLS.Auth)
 	v := url.Values{"response_type": {"code"}, "client_id": {oauthParams.ClientID}}
-	v.Set("redirect_uri", oauthParams.CallbackURL)
-	v.Set("scope", oauthParams.Scope)
+	v.Set("redirect_uri", oauthParams.OauthURLS.Callback)
+	v.Set("scope", oauthParams.OauthURLS.Scope)
 	v.Set("state", oauthState)
 	buf.WriteByte('?')
 	buf.WriteString(v.Encode())
 	url := buf.String()
-
 	// respone of this request should call callback handler func
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 func (h *Handler) OauthCallbackGoogleHandler(w http.ResponseWriter, r *http.Request) {
 	oauthParams, trouble := h.setParams("google")
+
+	if trouble == ErrInternalServer {
+		h.Errors(w, http.StatusInternalServerError)
+		return
+	} else if trouble == ErrPageNotFound {
+		h.Errors(w, http.StatusNotFound)
+		return
+	}
+
+	h.OauthSignIn(w, r, oauthParams)
+}
+
+func (h *Handler) OauthCallbackMailruHandler(w http.ResponseWriter, r *http.Request) {
+	oauthParams, trouble := h.setParams("mailru")
 
 	if trouble == ErrInternalServer {
 		h.Errors(w, http.StatusInternalServerError)
@@ -227,11 +221,8 @@ func (h *Handler) setParams(apiName string) (*OauthParams, string) {
 			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_SECRET"))
 			return nil, ErrInternalServer
 		}
-		oauthParams.AuthURL = GoogleAuthURL
-		oauthParams.TokenURL = GoogleTokenURL
-		oauthParams.AccessURL = GoogleAccessURL
-		oauthParams.Scope = GoogleScope
-		oauthParams.CallbackURL = GoogleCallbackURL
+		oauthParams.OauthURLS = GoogleOauthURLs
+
 	case "github":
 		if clientId, ok := os.LookupEnv("GITHUB_CLIENT_ID"); ok {
 			oauthParams.ClientID = clientId
@@ -245,11 +236,21 @@ func (h *Handler) setParams(apiName string) (*OauthParams, string) {
 			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_SECRET"))
 			return nil, ErrInternalServer
 		}
-		oauthParams.AuthURL = GithubAuthURL
-		oauthParams.TokenURL = GithubTokenURL
-		oauthParams.AccessURL = GithubAccessURL
-		oauthParams.Scope = GithubScope
-		oauthParams.CallbackURL = GithubCallbackURL
+		oauthParams.OauthURLS = GithubOauthURLs
+	case "mailru":
+		if clientId, ok := os.LookupEnv("MAILRU_CLIENT_ID"); ok {
+			oauthParams.ClientID = clientId
+		} else {
+			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_ID"))
+			return nil, ErrInternalServer
+		}
+		if clientSecret, ok := os.LookupEnv("MAILRU_CLIENT_SECRET"); ok {
+			oauthParams.ClientSecret = clientSecret
+		} else {
+			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_SECRET"))
+			return nil, ErrInternalServer
+		}
+		oauthParams.OauthURLS = MailruOauthURLs
 	default:
 		return nil, ErrPageNotFound
 	}
@@ -264,9 +265,9 @@ func (h *Handler) exchageCode(r *http.Request, oauthParams *OauthParams) error {
 	}
 
 	var buf bytes.Buffer
-	buf.WriteString(oauthParams.TokenURL + "?")
+	buf.WriteString(oauthParams.OauthURLS.Token + "?")
 	v := url.Values{"grant_type": {"authorization_code"}, "code": {code}}
-	v.Set("redirect_uri", oauthParams.CallbackURL)
+	v.Set("redirect_uri", oauthParams.OauthURLS.Callback)
 	v.Set("client_id", oauthParams.ClientID)
 	v.Set("client_secret", oauthParams.ClientSecret)
 	buf.WriteString(v.Encode())
@@ -289,13 +290,13 @@ func (h *Handler) tokenToCall(oauthParams *OauthParams) ([]byte, error) {
 	var response *http.Response
 
 	switch oauthParams.ApiName {
-	case "google":
-		response, err = http.Get(oauthParams.AccessURL + "=" + oauthParams.AccessToken)
+	case "google", "mailru":
+		response, err = http.Get(oauthParams.OauthURLS.Access + "=" + oauthParams.AccessToken)
 		if err != nil {
 			return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 		}
 	case "github":
-		req, err := http.NewRequest("GET", oauthParams.AccessURL, nil)
+		req, err := http.NewRequest("GET", oauthParams.OauthURLS.Access, nil)
 		if err != nil {
 			return nil, fmt.Errorf("newRequest: %w", err)
 		}
