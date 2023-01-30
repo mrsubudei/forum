@@ -53,10 +53,20 @@ func ReadEnv(path string) error {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		sl := strings.Split(line, "=")
-		key := sl[0]
-		value := sl[1]
-		os.Setenv(key, value)
+		if equal := strings.Index(line, "="); equal >= 0 {
+			if key := strings.TrimSpace(line[:equal]); len(key) > 0 {
+				value := ""
+				if len(line) > equal {
+					value = strings.TrimSpace(line[equal+1:])
+				}
+				os.Setenv(key, value)
+			}
+		}
 	}
+
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("config - ReadEnv - Scan: %w", err)
+	}
+
 	return nil
 }
