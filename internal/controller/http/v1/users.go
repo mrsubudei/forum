@@ -99,6 +99,11 @@ func (h *Handler) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if authorized := h.checkIfAuthrized(w, r); authorized {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
 		h.l.WriteLog(fmt.Errorf("v1 - AllUsersPageHandler - TypeAssertion:"+
@@ -218,10 +223,28 @@ func (h *Handler) SignInPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if authorized := h.checkIfAuthrized(w, r); authorized {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
 	err := h.ParseAndExecute(w, Content{}, "templates/login.html")
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - SignInPageHandler - ParseAndExecute - %w", err))
 	}
+}
+
+func (h *Handler) checkIfAuthrized(w http.ResponseWriter, r *http.Request) bool {
+	foundUser := h.GetExistedSession(w, r)
+	if foundUser.Id == 0 {
+		return false
+	}
+	isAuthorized, err := h.Usecases.Users.CheckSession(foundUser)
+	if err != nil {
+		h.l.WriteLog(fmt.Errorf("checkIfAuthrized: %w", err))
+		return false
+	}
+	return isAuthorized
 }
 
 func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {

@@ -72,16 +72,6 @@ func setupUserUseCase(mockRepo *m.MockRepos) *usecase.UsersUseCase {
 	return userUseCase
 }
 
-func getDependencies() (*hasher.BcryptHasher, *auth.Manager) {
-	cfg, err := config.LoadConfig("../../config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	hasher := hasher.NewBcryptHasher()
-	tokenManager := auth.NewManager(cfg)
-	return hasher, tokenManager
-}
-
 func TestSignUp(t *testing.T) {
 	mockRepo := m.NewMockRepos()
 	userUseCase := setupUserUseCase(mockRepo)

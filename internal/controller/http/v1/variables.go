@@ -55,6 +55,16 @@ const (
 )
 
 const (
-	GoogleAuthURL  = "https://accounts.google.com/o/oauth2/auth"
-	GoogleTokenURL = "https://oauth2.googleapis.com/token?"
+	GoogleAuthURL   = "https://accounts.google.com/o/oauth2/auth"
+	GoogleTokenURL  = "https://oauth2.googleapis.com/token"
+	GoogleAccessURL = "https://www.googleapis.com/oauth2/v2/userinfo?access_token"
+	GoogleScope     = "https://www.googleapis.com/auth/userinfo.email " +
+		"https://www.googleapis.com/auth/userinfo.profile"
+	GoogleCallbackURL = "http://localhost:8087/oauth2_callback_google"
+
+	GithubAuthURL     = "https://github.com/login/oauth/authorize"
+	GithubTokenURL    = "https://github.com/login/oauth/access_token"
+	GithubAccessURL   = "https://api.github.com/user/emails"
+	GithubScope       = "user"
+	GithubCallbackURL = "http://localhost:8087/oauth2_callback_github"
 )
