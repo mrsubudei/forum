@@ -90,7 +90,8 @@
                             </li>
                         </ul>
                     </div>
-                    <form action="/create_comment/{{.Post.Id}}" name="frmLogin" id="frmLogin" method="POST">
+                    <form action="/create_comment/{{.Post.Id}}" name="frmLogin" id="frmLogin" method="POST"
+                        enctype="multipart/form-data">
                         <div>
                             <div class="cat_bar">
                                 <h3 class="catbg">
@@ -104,6 +105,10 @@
                                     <dt>Содержание:</dt>
                                     <textarea name="content" class="input_post" required="required"></textarea>
                                 </dl>
+                                <div>
+                                    <label for="image">Image:</label>
+                                    <input type="file" id="image" name="image">
+                                </div>
                                 <p><input type="submit" value="Создать" class="button_submit"></p>
                             </div>
                             <span class="lowerframe"><span></span></span>

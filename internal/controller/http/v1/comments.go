@@ -2,7 +2,10 @@ package v1
 
 import (
 	"fmt"
+	"io"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -47,11 +50,47 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.Errors(w, http.StatusInternalServerError)
+	err := r.ParseMultipartForm(20 << 20)
+	if err != nil {
+		fmt.Println("Error:", err)
+		h.Errors(w, http.StatusBadRequest)
+		return
 	}
 
-	if len(r.Form["content"]) == 0 || len(r.Form["content"][0]) == 0 {
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		log.Println("11", err)
+		return
+	}
+	defer file.Close()
+
+	if _, err := os.Stat("templates/images"); os.IsNotExist(err) {
+		log.Println("22")
+		os.MkdirAll("templates/images", os.ModePerm)
+	}
+
+	targetFile, err := os.Create("templates/images/abc1")
+	if err != nil {
+		log.Println("33")
+		log.Println(err)
+		return
+	}
+	defer targetFile.Close()
+
+	written, err := io.Copy(targetFile, file)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if written >= (20 << 20) {
+		fmt.Println("zdorovi nahoi")
+	}
+
+	mimeType := header.Header.Get("Content-Type")
+	fmt.Println(mimeType)
+	// fmt.Println("written:", written)
+	if len(r.MultipartForm.Value["content"]) == 0 || len(r.MultipartForm.Value["content"][0]) == 0 {
+		fmt.Println("pusto")
 		h.Errors(w, http.StatusBadRequest)
 		return
 	}
