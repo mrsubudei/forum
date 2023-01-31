@@ -36,18 +36,34 @@ func (pr *PostsRepo) Store(post *entity.Post) error {
 
 	res, err := stmt.Exec(post.User.Id, post.Date, post.Title, post.Content)
 	if err != nil {
-		return fmt.Errorf("PostsRepo - Store - Exec: %w", err)
+		return fmt.Errorf("PostsRepo - Store - Exec #1: %w", err)
 	}
 
 	affected, err := res.RowsAffected()
 	if affected != 1 || err != nil {
-		return fmt.Errorf("PostsRepo - Store - RowsAffected: %w", err)
+		return fmt.Errorf("PostsRepo - Store - RowsAffected #1: %w", err)
 	}
 	postId, err := res.LastInsertId()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Store - LastInsertId: %w", err)
 	}
 	post.Id = postId
+
+	if post.ImagePath != "" {
+		res, err = tx.Exec(`
+		INSERT INTO images(post_id, path)
+			values(?, ?)
+	`, postId, post.ImagePath)
+
+		if err != nil {
+			return fmt.Errorf("PostsRepo - Store - Exec #2: %w", err)
+		}
+		affected, err = res.RowsAffected()
+		if affected != 1 || err != nil {
+			return fmt.Errorf("PostsRepo - Store - RowsAffected #2: %w", err)
+		}
+	}
+
 	err = tx.Commit()
 	if err != nil {
 		return fmt.Errorf("PostsRepo - Store - Commit: %w", err)
@@ -216,7 +232,8 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 		id, user_id, date, title, content,
 		(SELECT name FROM users WHERE users.id = posts.user_id) AS user_name,
 		(SELECT COUNT(*) FROM post_likes WHERE post_id = ?) AS post_likes,
-		(SELECT COUNT(*) FROM post_dislikes WHERE post_id = ?) AS post_dislikes
+		(SELECT COUNT(*) FROM post_dislikes WHERE post_id = ?) AS post_dislikes,
+		(SELECT path FROM images WHERE images.post_id = ?)
 	FROM posts
 	WHERE id = ?
 	`)
@@ -228,7 +245,7 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	var postDislikes sql.NullInt64
 	var userName sql.NullString
 
-	err = stmt.QueryRow(id, id, id).Scan(&post.Id, &post.User.Id, &post.Date, &post.Title, &post.Content,
+	err = stmt.QueryRow(id, id, id, id).Scan(&post.Id, &post.User.Id, &post.Date, &post.Title, &post.Content,
 		&userName, &postsLikes, &postDislikes)
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)

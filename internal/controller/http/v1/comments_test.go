@@ -1,11 +1,12 @@
 package v1_test
 
 import (
-	"forum/internal/entity"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	"forum/internal/entity"
 )
 
 func TestCreateCommentPageHandler(t *testing.T) {

@@ -1,15 +1,17 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 
 	"forum/internal/entity"
+
+	"forum/pkg/auth"
 )
 
 func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,50 +52,35 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := r.ParseMultipartForm(20 << 20)
+	err := r.ParseMultipartForm(ImageSizeInt << 20)
 	if err != nil {
-		fmt.Println("Error:", err)
 		h.Errors(w, http.StatusBadRequest)
 		return
 	}
 
-	file, header, err := r.FormFile("image")
+	imagePath, err := h.GetImage(w, r)
 	if err != nil {
-		log.Println("11", err)
+		content := Content{}
+		if strings.Contains(err.Error(), ErrImageTypeForbidden) ||
+			strings.Contains(err.Error(), ErrImageTooLarge) {
+			w.WriteHeader(http.StatusBadRequest)
+			content.ErrorMsg.Message = err.Error()
+			err := h.ParseAndExecute(w, content, "templates/create_comment.html")
+			if err != nil {
+				h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - ParseAndExecute #1: %w", err))
+			}
+		} else {
+			h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - GetImage: %w", err))
+			h.Errors(w, http.StatusInternalServerError)
+		}
 		return
 	}
-	defer file.Close()
 
-	if _, err := os.Stat("templates/images"); os.IsNotExist(err) {
-		log.Println("22")
-		os.MkdirAll("templates/images", os.ModePerm)
-	}
-
-	targetFile, err := os.Create("templates/images/abc1")
-	if err != nil {
-		log.Println("33")
-		log.Println(err)
-		return
-	}
-	defer targetFile.Close()
-
-	written, err := io.Copy(targetFile, file)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	if written >= (20 << 20) {
-		fmt.Println("zdorovi nahoi")
-	}
-
-	mimeType := header.Header.Get("Content-Type")
-	fmt.Println(mimeType)
-	// fmt.Println("written:", written)
 	if len(r.MultipartForm.Value["content"]) == 0 || len(r.MultipartForm.Value["content"][0]) == 0 {
-		fmt.Println("pusto")
 		h.Errors(w, http.StatusBadRequest)
 		return
 	}
+
 	path := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(path[len(path)-1])
 	if err != nil {
@@ -113,11 +100,12 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commentContent := r.Form["content"][0]
+	commentContent := r.MultipartForm.Value["content"][0]
 	newComment := entity.Comment{}
 	newComment.Content = strings.ReplaceAll(commentContent, "\r\n", "\\n")
 	newComment.User = content.User
 	newComment.PostId = int64(id)
+	newComment.ImagePath = "/" + imagePath
 
 	err = h.Usecases.Comments.WriteComment(newComment)
 	if err != nil {
@@ -195,4 +183,51 @@ func (h *Handler) CommentPutDislikeHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	http.Redirect(w, r, r.Header.Get("Referer")+"#"+strconv.Itoa(int(comment.Id)), http.StatusFound)
+}
+
+func (h *Handler) GetImage(w http.ResponseWriter, r *http.Request) (string, error) {
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		return "", nil
+	}
+	defer file.Close()
+
+	mimeType := header.Header.Get("Content-Type")
+	typeSl := strings.Split(mimeType, "/")
+	imageType := typeSl[1]
+
+	if imageType != "jpeg" && imageType != "png" && imageType != "gif" {
+		return "", errors.New(ErrImageTypeForbidden)
+	}
+
+	if _, err := os.Stat("templates/img/storage"); os.IsNotExist(err) {
+		os.MkdirAll("templates/img/storage", os.ModePerm)
+	}
+
+	manager := auth.NewManager(h.Cfg)
+	generated, err := manager.NewToken()
+	if err != nil {
+		return "", fmt.Errorf("newToken: %w", err)
+	}
+
+	path := "templates/img/storage/" + generated + "." + imageType
+	targetFile, err := os.Create(path)
+	if err != nil {
+		return "", fmt.Errorf("create: %w", err)
+	}
+	defer targetFile.Close()
+
+	written, err := io.Copy(targetFile, file)
+	if err != nil {
+		return "", fmt.Errorf("copy: %w", err)
+	}
+	if written >= (ImageSizeInt << 20) {
+		e := os.Remove(path)
+		if e != nil {
+			return "", fmt.Errorf("remove: %w", err)
+		}
+		return "", errors.New(ErrImageTooLarge)
+	}
+
+	return path, nil
 }

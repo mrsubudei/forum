@@ -36,12 +36,30 @@ func (cr *CommentsRepo) Store(comment entity.Comment) error {
 
 	res, err := stmt.Exec(comment.PostId, comment.User.Id, comment.Date, comment.Content)
 	if err != nil {
-		return fmt.Errorf("CommentsRepo - Store - Exec: %w", err)
+		return fmt.Errorf("CommentsRepo - Store - Exec #1: %w", err)
 	}
 
 	affected, err := res.RowsAffected()
 	if affected != 1 || err != nil {
-		return fmt.Errorf("CommentsRepo - Store - RowsAffected: %w", err)
+		return fmt.Errorf("CommentsRepo - Store - RowsAffected #1: %w", err)
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return fmt.Errorf("CommentsRepo - Store - LastInsertId: %w", err)
+	}
+	if comment.ImagePath != "" {
+		res, err = tx.Exec(`
+		INSERT INTO images(comment_id, path)
+			values(?, ?)
+	`, id, comment.ImagePath)
+
+		if err != nil {
+			return fmt.Errorf("CommentsRepo - Store - Exec #2: %w", err)
+		}
+		affected, err = res.RowsAffected()
+		if affected != 1 || err != nil {
+			return fmt.Errorf("CommentsRepo - Store - RowsAffected #2: %w", err)
+		}
 	}
 
 	err = tx.Commit()
@@ -59,7 +77,8 @@ func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
 	SELECT
 		id, post_id, user_id, date, content,
 		(SELECT COUNT(*) FROM comment_likes WHERE comment_likes.comment_id = comments.id) AS comment_likes,
-		(SELECT COUNT(*) FROM comment_dislikes WHERE comment_dislikes.comment_id = comments.id) AS comment_dislikes
+		(SELECT COUNT(*) FROM comment_dislikes WHERE comment_dislikes.comment_id = comments.id) AS comment_dislikes,
+		(SELECT path FROM images WHERE images.comment_id = comments.id)
 	FROM comments
 	WHERE post_id = ?
 	`, postId)
@@ -71,15 +90,17 @@ func (cr *CommentsRepo) Fetch(postId int64) ([]entity.Comment, error) {
 		var comment entity.Comment
 		var commentLikes sql.NullInt64
 		var commentDislikes sql.NullInt64
+		var imagePath sql.NullString
 
 		err = rows.Scan(&comment.Id, &comment.PostId, &comment.User.Id, &comment.Date, &comment.Content,
-			&commentLikes, &commentDislikes)
+			&commentLikes, &commentDislikes, &imagePath)
 		if err != nil {
 			return nil, fmt.Errorf("CommentsRepo - Fetch - Scan: %w", err)
 		}
 
 		comment.TotalLikes = commentLikes.Int64
 		comment.TotalDislikes = commentDislikes.Int64
+		comment.ImagePath = imagePath.String
 		comments = append(comments, comment)
 	}
 	return comments, nil

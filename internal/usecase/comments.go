@@ -29,6 +29,7 @@ func (cu *CommentsUseCase) WriteComment(comment entity.Comment) error {
 	if err != nil {
 		return fmt.Errorf("CommentsUseCase - WriteComment - %w", err)
 	}
+
 	return nil
 }
 

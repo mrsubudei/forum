@@ -1,14 +1,15 @@
 package entity
 
 type Comment struct {
-	Id            int64      `json:"id,omitempty"`
-	PostId        int64      `json:"post_id,omitempty"`
-	User          User       `json:"user,omitempty"`
-	Date          string     `json:"comment_date,omitempty"`
-	Content       string     `json:"comment_content,omitempty"`
-	ContentWeb    []string   `json:"content_web,omitempty"`
-	Likes         []Reaction `json:"likes,omitempty"`
-	TotalLikes    int64      `json:"total_likes,omitempty"`
-	Dislikes      []Reaction `json:"dislikes,omitempty"`
-	TotalDislikes int64      `json:"total_dislikes,omitempty"`
+	Id            int64
+	PostId        int64
+	User          User
+	Date          string
+	Content       string
+	ImagePath     string
+	ContentWeb    []string
+	Likes         []Reaction
+	TotalLikes    int64
+	Dislikes      []Reaction
+	TotalDislikes int64
 }

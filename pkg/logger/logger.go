@@ -62,7 +62,8 @@ func New() *Logger {
 func (l *Logger) WriteLog(err error) {
 	if !errors.Is(err, entity.ErrUserNotFound) && !errors.Is(err, entity.ErrPostNotFound) &&
 		!errors.Is(err, entity.ErrUserEmailAlreadyExists) && !errors.Is(err, entity.ErrUserNameAlreadyExists) &&
-		!errors.Is(err, entity.ErrUserPasswordIncorrect) && !errors.Is(err, entity.ErrUserEmailIncorrect) {
+		!errors.Is(err, entity.ErrUserPasswordIncorrect) && !errors.Is(err, entity.ErrUserEmailIncorrect) &&
+		!strings.Contains(err.Error(), "strconv.Atoi: parsing") && !strings.Contains(err.Error(), "no rows in result set") {
 		l.Err.Println(err)
 	} else {
 		l.Info.Println(err)

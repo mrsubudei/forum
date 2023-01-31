@@ -26,7 +26,7 @@ type Config struct {
 }
 
 func LoadConfig(filename string) (Config, error) {
-	//loading config file
+	// loading config file
 	config := Config{}
 	configFile, err := os.Open(filename)
 	if err != nil {

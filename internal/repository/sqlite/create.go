@@ -1,12 +1,12 @@
 package sqlite
 
 import (
-	"forum/pkg/sqlite3"
 	"time"
+
+	"forum/pkg/sqlite3"
 )
 
 func CreateDB(s *sqlite3.Sqlite) error {
-
 	users := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,6 +141,21 @@ func CreateDB(s *sqlite3.Sqlite) error {
 		);
 	`
 	_, err = s.DB.Exec(referencetopic)
+	if err != nil {
+		return err
+	}
+
+	images := `
+	CREATE TABLE IF NOT EXISTS images (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		post_id INTEGER,
+		comment_id INTEGER,
+		path TEXT,
+		FOREIGN KEY (post_id) REFERENCES posts(id),
+		FOREIGN KEY (comment_id) REFERENCES comments(id)
+		);
+	`
+	_, err = s.DB.Exec(images)
 	if err != nil {
 		return err
 	}

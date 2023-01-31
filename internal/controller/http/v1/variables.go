@@ -23,6 +23,11 @@ type ErrMessage struct {
 type Key string
 
 const (
+	ImageSizeStr = "20"
+	ImageSizeInt = 20
+)
+
+const (
 	UserNotExist          = "Такого пользователя не существует"
 	UserPassWrong         = "Неверный пароль, попробуйте ещё раз"
 	PasswordsNotSame      = "Пароли не совпадают"
@@ -40,6 +45,9 @@ const (
 	ErrMethodNotAllowed    = "Метод не разрешен"
 	ErrStatusNotAuthorized = "Вы не авторизованы"
 	ErrLowAccessLevel      = "Низкий уровень доступа"
+	ErrImageTypeForbidden  = "Тип загружаемого изображения не разрешен"
+	ErrImageTooLarge       = "Размер загружаемого изображения не должен превышать " +
+		ImageSizeStr + " мегабайт"
 )
 
 const (

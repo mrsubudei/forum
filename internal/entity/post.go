@@ -1,21 +1,22 @@
 package entity
 
 type Post struct {
-	Id               int64      `json:"id,omitempty"`
-	User             User       `json:"user,omitempty"`
-	Date             string     `json:"date,omitempty"`
-	Title            string     `json:"title,omitempty"`
-	Content          string     `json:"content,omitempty"`
-	ContentWeb       []string   `json:"content_web,omitempty"`
-	Categories       []string   `json:"categories,omitempty"`
-	Comments         []Comment  `json:"comments,omitempty"`
-	LastComment      Comment    `json:"last_comment,omitempty"`
-	LastCommentExist bool       `json:"last_comment_exist,omitempty"`
-	TotalComments    int64      `json:"total_comments,omitempty"`
-	Likes            []Reaction `json:"likes,omitempty"`
-	TotalLikes       int64      `json:"total_likes,omitempty"`
-	Dislikes         []Reaction `json:"dislkes,omitempty"`
-	TotalDislikes    int64      `json:"total_dislikes,omitempty"`
+	Id               int64
+	User             User
+	Date             string
+	Title            string
+	Content          string
+	ImagePath        string
+	ContentWeb       []string
+	Categories       []string
+	Comments         []Comment
+	LastComment      Comment
+	LastCommentExist bool
+	TotalComments    int64
+	Likes            []Reaction
+	TotalLikes       int64
+	Dislikes         []Reaction
+	TotalDislikes    int64
 }
 
 type Reaction struct {

@@ -83,8 +83,28 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.Errors(w, http.StatusInternalServerError)
+	err := r.ParseMultipartForm(ImageSizeInt << 20)
+	if err != nil {
+		h.Errors(w, http.StatusBadRequest)
+		return
+	}
+
+	imagePath, err := h.GetImage(w, r)
+	if err != nil {
+		content := Content{}
+		if strings.Contains(err.Error(), ErrImageTypeForbidden) ||
+			strings.Contains(err.Error(), ErrImageTooLarge) {
+			w.WriteHeader(http.StatusBadRequest)
+			content.ErrorMsg.Message = err.Error()
+			err := h.ParseAndExecute(w, content, "templates/create_post.html")
+			if err != nil {
+				h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - ParseAndExecute #1: %w", err))
+			}
+		} else {
+			h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - GetImage: %w", err))
+			h.Errors(w, http.StatusInternalServerError)
+		}
+		return
 	}
 
 	if len(r.Form["title"]) == 0 || len(r.Form["title"][0]) == 0 ||
@@ -116,6 +136,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	newPost.Content = strings.ReplaceAll(postContent, "\r\n", "\\n")
 	newPost.Categories = categories
 	newPost.User = content.User
+	newPost.ImagePath = imagePath
 	content.Post = newPost
 
 	if !valid {
