@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -24,6 +26,7 @@ type Config struct {
 }
 
 func LoadConfig(filename string) (Config, error) {
+	//loading config file
 	config := Config{}
 	configFile, err := os.Open(filename)
 	if err != nil {
@@ -40,13 +43,19 @@ func LoadConfig(filename string) (Config, error) {
 	if err != nil {
 		return config, err
 	}
+
+	// seting env variables
+	if err = setEnv(); err != nil {
+		return config, err
+	}
 	return config, nil
 }
 
-func ReadEnv(path string) error {
-	file, err := os.Open(path)
+func setEnv() error {
+	root := getRootPath()
+	file, err := os.Open(root + ".env")
 	if err != nil {
-		return fmt.Errorf("config - ReadEnv - Open: %w", err)
+		return fmt.Errorf("setEnv - Open: %w", err)
 	}
 	defer file.Close()
 
@@ -65,8 +74,34 @@ func ReadEnv(path string) error {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("config - ReadEnv - Scan: %w", err)
+		return fmt.Errorf("setEnv - Scan: %w", err)
 	}
 
 	return nil
+}
+
+func getRootPath() string {
+	separator := "/"
+	if runtime.GOOS == "windows" {
+		separator = "\\"
+	}
+
+	// getting full path from where program is running
+	_, basePath, _, _ := runtime.Caller(0)
+	pathSlice := strings.Split(filepath.Dir(basePath), separator)
+	tmpSl := []string{}
+	last := false
+
+	// separating root directory
+	for i := 0; i < len(pathSlice); i++ {
+		tmpSl = append(tmpSl, pathSlice[i])
+		if pathSlice[i] == "forum" {
+			last = true
+		}
+		if last {
+			break
+		}
+	}
+
+	return strings.Join(tmpSl, separator) + separator
 }

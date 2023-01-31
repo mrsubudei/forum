@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"forum/internal/config"
 	"forum/internal/entity"
 	"io"
 	"net/http"
@@ -15,11 +14,14 @@ import (
 	"strings"
 )
 
-func (h *Handler) OauthSignHandler(w http.ResponseWriter, r *http.Request) {
-	err := config.ReadEnv(".env")
-	if err != nil {
-		h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - ReadEnv: %w", err))
-		h.Errors(w, http.StatusInternalServerError)
+// oauth2 consists of three streps:
+// 1. request to get code
+// 2. exchange code for token
+// 3. use token to call API
+
+func (h *Handler) OauthSigninHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -40,18 +42,13 @@ func (h *Handler) OauthSignHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// oauth2 consists of three streps:
-	// 1. request to get code
-	// 2. exchange code for token
-	// 3. use token to call API
-
 	// this is the first step
 	var buf bytes.Buffer
 	buf.WriteString(oauthParams.OauthURLS.Auth)
 	v := url.Values{"response_type": {"code"}, "client_id": {oauthParams.ClientID}}
 	v.Set("redirect_uri", oauthParams.OauthURLS.Callback)
 	v.Set("scope", oauthParams.OauthURLS.Scope)
-	v.Set("state", oauthState)
+	v.Set("state", OauthState)
 	buf.WriteByte('?')
 	buf.WriteString(v.Encode())
 	url := buf.String()
@@ -260,7 +257,7 @@ func (h *Handler) setParams(apiName string) (*OauthParams, string) {
 func (h *Handler) exchageCode(r *http.Request, oauthParams *OauthParams) error {
 	state := r.FormValue("state")
 	code := r.FormValue("code")
-	if state != oauthState {
+	if state != OauthState {
 		return fmt.Errorf("invalid oauth state")
 	}
 
@@ -280,7 +277,9 @@ func (h *Handler) exchageCode(r *http.Request, oauthParams *OauthParams) error {
 	}
 	defer resp.Body.Close()
 	bytes, _ := io.ReadAll(resp.Body)
-	json.Unmarshal(bytes, &oauthParams)
+	if err = json.Unmarshal(bytes, &oauthParams); err != nil {
+		return fmt.Errorf("unmarshal: %w", err)
+	}
 	return nil
 }
 

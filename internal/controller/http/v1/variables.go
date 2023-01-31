@@ -54,7 +54,7 @@ const (
 	ReactionMessageDislike = "\"дизлайк\""
 )
 
-var oauthState = "pseudo-random-fs3f#ds38A@f"
+var OauthState = "pseudo-random-fs3f#ds38A@f"
 
 type OauthContent struct {
 	Email string `json:"email"`

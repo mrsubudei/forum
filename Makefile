@@ -22,3 +22,16 @@ meta:
 		@docker image inspect --format='{{.ContainerConfig.Labels.authors}}' $(name)
 		@echo DockerVersion:
 		@docker image inspect --format='{{.DockerVersion}}' $(name)
+
+.PHONY: go
+go:
+		go run cmd/main.go
+
+.PHONY: tests
+tests:
+		go test -v ./...
+
+.PHONY: test covers
+test covers:
+		go test ./... -coverprofile=coverage
+		go tool cover -html=coverage

@@ -256,7 +256,9 @@ func TestSearchByCategoryHandler(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/categories/cars", nil)
-		handler.Usecases.Posts.CreateCategories([]string{"cars"})
+		if err := handler.Usecases.Posts.CreateCategories([]string{"cars"}); err != nil {
+			t.Fatal(err)
+		}
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
@@ -278,7 +280,9 @@ func TestSearchByCategoryHandler(t *testing.T) {
 	t.Run("err category not found", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/categories/qwerty", nil)
-		handler.Usecases.Posts.CreateCategories([]string{"cars"})
+		if err := handler.Usecases.Posts.CreateCategories([]string{"cars"}); err != nil {
+			t.Fatal(err)
+		}
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {

@@ -107,7 +107,7 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("/oauth2_callback_google", h.OauthCallbackGoogleHandler)
 	router.HandleFunc("/oauth2_callback_github", h.OauthCallbackGithubHandler)
 	router.HandleFunc("/oauth2_callback_mailru", h.OauthCallbackMailruHandler)
-	router.HandleFunc("/oauth2_signin/", h.OauthSignHandler)
+	router.HandleFunc("/oauth2_signin/", h.OauthSigninHandler)
 
 	// searching routes
 	router.Handle("/search_page", h.AssignStatus(http.HandlerFunc(h.SearchPageHandler)))
