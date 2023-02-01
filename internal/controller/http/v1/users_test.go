@@ -372,13 +372,17 @@ func TestEditProfileHandler(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
+		body, mw := CreateMultipartForm(t, "",
+			"Lorem ipsum dolor sit amet.", "")
+
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/edit_profile/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/edit_profile/1", body)
+		req.Header.Set("Content-Type", mw.FormDataContentType())
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
 		req.AddCookie(cookie)
-
+		mw.Close()
 		form := url.Values{}
 		form.Add("id", "3")
 		form.Add("city", "Astana")
@@ -389,6 +393,25 @@ func TestEditProfileHandler(t *testing.T) {
 
 		if rec.Code != http.StatusFound {
 			t.Fatalf("want: %v, got: %v", http.StatusFound, rec.Code)
+		}
+	})
+
+	t.Run("err image size too big", func(t *testing.T) {
+		body, mw := CreateMultipartForm(t, "../../../../templates/img/icons/darth_maul.jpeg",
+			"Lorem ipsum dolor sit amet.", "image")
+
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPost, "/edit_profile/1", body)
+		req.Header.Set("Content-Type", mw.FormDataContentType())
+		cookie := &http.Cookie{
+			Name: "session_token",
+		}
+		req.AddCookie(cookie)
+		mw.Close()
+		handler.Mux.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusBadRequest {
+			t.Fatalf("want: %v, got: %v", http.StatusBadRequest, rec.Code)
 		}
 	})
 

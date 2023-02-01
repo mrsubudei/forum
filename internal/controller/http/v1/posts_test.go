@@ -86,19 +86,21 @@ func TestCreatePostHandler(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
+		body, mw := CreateMultipartForm(t, "",
+			"Lorem ipsum dolor sit amet.", "")
+
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/create_post", nil)
+		req := httptest.NewRequest(http.MethodPost, "/create_post", body)
+		req.Header.Set("Content-Type", mw.FormDataContentType())
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
 		req.AddCookie(cookie)
-
 		form := url.Values{}
 		form.Add("title", "BMW")
-		form.Add("content", "Lorem ipsum dolor sit amet.")
 		form.Add("categories", "cars")
 		req.PostForm = form
-
+		mw.Close()
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusFound {
@@ -122,18 +124,17 @@ func TestCreatePostHandler(t *testing.T) {
 	})
 
 	t.Run("err empty request", func(t *testing.T) {
+		body, mw := CreateMultipartForm(t, "",
+			"", "")
+
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/create_post", nil)
+		req := httptest.NewRequest(http.MethodPost, "/create_post", body)
+		req.Header.Set("Content-Type", mw.FormDataContentType())
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
 		req.AddCookie(cookie)
-
-		form := url.Values{}
-		form.Add("title", "BMW")
-		form.Add("categories", "cars")
-		req.PostForm = form
-
+		mw.Close()
 		handler.Mux.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
@@ -142,13 +143,16 @@ func TestCreatePostHandler(t *testing.T) {
 	})
 
 	t.Run("err category is not chosen", func(t *testing.T) {
+		body, mw := CreateMultipartForm(t, "",
+			"abc", "")
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/create_post", nil)
+		req := httptest.NewRequest(http.MethodPost, "/create_post", body)
+		req.Header.Set("Content-Type", mw.FormDataContentType())
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
 		req.AddCookie(cookie)
-
+		mw.Close()
 		form := url.Values{}
 		form.Add("title", "BMW")
 		form.Add("content", "Lorem ipsum dolor sit amet.")

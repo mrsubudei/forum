@@ -1,10 +1,14 @@
 package v1_test
 
 import (
+	"bytes"
+	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"testing"
 
 	"forum/internal/config"
@@ -29,6 +33,44 @@ func setup() *v1.Handler {
 	handler.RegisterRoutes(handler.Mux)
 
 	return handler
+}
+
+func CreateMultipartForm(t *testing.T, path string,
+	content string, fieldName string) (*bytes.Buffer, *multipart.Writer) {
+
+	body := new(bytes.Buffer)
+	mw := multipart.NewWriter(body)
+
+	if path != "" {
+		filePath := path
+		file, err := os.Open(filePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer file.Close()
+
+		w, err := mw.CreateFormFile(fieldName, filePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := io.Copy(w, file); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	field, err := mw.CreateFormField("content")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if content != "" {
+		_, err = io.Copy(field, bytes.NewBufferString(content))
+		if err != nil {
+			t.Fatalf("Error writing to form field: %v", err)
+		}
+	}
+
+	return body, mw
 }
 
 func TestIndexHandler(t *testing.T) {

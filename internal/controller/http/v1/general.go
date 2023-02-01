@@ -1,11 +1,16 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
+	"image"
+	"io"
 	"net/http"
+	"os"
 	"strings"
 
 	"forum/internal/entity"
+	"forum/pkg/auth"
 )
 
 func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -223,4 +228,71 @@ func (h *Handler) filterPosts(posts []entity.Post, request string) []entity.Post
 		}
 	}
 	return filtered
+}
+
+func (h *Handler) GetImage(w http.ResponseWriter, r *http.Request) (string, error) {
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		return "", nil
+	}
+	defer file.Close()
+
+	mimeType := header.Header.Get("Content-Type")
+	typeSl := strings.Split(mimeType, "/")
+	imageType := typeSl[1]
+
+	if imageType != "jpeg" && imageType != "png" && imageType != "gif" {
+		return "", errors.New(imageTypeForbidden)
+	}
+
+	if _, err := os.Stat("templates/img/storage"); os.IsNotExist(err) {
+		os.MkdirAll("templates/img/storage", os.ModePerm)
+	}
+
+	manager := auth.NewManager(h.Cfg)
+	generated, err := manager.NewToken()
+	if err != nil {
+		return "", fmt.Errorf("newToken: %w", err)
+	}
+
+	path := "templates/img/storage/" + generated + "." + imageType
+	targetFile, err := os.Create(path)
+	if err != nil {
+		return "", fmt.Errorf("create: %w", err)
+	}
+	defer targetFile.Close()
+
+	written, err := io.Copy(targetFile, file)
+	if err != nil {
+		return "", fmt.Errorf("copy: %w", err)
+	}
+	if written >= (ImageSizeInt << 20) {
+		err := os.Remove(path)
+		if err != nil {
+			return "", fmt.Errorf("remove: %w", err)
+		}
+		return "", errors.New(imageTooLarge)
+	}
+
+	return path, nil
+}
+
+func (h *Handler) CheckSizeExceeded(path string) (bool, error) {
+	if path == "" {
+		return false, nil
+	}
+	fmt.Println("tuta")
+	file, err := os.Open(path)
+	if err != nil {
+		return false, fmt.Errorf("open: %w", err)
+	}
+
+	image, _, err := image.DecodeConfig(file)
+	if err != nil {
+		return false, fmt.Errorf("decodeConfig: %w", err)
+	}
+	if image.Width > ImageWidthInt || image.Height > ImageHeightInt {
+		return true, nil
+	}
+	return false, nil
 }
