@@ -13,6 +13,7 @@ type Content struct {
 	Message      string
 	OwnerId      int64
 	ErrorMsg     ErrMessage
+	Uri          string
 }
 
 type ErrMessage struct {
@@ -23,8 +24,12 @@ type ErrMessage struct {
 type Key string
 
 const (
-	ImageSizeStr = "20"
-	ImageSizeInt = 20
+	ImageSizeStr   = "20"
+	ImageSizeInt   = 20
+	ImageWidthInt  = 120
+	ImageWidthStr  = "120"
+	ImageHeightInt = 150
+	ImageHeightStr = "150"
 )
 
 const (
@@ -38,16 +43,21 @@ const (
 )
 
 const (
-	ErrNoRowsInResult      = "no rows in result set"
-	ErrPageNotFound        = "Страница не найдена"
-	ErrBadRequest          = "Некорректный запрос"
-	ErrInternalServer      = "Ошибка сервера"
-	ErrMethodNotAllowed    = "Метод не разрешен"
-	ErrStatusNotAuthorized = "Вы не авторизованы"
-	ErrLowAccessLevel      = "Низкий уровень доступа"
-	ErrImageTypeForbidden  = "Тип загружаемого изображения не разрешен"
-	ErrImageTooLarge       = "Размер загружаемого изображения не должен превышать " +
+	NoRowsInResult      = "no rows in result set"
+	PageNotFound        = "Страница не найдена"
+	BadRequest          = "Некорректный запрос"
+	InternalServerErr   = "Ошибка сервера"
+	MethodNotAllowed    = "Метод не разрешен"
+	StatusNotAuthorized = "Вы не авторизованы"
+	LowAccessLevel      = "Низкий уровень доступа"
+)
+
+var (
+	imageTypeForbidden = "Разрешены только следующие форматы: png, jpg, gif"
+	imageTooLarge      = "Размер загружаемого изображения не должен превышать " +
 		ImageSizeStr + " мегабайт"
+	imageSizeExceeded = "Размер загружаемого изображения не должен превышать " +
+		ImageWidthStr + " x " + ImageHeightStr + " пикселей"
 )
 
 const (
@@ -62,7 +72,7 @@ const (
 	ReactionMessageDislike = "\"дизлайк\""
 )
 
-var OauthState = "pseudo-random-fs3f#ds38A@f"
+const OauthState = "pseudo-random-fs3f#ds38A@f"
 
 type OauthContent struct {
 	Email string `json:"email"`

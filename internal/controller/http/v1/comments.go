@@ -3,6 +3,10 @@ package v1
 import (
 	"errors"
 	"fmt"
+	"image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"net/http"
 	"os"
@@ -39,6 +43,7 @@ func (h *Handler) CreateCommentPageHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	content.Post.Id = int64(id)
+	content.Uri = strconv.Itoa(id)
 
 	err = h.ParseAndExecute(w, content, "templates/create_comment.html")
 	if err != nil {
@@ -52,20 +57,36 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := r.ParseMultipartForm(ImageSizeInt << 20)
+	var content Content
+	var err error
+	var ok bool
+
+	path := strings.Split(r.URL.Path, "/")
+	id, err := strconv.Atoi(path[len(path)-1])
+	if err != nil {
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - Atoi: %w", err))
+	}
+	if r.URL.Path != "/create_comment/"+path[len(path)-1] || err != nil || id <= 0 {
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - URL.Path: %w", err))
+		h.Errors(w, http.StatusNotFound)
+		return
+	}
+
+	err = r.ParseMultipartForm(ImageSizeInt << 20)
 	if err != nil {
 		h.Errors(w, http.StatusBadRequest)
 		return
 	}
 
+	content.Uri = strconv.Itoa(id)
+
 	imagePath, err := h.GetImage(w, r)
 	if err != nil {
-		content := Content{}
-		if strings.Contains(err.Error(), ErrImageTypeForbidden) ||
-			strings.Contains(err.Error(), ErrImageTooLarge) {
+		if strings.Contains(err.Error(), imageTypeForbidden) ||
+			strings.Contains(err.Error(), imageTooLarge) {
 			w.WriteHeader(http.StatusBadRequest)
 			content.ErrorMsg.Message = err.Error()
-			err := h.ParseAndExecute(w, content, "templates/create_comment.html")
+			err = h.ParseAndExecute(w, content, "templates/create_comment.html")
 			if err != nil {
 				h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - ParseAndExecute #1: %w", err))
 			}
@@ -81,18 +102,7 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := strings.Split(r.URL.Path, "/")
-	id, err := strconv.Atoi(path[len(path)-1])
-	if err != nil {
-		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - Atoi: %w", err))
-	}
-	if r.URL.Path != "/create_comment/"+path[len(path)-1] || err != nil || id <= 0 {
-		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - URL.Path: %w", err))
-		h.Errors(w, http.StatusNotFound)
-		return
-	}
-
-	content, ok := r.Context().Value(Key("content")).(Content)
+	content, ok = r.Context().Value(Key("content")).(Content)
 	if !ok {
 		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - TypeAssertion:"+
 			"got data of type %T but wanted v1.Content", content))
@@ -109,9 +119,16 @@ func (h *Handler) CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Usecases.Comments.WriteComment(newComment)
 	if err != nil {
-		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - WriteComment: %w", err))
-		h.Errors(w, http.StatusBadRequest)
-		return
+		err = os.Remove(imagePath)
+		if err != nil {
+			h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - Remove: %w", err))
+			h.Errors(w, http.StatusInternalServerError)
+			return
+		} else {
+			h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - WriteComment: %w", err))
+			h.Errors(w, http.StatusBadRequest)
+			return
+		}
 	}
 	http.Redirect(w, r, "/posts/"+strconv.Itoa(id), http.StatusFound)
 }
@@ -197,7 +214,7 @@ func (h *Handler) GetImage(w http.ResponseWriter, r *http.Request) (string, erro
 	imageType := typeSl[1]
 
 	if imageType != "jpeg" && imageType != "png" && imageType != "gif" {
-		return "", errors.New(ErrImageTypeForbidden)
+		return "", errors.New(imageTypeForbidden)
 	}
 
 	if _, err := os.Stat("templates/img/storage"); os.IsNotExist(err) {
@@ -222,12 +239,28 @@ func (h *Handler) GetImage(w http.ResponseWriter, r *http.Request) (string, erro
 		return "", fmt.Errorf("copy: %w", err)
 	}
 	if written >= (ImageSizeInt << 20) {
-		e := os.Remove(path)
-		if e != nil {
+		err := os.Remove(path)
+		if err != nil {
 			return "", fmt.Errorf("remove: %w", err)
 		}
-		return "", errors.New(ErrImageTooLarge)
+		return "", errors.New(imageTooLarge)
 	}
 
 	return path, nil
+}
+
+func (h *Handler) CheckSizeExceeded(path string) (bool, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return false, fmt.Errorf("open: %w", err)
+	}
+
+	image, _, err := image.DecodeConfig(file)
+	if err != nil {
+		return false, fmt.Errorf("decodeConfig: %w", err)
+	}
+	if image.Width > ImageWidthInt || image.Height > ImageHeightInt {
+		return true, nil
+	}
+	return false, nil
 }

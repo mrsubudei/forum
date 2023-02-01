@@ -88,12 +88,10 @@
                             <li>
                                 <a href="/"><span>Форум школы Алем</span></a> »
                             </li>
-                            <li class="last">
-                                <a href="/edit_profile_page/{{.User.Id}}"><span>Редактировать профайл</span></a>
-                            </li>
                         </ul>
                     </div>
-                    <form action="/edit_profile{{.User.Id}}" name="frmLogin" id="frmLogin" method="post">
+                    <form action="/edit_profile/{{.Uri}}" name="frmLogin" id="frmLogin" method="post"
+                        enctype="multipart/form-data">
                         <div class="tborder login">
                             <div class="cat_bar">
                                 <h3 class="catbg">
@@ -103,6 +101,7 @@
                             </div>
                             <span class="upperframe"><span></span></span>
                             <div class="roundframe"><br class="clear">
+                                <p class="error">{{.ErrorMsg.Message}}</p>
                                 <dl>
                                     {{if .Admin}}
                                     <dt>Id ползователя:</dt>
@@ -110,18 +109,21 @@
                                     </dd>
                                     {{end}}
                                     <dt>Город:</dt>
-                                    <dd><input type="text" name="city" size="20" class="input_text">
+                                    <dd><input type="text" name="city" size="20" class="input_text user_city">
                                     </dd>
                                     <dt>Дата рождения:</dt>
-                                    <dd><input name="date_of_birth" type="date" size="20" class="input_text">
+                                    <dd><input name="date_of_birth" type="date" size="20" class="input_text user_date">
                                     </dd>
                                     <dt>Пол:</dt>
                                     <dd><input type="radio" name="gender" value="Male"> М
                                         <input type="radio" name="gender" value="Female"> Ж
                                     </dd>
                                     <dt>Подпись:</dt>
-                                    <dd><input name="sign" type="text" size="20" class="input_text">
+                                    <dd><input name="sign" type="text" size="20" class="input_text user_sign">
                                     </dd>
+                                    <dt>Аватар:</dt>
+                                    <label for="image"></label>
+                                    <input class="user_avatar" type="file" id="image" name="image">
                                     {{if .Admin}}
                                     <dt>Роль:</dt>
                                     <dd><input name="role" type="text" size="20" class="input_text">

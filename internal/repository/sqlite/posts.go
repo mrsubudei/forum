@@ -230,6 +230,7 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	stmt, err := pr.DB.Prepare(`
 	SELECT
 		id, user_id, date, title, content,
+		(SELECT path FROM images WHERE images.user_id = posts.user_id),
 		(SELECT name FROM users WHERE users.id = posts.user_id) AS user_name,
 		(SELECT COUNT(*) FROM post_likes WHERE post_id = ?) AS post_likes,
 		(SELECT COUNT(*) FROM post_dislikes WHERE post_id = ?) AS post_dislikes,
@@ -244,9 +245,12 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	var postsLikes sql.NullInt64
 	var postDislikes sql.NullInt64
 	var userName sql.NullString
+	var imagePath sql.NullString
+	var avatarPath sql.NullString
 
 	err = stmt.QueryRow(id, id, id, id).Scan(&post.Id, &post.User.Id, &post.Date, &post.Title, &post.Content,
-		&userName, &postsLikes, &postDislikes)
+		&avatarPath, &userName, &postsLikes, &postDislikes, &imagePath)
+
 	if err != nil {
 		return post, fmt.Errorf("PostsRepo - GetById - Scan: %w", err)
 	}
@@ -254,6 +258,8 @@ func (pr *PostsRepo) GetById(id int64) (entity.Post, error) {
 	post.TotalLikes = postsLikes.Int64
 	post.TotalDislikes = postDislikes.Int64
 	post.User.Name = userName.String
+	post.User.AvatarPath = avatarPath.String
+	post.ImagePath = imagePath.String
 
 	return post, nil
 }

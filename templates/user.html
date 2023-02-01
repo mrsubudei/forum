@@ -105,17 +105,15 @@
                             <a href="/users/{{.User.Id}}" title="Просмотр профиля {{.User.Name}}">{{.User.Name}}</a>
                         </h4>
                         <ul class="reset smalltext">
+                            <li class="avatar">
+                                <a href="/users/{{.User.Id}}">
+                                    <img class="avatar" src="{{.User.AvatarPath}}" alt="">
+                                </a>
+                            </li>
                             <li class="postgroup">{{.User.Role}}</li>
                             {{if .User.Owner}}
                             <li class="postgroup">Почта: {{.User.Email}}</li>
                             {{end}}
-                            <li class="avatar">
-                                <!-- <a href="/users/2">
-                                    <img class="avatar"
-                                        src="avatars/Musicians/Bob_Marley.jpg"
-                                        alt="">
-                                </a> -->
-                            </li>
                             <li class="postcount">Город: {{.User.City}}</li>
                             <li class="postcount">Дата рождения: {{.User.DateOfBirth}}</li>
                             {{if .User.Male}}

@@ -34,10 +34,10 @@ func (h *Handler) OauthSigninHandler(w http.ResponseWriter, r *http.Request) {
 
 	// setting parametrs depends on api name
 	oauthParams, trouble := h.setParams(apiName)
-	if trouble == ErrInternalServer {
+	if trouble == InternalServerErr {
 		h.Errors(w, http.StatusInternalServerError)
 		return
-	} else if trouble == ErrPageNotFound {
+	} else if trouble == PageNotFound {
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -59,10 +59,10 @@ func (h *Handler) OauthSigninHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) OauthCallbackGoogleHandler(w http.ResponseWriter, r *http.Request) {
 	oauthParams, trouble := h.setParams("google")
 
-	if trouble == ErrInternalServer {
+	if trouble == InternalServerErr {
 		h.Errors(w, http.StatusInternalServerError)
 		return
-	} else if trouble == ErrPageNotFound {
+	} else if trouble == PageNotFound {
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -73,10 +73,10 @@ func (h *Handler) OauthCallbackGoogleHandler(w http.ResponseWriter, r *http.Requ
 func (h *Handler) OauthCallbackMailruHandler(w http.ResponseWriter, r *http.Request) {
 	oauthParams, trouble := h.setParams("mailru")
 
-	if trouble == ErrInternalServer {
+	if trouble == InternalServerErr {
 		h.Errors(w, http.StatusInternalServerError)
 		return
-	} else if trouble == ErrPageNotFound {
+	} else if trouble == PageNotFound {
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -86,10 +86,10 @@ func (h *Handler) OauthCallbackMailruHandler(w http.ResponseWriter, r *http.Requ
 
 func (h *Handler) OauthCallbackGithubHandler(w http.ResponseWriter, r *http.Request) {
 	oauthParams, trouble := h.setParams("github")
-	if trouble == ErrInternalServer {
+	if trouble == InternalServerErr {
 		h.Errors(w, http.StatusInternalServerError)
 		return
-	} else if trouble == ErrPageNotFound {
+	} else if trouble == PageNotFound {
 		h.Errors(w, http.StatusNotFound)
 		return
 	}
@@ -210,13 +210,13 @@ func (h *Handler) setParams(apiName string) (*OauthParams, string) {
 			oauthParams.ClientID = clientId
 		} else {
 			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_ID"))
-			return nil, ErrInternalServer
+			return nil, InternalServerErr
 		}
 		if clientSecret, ok := os.LookupEnv("GOOGLE_CLIENT_SECRET"); ok {
 			oauthParams.ClientSecret = clientSecret
 		} else {
 			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_SECRET"))
-			return nil, ErrInternalServer
+			return nil, InternalServerErr
 		}
 		oauthParams.OauthURLS = GoogleOauthURLs
 
@@ -225,13 +225,13 @@ func (h *Handler) setParams(apiName string) (*OauthParams, string) {
 			oauthParams.ClientID = clientId
 		} else {
 			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_ID"))
-			return nil, ErrInternalServer
+			return nil, InternalServerErr
 		}
 		if clientSecret, ok := os.LookupEnv("GITHUB_CLIENT_SECRET"); ok {
 			oauthParams.ClientSecret = clientSecret
 		} else {
 			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_SECRET"))
-			return nil, ErrInternalServer
+			return nil, InternalServerErr
 		}
 		oauthParams.OauthURLS = GithubOauthURLs
 	case "mailru":
@@ -239,17 +239,17 @@ func (h *Handler) setParams(apiName string) (*OauthParams, string) {
 			oauthParams.ClientID = clientId
 		} else {
 			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_ID"))
-			return nil, ErrInternalServer
+			return nil, InternalServerErr
 		}
 		if clientSecret, ok := os.LookupEnv("MAILRU_CLIENT_SECRET"); ok {
 			oauthParams.ClientSecret = clientSecret
 		} else {
 			h.l.WriteLog(fmt.Errorf("v1 - OauthSignHandler - setParams - LookupEnv CLIENT_SECRET"))
-			return nil, ErrInternalServer
+			return nil, InternalServerErr
 		}
 		oauthParams.OauthURLS = MailruOauthURLs
 	default:
-		return nil, ErrPageNotFound
+		return nil, PageNotFound
 	}
 	return &oauthParams, ""
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/mail"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -279,7 +280,7 @@ func (h *Handler) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.Usecases.Users.SignIn(user)
 
-	if err != nil && !strings.Contains(err.Error(), ErrNoRowsInResult) {
+	if err != nil && !strings.Contains(err.Error(), NoRowsInResult) {
 		h.l.WriteLog(fmt.Errorf("v1 - SignInHandler - SignIn: %w", err))
 	}
 	if err == entity.ErrUserNotFound {
@@ -352,7 +353,7 @@ func (h *Handler) EditProfilePageHandler(w http.ResponseWriter, r *http.Request)
 		h.Errors(w, http.StatusForbidden)
 		return
 	}
-
+	content.Uri = strconv.Itoa(id)
 	err = h.ParseAndExecute(w, content, "templates/edit_profile.html")
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - EditProfilePageHandler - ParseAndExecute - %w", err))
@@ -364,6 +365,69 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		h.Errors(w, http.StatusMethodNotAllowed)
 		return
 	}
+	content := Content{}
+	var err error
+
+	err = r.ParseMultipartForm(ImageSizeInt << 20)
+	if err != nil {
+		h.Errors(w, http.StatusBadRequest)
+		return
+	}
+
+	path := strings.Split(r.URL.Path, "/")
+	id, err := strconv.Atoi(path[len(path)-1])
+	if err != nil {
+		h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - Atoi: %w", err))
+	}
+	if r.URL.Path != "/edit_profile/"+path[len(path)-1] || id <= 0 {
+		h.Errors(w, http.StatusNotFound)
+		return
+	}
+
+	if len(r.MultipartForm.Value["id"]) != 0 && r.MultipartForm.Value["id"][0] != "" {
+		id, err := strconv.Atoi(r.MultipartForm.Value["id"][0])
+		if err != nil {
+			h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - Atoi: %w", err))
+			h.Errors(w, http.StatusInternalServerError)
+			return
+		}
+		content.User.Id = int64(id)
+	}
+
+	content.Uri = strconv.Itoa(id)
+
+	imagePath, err := h.GetImage(w, r)
+	if err != nil {
+		if strings.Contains(err.Error(), imageTypeForbidden) ||
+			strings.Contains(err.Error(), imageTooLarge) {
+			w.WriteHeader(http.StatusBadRequest)
+			content.ErrorMsg.Message = err.Error()
+			err := h.ParseAndExecute(w, content, "templates/edit_profile.html")
+			if err != nil {
+				h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - ParseAndExecute #1: %w", err))
+			}
+		} else {
+			h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - GetImage: %w", err))
+			h.Errors(w, http.StatusInternalServerError)
+		}
+		return
+	}
+
+	exceeded, err := h.CheckSizeExceeded(imagePath)
+	if err != nil {
+		h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - CheckSizeExceeded: %w", err))
+		h.Errors(w, http.StatusInternalServerError)
+		return
+	}
+	if exceeded {
+		w.WriteHeader(http.StatusBadRequest)
+		content.ErrorMsg.Message = imageSizeExceeded
+		err := h.ParseAndExecute(w, content, "templates/edit_profile.html")
+		if err != nil {
+			h.l.WriteLog(fmt.Errorf("v1 - CreateCommentHandler - ParseAndExecute #2: %w", err))
+		}
+		return
+	}
 
 	content, ok := r.Context().Value(Key("content")).(Content)
 	if !ok {
@@ -373,20 +437,6 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.Errors(w, http.StatusInternalServerError)
-	}
-
-	if len(r.Form["id"]) != 0 && r.Form["id"][0] != "" {
-		id, err := strconv.Atoi(r.Form["id"][0])
-		if err != nil {
-			h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - Atoi: %w", err))
-			h.Errors(w, http.StatusInternalServerError)
-			return
-		}
-		content.User.Id = int64(id)
-	}
-
 	existUser, err := h.Usecases.Users.GetById(content.User.Id)
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - GetById: %w", err))
@@ -394,28 +444,37 @@ func (h *Handler) EditProfileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(r.Form["date_of_birth"]) != 0 && r.Form["date_of_birth"][0] != "" {
-		existUser.DateOfBirth = r.Form["date_of_birth"][0]
+	if len(r.MultipartForm.Value["date_of_birth"]) != 0 &&
+		r.MultipartForm.Value["date_of_birth"][0] != "" {
+		existUser.DateOfBirth = r.MultipartForm.Value["date_of_birth"][0]
 	}
-	if len(r.Form["city"]) != 0 && r.Form["city"][0] != "" {
-		existUser.City = r.Form["city"][0]
+	if len(r.MultipartForm.Value["city"]) != 0 && r.MultipartForm.Value["city"][0] != "" {
+		existUser.City = r.MultipartForm.Value["city"][0]
 	}
-	if len(r.Form["gender"]) != 0 && r.Form["gender"][0] != "" {
-		existUser.Gender = r.Form["gender"][0]
+	if len(r.MultipartForm.Value["gender"]) != 0 && r.MultipartForm.Value["gender"][0] != "" {
+		existUser.Gender = r.MultipartForm.Value["gender"][0]
 	}
-	if len(r.Form["sign"]) != 0 && r.Form["sign"][0] != "" {
-		existUser.Sign = r.Form["sign"][0]
+	if len(r.MultipartForm.Value["sign"]) != 0 && r.MultipartForm.Value["sign"][0] != "" {
+		existUser.Sign = r.MultipartForm.Value["sign"][0]
 	}
-	if len(r.Form["role"]) != 0 && r.Form["role"][0] != "" {
-		existUser.Role = r.Form["role"][0]
+	if len(r.MultipartForm.Value["role"]) != 0 && r.MultipartForm.Value["role"][0] != "" {
+		existUser.Role = r.MultipartForm.Value["role"][0]
 	}
-
+	if imagePath != "" {
+		existUser.AvatarPath = "/" + imagePath
+	}
 	err = h.Usecases.Users.UpdateUserInfo(existUser, UpdateQueryInfo)
-
 	if err != nil {
-		h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - UpdateUserInfo: %w", err))
-		h.Errors(w, http.StatusInternalServerError)
-		return
+		err = os.Remove(imagePath)
+		if err != nil {
+			h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - Remove: %w", err))
+			h.Errors(w, http.StatusInternalServerError)
+			return
+		} else {
+			h.l.WriteLog(fmt.Errorf("v1 - EditProfileHandler - UpdateUserInfo: %w", err))
+			h.Errors(w, http.StatusInternalServerError)
+			return
+		}
 	}
 
 	http.Redirect(w, r, "/users/"+strconv.Itoa(int(content.User.Id)), http.StatusFound)
@@ -534,7 +593,7 @@ func (h *Handler) GetExistedSession(w http.ResponseWriter, r *http.Request) enti
 	}
 	id, err := h.Usecases.Users.GetIdBy(user)
 	if err != nil {
-		if !strings.Contains(err.Error(), ErrNoRowsInResult) {
+		if !strings.Contains(err.Error(), NoRowsInResult) {
 			h.l.WriteLog(fmt.Errorf("v1 - GetExistedSession - GetIdBy: %w", err))
 		}
 		return foundUser

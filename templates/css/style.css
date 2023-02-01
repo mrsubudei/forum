@@ -4333,3 +4333,20 @@ span.hidelink {
 	margin-left: 5px;
 	margin-right: 5px;
 }
+
+.user_avatar {
+	margin-left: 7px;
+	width: 220px;
+}
+
+.user_sign {
+	width: 220px;
+}
+
+.user_city {
+	width: 220px;
+}
+
+.user_date {
+	width: 220px;
+}

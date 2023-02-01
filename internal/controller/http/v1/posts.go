@@ -3,6 +3,7 @@ package v1
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -92,8 +93,8 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	imagePath, err := h.GetImage(w, r)
 	if err != nil {
 		content := Content{}
-		if strings.Contains(err.Error(), ErrImageTypeForbidden) ||
-			strings.Contains(err.Error(), ErrImageTooLarge) {
+		if strings.Contains(err.Error(), imageTypeForbidden) ||
+			strings.Contains(err.Error(), imageTooLarge) {
 			w.WriteHeader(http.StatusBadRequest)
 			content.ErrorMsg.Message = err.Error()
 			err := h.ParseAndExecute(w, content, "templates/create_post.html")
@@ -136,7 +137,7 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	newPost.Content = strings.ReplaceAll(postContent, "\r\n", "\\n")
 	newPost.Categories = categories
 	newPost.User = content.User
-	newPost.ImagePath = imagePath
+	newPost.ImagePath = "/" + imagePath
 	content.Post = newPost
 
 	if !valid {
@@ -155,9 +156,16 @@ func (h *Handler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		err := h.Usecases.Posts.CreatePost(newPost)
 		if err != nil {
-			h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - CreatePost: %w", err))
-			h.Errors(w, http.StatusInternalServerError)
-			return
+			err = os.Remove(imagePath)
+			if err != nil {
+				h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - Remove: %w", err))
+				h.Errors(w, http.StatusInternalServerError)
+				return
+			} else {
+				h.l.WriteLog(fmt.Errorf("v1 - CreatePostHandler - CreatePost: %w", err))
+				h.Errors(w, http.StatusInternalServerError)
+				return
+			}
 		}
 		http.Redirect(w, r, "/", http.StatusFound)
 	}

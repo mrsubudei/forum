@@ -15,6 +15,7 @@ type User struct {
 	Male            bool
 	Female          bool
 	Role            string
+	AvatarPath      string
 	Sign            string
 	SessionToken    string
 	SessionTTL      time.Time

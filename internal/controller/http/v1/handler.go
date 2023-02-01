@@ -54,30 +54,30 @@ func (h *Handler) Errors(w http.ResponseWriter, status int) {
 	switch status {
 	case http.StatusBadRequest:
 		errors.Code = http.StatusBadRequest
-		errors.Message = ErrBadRequest
+		errors.Message = BadRequest
 	case http.StatusUnauthorized:
 		errors.Code = http.StatusUnauthorized
-		errors.Message = ErrStatusNotAuthorized
+		errors.Message = StatusNotAuthorized
 	case http.StatusForbidden:
 		errors.Code = http.StatusForbidden
-		errors.Message = ErrLowAccessLevel
+		errors.Message = LowAccessLevel
 	case http.StatusNotFound:
 		errors.Code = http.StatusNotFound
-		errors.Message = ErrPageNotFound
+		errors.Message = PageNotFound
 	case http.StatusMethodNotAllowed:
 		errors.Code = http.StatusMethodNotAllowed
-		errors.Message = ErrMethodNotAllowed
+		errors.Message = MethodNotAllowed
 	case http.StatusNotAcceptable:
 		errors.Code = http.StatusNotAcceptable
 		errors.Message = UserNotExist
 	case http.StatusInternalServerError:
 		errors.Code = http.StatusInternalServerError
-		errors.Message = ErrInternalServer
+		errors.Message = InternalServerErr
 	}
 	html, err := template.ParseFiles(root + "templates/errors.html")
 	if err != nil {
 		h.l.WriteLog(fmt.Errorf("v1 - Errors - ParseFiles: %w", err))
-		http.Error(w, ErrInternalServer, http.StatusInternalServerError)
+		http.Error(w, InternalServerErr, http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(errors.Code)
@@ -90,6 +90,8 @@ func (h *Handler) Errors(w http.ResponseWriter, status int) {
 func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	// main
 	router.Handle("/", h.AssignStatus(http.HandlerFunc(h.IndexHandler)))
+	router.Handle("/search_page", h.AssignStatus(http.HandlerFunc(h.SearchPageHandler)))
+	router.Handle("/search", h.AssignStatus(http.HandlerFunc(h.SearchHandler)))
 
 	// users routes
 	router.Handle("/signin_page", h.AssignStatus(http.HandlerFunc(h.SignInPageHandler)))
@@ -98,7 +100,7 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.Handle("/signup", h.AssignStatus(http.HandlerFunc(h.SignUpHandler)))
 	router.Handle("/signout", h.CheckAuth(http.HandlerFunc(h.SignOutHandler)))
 	router.Handle("/edit_profile_page/", h.CheckAuth(http.HandlerFunc(h.EditProfilePageHandler)))
-	router.Handle("/edit_profile", h.CheckAuth(http.HandlerFunc(h.EditProfileHandler)))
+	router.Handle("/edit_profile/", h.CheckAuth(http.HandlerFunc(h.EditProfileHandler)))
 	router.Handle("/users/", h.AssignStatus(http.HandlerFunc(h.UserPageHandler)))
 	router.Handle("/all_users_page", h.AssignStatus(http.HandlerFunc(h.AllUsersPageHandler)))
 	router.Handle("/find_reacted_users/", h.CheckAuth(http.HandlerFunc(h.FindReactedUsersHandler)))
@@ -108,10 +110,6 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("/oauth2_callback_github", h.OauthCallbackGithubHandler)
 	router.HandleFunc("/oauth2_callback_mailru", h.OauthCallbackMailruHandler)
 	router.HandleFunc("/oauth2_signin/", h.OauthSigninHandler)
-
-	// searching routes
-	router.Handle("/search_page", h.AssignStatus(http.HandlerFunc(h.SearchPageHandler)))
-	router.Handle("/search", h.AssignStatus(http.HandlerFunc(h.SearchHandler)))
 
 	// posts routes
 	router.Handle("/create_category_page", h.CheckAuth(http.HandlerFunc(h.CreateCategoryPageHandler)))

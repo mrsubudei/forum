@@ -373,7 +373,7 @@ func TestEditProfileHandler(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/edit_profile", nil)
+		req := httptest.NewRequest(http.MethodPost, "/edit_profile/", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}
@@ -394,7 +394,7 @@ func TestEditProfileHandler(t *testing.T) {
 
 	t.Run("wrong method", func(t *testing.T) {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/edit_profile", nil)
+		req := httptest.NewRequest(http.MethodGet, "/edit_profile/", nil)
 		cookie := &http.Cookie{
 			Name: "session_token",
 		}

@@ -150,9 +150,11 @@ func CreateDB(s *sqlite3.Sqlite) error {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		post_id INTEGER,
 		comment_id INTEGER,
+		user_id INTEGER,
 		path TEXT,
 		FOREIGN KEY (post_id) REFERENCES posts(id),
-		FOREIGN KEY (comment_id) REFERENCES comments(id)
+		FOREIGN KEY (comment_id) REFERENCES comments(id),
+		FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 	`
 	_, err = s.DB.Exec(images)

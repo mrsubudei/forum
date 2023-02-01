@@ -38,12 +38,12 @@ func (ur *UsersRepo) Store(user entity.User) error {
 	res, err := stmt.Exec(user.Name, user.Email, user.Password, user.RegDate,
 		user.DateOfBirth, user.City, user.Gender, RoleUser, " ")
 	if err != nil {
-		return fmt.Errorf("UsersRepo - Store - Exec: %w", err)
+		return fmt.Errorf("UsersRepo - Store - Exec #1: %w", err)
 	}
 
 	affected, err := res.RowsAffected()
 	if affected != 1 || err != nil {
-		return fmt.Errorf("UsersRepo - Store - RowsAffected: %w", err)
+		return fmt.Errorf("UsersRepo - Store - RowsAffected #1: %w", err)
 	}
 
 	err = tx.Commit()
@@ -157,6 +157,7 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	stmt, err := ur.DB.Prepare(`
 	SELECT
 		id, name, email, password, reg_date, date_of_birth, city, sex, role, sign,
+		(SELECT path FROM images WHERE images.user_id = ?),
 		(SELECT COUNT(*) FROM posts WHERE posts.user_id = users.id) AS posts,
 		(SELECT COUNT(*) FROM comments WHERE comments.user_id = users.id) AS comments,
 		(SELECT COUNT(*) FROM post_likes WHERE post_likes.user_id = users.id) AS post_likes,
@@ -177,9 +178,11 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	var commentLikes sql.NullInt64
 	var commentDislikes sql.NullInt64
 	var sign sql.NullString
+	var avatarPath sql.NullString
 
-	err = stmt.QueryRow(id).Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.RegDate, &user.DateOfBirth, &user.City,
-		&user.Gender, &user.Role, &sign, &posts, &comments, &postLikes, &postDislikes, &commentLikes, &commentDislikes)
+	err = stmt.QueryRow(id, id).Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.RegDate,
+		&user.DateOfBirth, &user.City, &user.Gender, &user.Role, &sign, &avatarPath, &posts, &comments,
+		&postLikes, &postDislikes, &commentLikes, &commentDislikes)
 	if err != nil {
 		return user, fmt.Errorf("UsersRepo - GetById - Scan: %w", err)
 	}
@@ -191,6 +194,7 @@ func (ur *UsersRepo) GetById(id int64) (entity.User, error) {
 	user.CommentLikes = commentLikes.Int64
 	user.CommentDislikes = commentDislikes.Int64
 	user.Sign = sign.String
+	user.AvatarPath = avatarPath.String
 
 	if user.DateOfBirth == "0001-01-01" {
 		user.DateOfBirth = ""
@@ -250,12 +254,46 @@ func (ur *UsersRepo) UpdateInfo(user entity.User) error {
 
 	res, err := stmt.Exec(user.DateOfBirth, user.City, user.Gender, user.Sign, user.Role, user.Id)
 	if err != nil {
-		return fmt.Errorf("UsersRepo - Update - Exec: %w", err)
+		return fmt.Errorf("UsersRepo - Update - Exec #1: %w", err)
 	}
 
 	affected, err := res.RowsAffected()
 	if affected != 1 || err != nil {
 		return fmt.Errorf("UsersRepo - Update - RowsAffected: %w", err)
+	}
+
+	row := tx.QueryRow(`
+		SELECT path 
+		FROM images WHERE user_id = ?
+	`, user.Id)
+
+	var avatarPath sql.NullString
+
+	if err = row.Scan(&avatarPath); err == sql.ErrNoRows {
+		res, err = tx.Exec(`
+		INSERT INTO images(user_id, path)
+		VALUES (?, ?)
+		`, user.Id, user.AvatarPath)
+		if err != nil {
+			return fmt.Errorf("UsersRepo - Update - Exec #2: %w", err)
+		}
+		affected, err := res.RowsAffected()
+		if affected != 1 || err != nil {
+			return fmt.Errorf("UsersRepo - Update - RowsAffected #2: %w", err)
+		}
+	} else {
+		res, err = tx.Exec(`
+		UPDATE images
+		SET path = ?
+		WHERE user_id = ?
+		`, user.AvatarPath, user.Id)
+		if err != nil {
+			return fmt.Errorf("UsersRepo - Update - Exec #3: %w", err)
+		}
+		affected, err := res.RowsAffected()
+		if affected != 1 || err != nil {
+			return fmt.Errorf("UsersRepo - Update - RowsAffected #3: %w", err)
+		}
 	}
 
 	err = tx.Commit()

@@ -116,6 +116,11 @@
                                                 title="Просмотр профиля {{.Post.User.Name}}">{{.Post.User.Name}}</a>
                                         </h4>
                                         <ul class="reset smalltext">
+                                            <li class="avatar">
+                                                <a href="/users/{{.Post.User.Id}}">
+                                                    <img class="avatar" src="{{.Post.User.AvatarPath}}" alt="">
+                                                </a>
+                                            </li>
                                             <li class="postgroup">{{.Post.User.Role}}</li>
                                             {{if .Post.User.Male}}
                                             <li class="postcount">Пол: <img src="/templates/img/Male.gif"
@@ -125,13 +130,6 @@
                                             <li class="postcount">Пол: <img src="/templates/img/Female.gif"
                                                     title="Женский"></li>
                                             {{end}}
-                                            <li class="avatar">
-                                                <!-- <a href="/users/{{.Post.User.Id}}">
-                                                    <img class="avatar"
-                                                        src="avatars/Musicians/Bob_Marley.jpg"
-                                                        alt="">
-                                                </a> -->
-                                            </li>
                                             <li class="postcount">Постов: {{.Post.User.Posts}}</li>
                                             <li class="postcount">Комментариев: {{.Post.User.Comments}}</li>
                                             <li class="profile">
@@ -176,8 +174,8 @@
                                                 {{range .Post.ContentWeb}}
                                                 {{.}} <br>
                                                 {{end}}
+                                                <img src="{{.Post.ImagePath}}" alt="">
                                             </div>
-
                                         </div>
                                     </div>
                                     <div class="moderatorbar">
@@ -199,6 +197,11 @@
                                                 title="Просмотр профиля {{.User.Name}}">{{.User.Name}}</a>
                                         </h4>
                                         <ul class="reset smalltext">
+                                            <li class="avatar">
+                                                <a href="/users/{{.User.Id}}">
+                                                    <img class="avatar" src="{{.User.AvatarPath}}" alt="">
+                                                </a>
+                                            </li>
                                             <li class="postgroup">{{.User.Role}}</li>
                                             {{if .User.Male}}
                                             <li class="postcount">Пол: <img src="/templates/img/Male.gif"
@@ -270,6 +273,11 @@
                                                 title="Просмотр профиля {{.User.Name}}">{{.User.Name}}</a>
                                         </h4>
                                         <ul class="reset smalltext">
+                                            <li class="avatar">
+                                                <a href="/users/{{.User.Id}}">
+                                                    <img class="avatar" src="{{.User.AvatarPath}}" alt="">
+                                                </a>
+                                            </li>
                                             <li class="postgroup">{{.User.Role}}</li>
                                             {{if .User.Male}}
                                             <li class="postcount">Пол: <img src="/templates/img/Male.gif"
