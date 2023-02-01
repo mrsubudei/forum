@@ -30,8 +30,3 @@ go:
 .PHONY: tests
 tests:
 		go test -v ./...
-
-.PHONY: test covers
-test covers:
-		go test ./... -coverprofile=coverage
-		go tool cover -html=coverage

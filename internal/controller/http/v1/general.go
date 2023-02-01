@@ -240,8 +240,8 @@ func (h *Handler) GetImage(w http.ResponseWriter, r *http.Request) (string, erro
 	mimeType := header.Header.Get("Content-Type")
 	typeSl := strings.Split(mimeType, "/")
 	imageType := typeSl[1]
-
-	if imageType != "jpeg" && imageType != "png" && imageType != "gif" {
+	if imageType != "jpeg" && imageType != "png" &&
+		imageType != "gif" && imageType != "octet-stream" {
 		return "", errors.New(imageTypeForbidden)
 	}
 
@@ -281,7 +281,7 @@ func (h *Handler) CheckSizeExceeded(path string) (bool, error) {
 	if path == "" {
 		return false, nil
 	}
-	fmt.Println("tuta")
+
 	file, err := os.Open(path)
 	if err != nil {
 		return false, fmt.Errorf("open: %w", err)

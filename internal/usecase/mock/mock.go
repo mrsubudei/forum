@@ -69,6 +69,7 @@ func (um *UsersMockUseCase) DeleteUser(u entity.User) error {
 }
 
 type PostsMockUseCase struct {
+	Posts      []entity.Post
 	Categories []string
 }
 
@@ -77,11 +78,12 @@ func NewPostsMockUseCase() *PostsMockUseCase {
 }
 
 func (pm *PostsMockUseCase) CreatePost(p entity.Post) error {
+	pm.Posts = append(pm.Posts, p)
 	return nil
 }
 
 func (pm *PostsMockUseCase) GetAllPosts() ([]entity.Post, error) {
-	return []entity.Post{}, nil
+	return pm.Posts, nil
 }
 
 func (pm *PostsMockUseCase) GetPostsByQuery(user entity.User, query string) ([]entity.Post, error) {

@@ -53,7 +53,7 @@ func LoadConfig(filename string) (Config, error) {
 
 func setEnv() error {
 	root := getRootPath()
-	file, err := os.Open(root + ".env")
+	file, err := os.Open(root + ".env.example")
 	if err != nil {
 		return fmt.Errorf("setEnv - Open: %w", err)
 	}

@@ -15,6 +15,11 @@ Only registered users are able to like or dislike posts and comments.
 To see posts that you created or liked or disliked, go to profile page and click on relevant  
 numbers. Only registered users can get this information.  
 
+## Prerequisites
+To be able to use authorization with google, githun and mail.ru  
+you should register application in developers console page, and  
+put client_id and client_secret to .env.example file.  
+
 ## Usage  
 To run project:  
 ```
@@ -37,7 +42,7 @@ Configuration is stored in `config.json` file. It is then parsed
 and saved in structure in `/internal/config/config.go`.  
 
 ## Logging  
-All errors is saved in `logs.txt` file.  
+All errors is saved in `logs.log` file.  
 
 ## Libraries  
 In this project next libraries are used:  

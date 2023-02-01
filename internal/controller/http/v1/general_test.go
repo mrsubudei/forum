@@ -125,6 +125,7 @@ func TestSearchHandler(t *testing.T) {
 	handler := setup()
 
 	t.Run("OK", func(t *testing.T) {
+		handler.Usecases.Posts.CreatePost(entity.Post{Title: "sdf"})
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodPost, "/search", nil)
 
