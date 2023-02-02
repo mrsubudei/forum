@@ -245,8 +245,10 @@ func (h *Handler) GetImage(w http.ResponseWriter, r *http.Request) (string, erro
 		return "", errors.New(imageTypeForbidden)
 	}
 
-	if _, err := os.Stat("templates/img/storage"); os.IsNotExist(err) {
-		os.MkdirAll("templates/img/storage", os.ModePerm)
+	root := getRootPath()
+
+	if _, err := os.Stat(root + "templates/img/storage"); os.IsNotExist(err) {
+		os.MkdirAll(root+"templates/img/storage", os.ModePerm)
 	}
 
 	manager := auth.NewManager(h.Cfg)
@@ -255,7 +257,7 @@ func (h *Handler) GetImage(w http.ResponseWriter, r *http.Request) (string, erro
 		return "", fmt.Errorf("newToken: %w", err)
 	}
 
-	path := "templates/img/storage/" + generated + "." + imageType
+	path := root + "templates/img/storage/" + generated + "." + imageType
 	targetFile, err := os.Create(path)
 	if err != nil {
 		return "", fmt.Errorf("create: %w", err)
